@@ -1,7 +1,7 @@
 class GlobalRes {
     constructor() {
-        this.language = "eng";
-        //this.language = "chnT";
+        //this.language = "eng";
+        this.language = "chnT";
         //==============================
         this.kid = 0;
         // this.kidMap=new Map();
@@ -13,7 +13,6 @@ class GlobalRes {
         this.password = "1234";
         this.mouseAct = {};
         this.baseColor = "#27282c";
-        this.language = "chinese";
         this.minFontSize = 10;
         this.maxFontSize = 200;
         this.mdTestInx = 0;

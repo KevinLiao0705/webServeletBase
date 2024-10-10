@@ -58,6 +58,8 @@ class Describe {
         optsCopy.nature.image = "systemResource/icons8-add-48.png";
 
         optsCopy.int = {dataType: "int", checkType: "int", setType: "inputText", value: 0, actButtons: ["inc", "dec", "pad"], group: "copy", dsc: ""};
+        optsCopy.int.max=100;
+        optsCopy.int.min=-100;
         optsCopy.int.image = "systemResource/number123.png";
 
         optsCopy.intA = {dataType: "int", checkType: "int", setType: "textArea", value: [1,2,3], actButtons: ["pad"], group: "copy", dsc: ""};
@@ -104,8 +106,11 @@ class Describe {
 
         optsCopy.inputRange = {dataType: "int", checkType: "int", setType: "inputRange", value: 25, min: 0, max: 100, fixed: 0, actButtons: ["value"], group: "copy", dsc: ""};
         optsCopy.inputRange.image = "systemResource/icons8-add-48.png";
-
-
+        
+        optsCopy.group = {dataType: "int", setType: "group", value: 0,  group: "base"};
+        optsCopy.group.image = "systemResource/icons8-group-50.png";
+        
+        optsBase.baseGroup = KvLib.copyObj(optsCopy.group, {group: "base"});
         optsBase.bool = KvLib.copyObj(optsCopy.bool, {group: "base"});
         optsBase.nature = KvLib.copyObj(optsCopy.nature, {group: "base"});
         optsBase.int = KvLib.copyObj(optsCopy.int, {group: "base"});

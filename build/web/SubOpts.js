@@ -272,6 +272,14 @@ class SubOpts {
             opts.innerTextColor="#ddd";
             opts.textShadow = "2px 2px 2px #000";
         }
+
+        if ("Component~Cp_base~label.gridTr"){
+            var opts = gr.blockSubOpts["Component~Cp_base~label.gridTr"] = {};
+            KvLib.deepCoverObject(opts, gr.blockSubOpts["Component~Cp_base~label.sys0"]);
+            opts.borderType="gridTr";
+        }
+        
+        
         
         if ("Component~Cp_base~label.sys3"){
             var opts = gr.blockSubOpts["Component~Cp_base~label.sys3"] = {};

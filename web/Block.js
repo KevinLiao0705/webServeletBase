@@ -206,6 +206,21 @@ class Block {
                 elem.style.borderBottom = st.borderWidth + "px solid " + op.borderColor;
                 elem.style.borderRight = st.borderWidth + "px solid " + op.borderColor;
                 break;
+            case "gridTr":
+                elem.style.borderTop = st.borderWidth + "px solid " + op.borderColor;
+                elem.style.borderRight = st.borderWidth + "px solid " + op.borderColor;
+                elem.style.borderLeft = st.borderWidth + "px solid " + op.baseColor;
+                ;
+                elem.style.borderBottom = st.borderWidth + "px solid " + op.baseColor;
+                break;
+            case "gridT":
+                elem.style.borderTop = st.borderWidth + "px solid " + op.borderColor;
+                elem.style.borderRight = st.borderWidth + "px solid " + op.baseColor;
+                ;
+                elem.style.borderLeft = st.borderWidth + "px solid " + op.baseColor;
+                ;
+                elem.style.borderBottom = st.borderWidth + "px solid " + op.baseColor;
+                break;
 
         }
 
@@ -324,6 +339,10 @@ class Block {
         elem.style.fontFamily = op.fontFamily;
         elem.style.fontWeight = op.fontWeight;
         elem.style.fontStyle = op.fontStyle;
+        if (op.maxFontSize) {
+            if (op.maxFontSize < st.fontSize)
+                st.fontSize = op.maxFontSize;
+        }
         elem.style.fontSize = st.fontSize + "px";
         elem.style.whiteSpace = op.whiteSpace;
         elem.style.textAlign = op.textAlign;
@@ -565,9 +584,12 @@ class Block {
                 elem.addEventListener("mouseup", self.mouseUpFunc);
             if (op.mouseClick_f)
                 elem.addEventListener("click", self.mouseClickFunc);
-            if (op.mouseWheel_f) {
+            if (op.mouseWheel_f)
                 elem.addEventListener("wheel", self.mouseWheelFunc);
-            }
+            if (op.keyPress_f)
+                elem.addEventListener('keypress', self.keyPressFunc);
+
+
         }
     }
 

@@ -77,93 +77,9 @@ class Mda {
         MdaPopWin.popMaskObjA(obj);
     }
 
-    warnBox(op) {
-        var opts = {};
-        opts.title = "Warnning";
-        opts.titleBaseColor = "#ff0";
-        KvLib.deepCoverObject(opts, op);
-        this.mesBox(opts);
-    }
-
-    errorBox(op) {
-        var opts = {};
-        opts.title = "Error";
-        opts.titleBaseColor = "#f88";
-        KvLib.deepCoverObject(opts, op);
-        this.mesBox(opts);
-    }
-
-    okBox(op) {
-        var opts = {};
-        opts.title = "OK";
-        opts.titleBaseColor = "#0f0";
-        KvLib.deepCoverObject(opts, op);
-        this.mesBox(opts);
-    }
-
-    checkBox(op) {
-        var opts = {};
-        opts.title = "Warnning";
-        opts.titleBaseColor = "#ff0";
-        opts.buttons = ["OK", "ESC"];
-        opts.buttonIds = ["ok", "esc"];
-        KvLib.deepCoverObject(opts, op);
-        this.mesBox(opts);
-    }
-
-    mesBox(_op) {
-        if (gr.mesBoxOn_f)
-            return;
-        var op = {};
-        op.kvTexts = ["This is message1", "This is message2"];
-        op.title = "Message";
-        op.buttons = ["ESC"];
-        op.buttonIds = ["esc"];
-        op.titleBaseColor = "#ccf";
-        op.buttonXm = 100;
-        op.w = 800;
-        op.h = 220;
-        op.bm = 10;
-        op.ym = 10;
-
-        KvLib.deepCoverObject(op, _op);
-        //=====================================
-        var opts = {};
-        opts.title = op.title;
-        opts.titleColor = "#000";
-        opts.titleBaseColor = op.titleBaseColor;
-        opts.buttons = op.buttons;
-        opts.buttonIds = op.buttonIds;
-        mda.setMargin(opts, op);
-        opts.ym = op.ym;
-        opts.eh = op.kvTexts.length * 40;
-        //=================
-        var ksObj = opts.ksObj = {};
-        var kopts = ksObj.opts = {};
-        kopts.innerText = "";
-        for (var i = 0; i < op.kvTexts.length; i++) {
-            if (i !== 0)
-                kopts.innerText += "<br>";
-            kopts.innerText += op.kvTexts[i];
-        }
-        kopts.fontSize = 40 * 0.7;
-        ksObj.name = "message";
-        ksObj.type = "Component~Cp_base~plate.none";
-        //=================
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-            KvLib.exeFunc(_op.actionFunc, iobj);
-            MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
-            gr.mesBoxOn_f = 0;
-        };
-        var kvObj = new Block("mdaBox", "Model~MdaBox~base.sys0", opts);
-        var mesObj = mda.popObj(op.w, op.h, kvObj);
-        var bobj = kvObj.blockRefs["esc"];
-        gr.mesBoxOn_f = 1;
-        bobj.elems["base"].focus();
-
-
-    }
+    
+    
+    
 
     intPadBox(_op) {
         var op = {};
@@ -245,7 +161,7 @@ class Mda {
                 var setLine = mdaPad.blockRefs["lcd"];
                 var errStr = setLine.mdClass.checkValue(1);
                 if (errStr) {
-                    mda.errorBox({kvTexts: [errStr]});
+                    box.errorBox({kvTexts: [errStr]});
                     return;
                 }
             }
@@ -335,7 +251,7 @@ class Mda {
                 var setLine = mdaPad.blockRefs["lcd"];
                 var errStr = setLine.mdClass.checkValue(1);
                 if (errStr) {
-                    mda.errorBox({kvTexts: [errStr]});
+                    box.errorBox({kvTexts: [errStr]});
                     return;
                 }
                 MdaPopWin.popOff(2);
@@ -415,7 +331,7 @@ class Mda {
                 var setLine = mdaPad.blockRefs["lcd"];
                 var errStr = setLine.mdClass.checkValue(1);
                 if (errStr) {
-                    mda.errorBox({kvTexts: [errStr]});
+                    box.errorBox({kvTexts: [errStr]});
                     return;
                 }
             }
@@ -440,7 +356,7 @@ class Mda {
                 var setLine = mdaPad.blockRefs["lcd"];
                 var errStr = setLine.mdClass.checkValue(1);
                 if (errStr) {
-                    mda.errorBox({kvTexts: [errStr]});
+                    box.errorBox({kvTexts: [errStr]});
                     return;
                 }
                 iobj.buttonId = "enter";
@@ -645,12 +561,12 @@ class Mda {
         var opts = {};
         opts.ksObjss = [];
         opts.eh = 30;
-        //opts.etm=0;
-        //opts.ebm=0;
-        //opts.erm=0;
-        opts.elm = 0;
+        opts.etm = 1;
+        opts.ebm = 1;
+        opts.erm = 1;
+        opts.elm = 1;
         opts.xm = 0;
-        opts.ym = 0;
+        opts.ym = 1;
         var i = 0;
         for (var objKey in dsc.optsBase) {
             var ksObjs = [];
@@ -662,8 +578,9 @@ class Mda {
             setOpts.title = objKey;
             setOpts.titleWidth = 300;
             setOpts.iconWidth = 25;
-            setOpts.noWidth = 50;
-            setOpts.no=""+(i+1);
+            //setOpts.noWidth = 25;
+            setOpts.expandWidth = 30;
+            setOpts.no = "" + (i + 1);
             setOpts.titleFontSize = 16;
             ksObjs.push(ksObj);
             opts.ksObjss.push(ksObjs);
@@ -706,6 +623,9 @@ class Mda {
         op.ebm = 4;
         op.erm = 4;
         op.elm = 4;
+        op.eBorderColor = "#ccc";
+        op.eBorderWidth = 0;
+        op.eBaseColor = "#888";
         KvLib.deepCoverObject(op, _op);
         //=======================================================
         var opts = {};
@@ -730,7 +650,7 @@ class Mda {
                         var setLine = mainMd.blockRefs[key];
                         var errStrs = setLine.mdClass.checkValue(1);
                         if (errStrs) {
-                            mda.errorBox({kvTexts: errStrs});
+                            box.errorBox({kvTexts: errStrs});
                             return errStrs;
                         } else {
                             var ksObj = mainMd.opts.ksObjss[iInx][jInx];
@@ -739,6 +659,10 @@ class Mda {
                     }
                 }
             };
+            if (iobj.act === "expand") {
+                //var setOptsA=op.ksObjss;
+                return;
+            }
             if (iobj.act === "checkPreChange") {
                 return preChangeFunc(iobj);
             }
@@ -771,8 +695,9 @@ class Mda {
         kopts.ebm = op.ebm;
         kopts.erm = op.erm;
         kopts.elm = op.elm;
-        kopts.borderColor = "#fff";
-        kopts.borderWidth = 1;
+        kopts.borderColor = op.eBorderColor;
+        kopts.borderWidth = op.eBorderWidth;
+        kopts.baseColor = op.eBaseColor;
         kopts.ksObjss = op.ksObjss;
         kopts.ksObjWs = op.ksObjWs;
         //=================
@@ -1781,7 +1706,7 @@ class MdaContainer {
         var opts = {};
         Block.setBaseOpts(opts);
         opts.xm = 10;
-        opts.ym = 10;
+        opts.ym = 20;
         opts.eh = 40;
         opts.ew = 200;
         opts.etm = 20;
@@ -2830,23 +2755,23 @@ class MdaMdTest {
 
 
             if (iobj.keyId === "testMesssageBox~mesBox") {
-                mda.mesBox({});
+                box.mesBox({});
                 return;
             }
             if (iobj.keyId === "testMesssageBox~warnBox") {
-                mda.warnBox({});
+                box.warnBox({});
                 return;
             }
             if (iobj.keyId === "testMesssageBox~okBox") {
-                mda.okBox({});
+                box.okBox({});
                 return;
             }
             if (iobj.keyId === "testMesssageBox~errorBox") {
-                mda.errorBox({});
+                box.errorBox({});
                 return;
             }
             if (iobj.keyId === "testMesssageBox~checkBox") {
-                mda.checkBox({});
+                box.checkBox({});
                 return;
             }
             if (iobj.keyId === "testSelectBox~selectBox") {
@@ -3697,7 +3622,6 @@ class MdaBox {
         var opts = {};
         md.setPns(opts);
         opts.margin = 0;
-        opts.borderColor = "#f00";
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
         //======================================    
         var cname = lyMaps["body"] + "~" + 0;
@@ -3749,6 +3673,7 @@ class MdaBox {
                 iobj.sender = md;
                 KvLib.exe(op.actionFunc, iobj);
             };
+            opts.maxFontSize = 30;
             blocks[cname] = {name: "headButton#" + i, type: "Component~Cp_base~button.sys0", opts: opts};
         }
 
@@ -4170,13 +4095,13 @@ class MdaSetLine {
                     if (checkType === "float")
                         var iv = KvLib.strToFloat(iValue, null);
                     if (iv === null)
-                        return [setOpts.title, "Data format error !!!"];
+                        return [setOpts.title, KvLib.getKvText(syst.errorOfDataFormat).text];
                     if (setOpts.max !== null && setOpts.max !== undefined)
                         if (iv > setOpts.max)
-                            return [setOpts.title, "Data over than max value of " + setOpts.max + " !!!"];
+                            return [setOpts.title, KvLib.getKvText(syst.dataOverTheMax).text + setOpts.max + " !!!"];
                     if (setOpts.min !== null && setOpts.min !== undefined)
                         if (iv < setOpts.min)
-                            return [setOpts.title, "Data less than min value of " + setOpts.min + " !!!"];
+                            return [setOpts.title, KvLib.getKvText(syst.dataLessTheMin).text + setOpts.min + " !!!"];
                     ivA.push(iv);
                 }
                 if (checkType === "color") {
@@ -4313,27 +4238,27 @@ class MdaSetLine {
         var retFunc = function (iobj) {
             console.log(iobj);
             /*
-            if (iobj.kvObj.name === "inputText") {
-                if (iobj.act === "pressEnter") {
-                    console.log(iobj);
-                    var errStrs = md.mdClass.checkValue(1);
-                    if (errStrs) {
-                        mda.errorBox({kvTexts: errStrs});
-                        return;
-                    }
-                    iobj.sender = md;
-                    iobj.setOpts = md.opts.setOpts;
-                    KvLib.exeFunc(op.actionFunc, iobj);
-                    return;
-                }
-            }*
+             if (iobj.kvObj.name === "inputText") {
+             if (iobj.act === "pressEnter") {
+             console.log(iobj);
+             var errStrs = md.mdClass.checkValue(1);
+             if (errStrs) {
+             box.errorBox({kvTexts: errStrs});
+             return;
+             }
+             iobj.sender = md;
+             iobj.setOpts = md.opts.setOpts;
+             KvLib.exeFunc(op.actionFunc, iobj);
+             return;
+             }
+             }*
              * 
              */
             if (iobj.act === "pressEnter") {
                 console.log(iobj);
                 var errStrs = md.mdClass.checkValue(1);
                 if (errStrs) {
-                    mda.errorBox({kvTexts: errStrs});
+                    box.errorBox({kvTexts: errStrs});
                     return;
                 }
                 iobj.sender = md;
@@ -4359,7 +4284,7 @@ class MdaSetLine {
                 var inputText = md.blockRefs["inputText"];
                 var errStrs = md.mdClass.checkValue(1);
                 if (errStrs) {
-                    mda.errorBox({kvTexts: errStrs});
+                    box.errorBox({kvTexts: errStrs});
                     return;
                 }
             }
@@ -4379,19 +4304,45 @@ class MdaSetLine {
         var setOpts = op.setOpts;
         var opts = {};
         md.setMargin(opts);
+        var expandWidth = KvLib.setValue(setOpts.expandWidth, 0);
         var checkWidth = KvLib.setValue(setOpts.checkWidth, 0);
         var noWidth = KvLib.setValue(setOpts.noWidth, 0);
         var iconWidth = KvLib.setValue(setOpts.iconWidth, 0);
         var titleWidth = KvLib.setValue(setOpts.titleWidth, 0);
-        opts.xArr = [checkWidth, noWidth, iconWidth, titleWidth, 9999];
+        opts.xArr = [expandWidth, checkWidth, noWidth, iconWidth, titleWidth, 9999];
         var actButtons = KvLib.setValue(setOpts.actButtons, []);
         var actButtonWidth = KvLib.setValue(setOpts.actButtonWidth, 50);
         for (var i = 0; i < actButtons.length; i++)
             opts.xArr.push(actButtonWidth);
         md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "main");
 
-        if (checkWidth) {
+        if (expandWidth) {
             var cname = md.lyMaps["main"] + "~" + 0;
+            var opts = {};
+            opts.actionFunc = function (iobj) {
+                console.log(iobj);
+                iobj.sender = md;
+                if (md.opts.setOpts.value)
+                    iobj.act = "collaps";
+                else
+                    iobj.act = "expand";
+                iobj.groupName = md.setOpts.group;
+                KvLib.exeFunc(op.actionFunc, iobj);
+
+            };
+            if (setOpts.setType === "group") {
+                if (setOpts.value)
+                    opts.innerText = "-";
+                else
+                    opts.innerText = "+";
+                opts.fontSize = "0.5rh";
+                md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "buttonExpand");
+            }
+        }
+
+
+        if (checkWidth) {
+            var cname = md.lyMaps["main"] + "~" + 1;
             var opts = {};
             opts.actionFunc = function (iobj) {
                 console.log(iobj);
@@ -4413,29 +4364,37 @@ class MdaSetLine {
             md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "buttonCheck");
         }
         if (noWidth) {
-            var cname = md.lyMaps["main"] + "~" + 1;
-            var opts = {};
-            opts.innerText = setOpts.no;
-            md.newBlock(cname, opts, "Component~Cp_base~label.sys3", "labelNo");
-        }
-        if (iconWidth) {
             var cname = md.lyMaps["main"] + "~" + 2;
             var opts = {};
-            opts.backgroundImageUrls = [op.setOpts.image];
+            opts.innerText = setOpts.no;
+            opts.borderType = "gridTr";
+            md.newBlock(cname, opts, "Component~Cp_base~label.sys0", "labelNo");
+        }
+        if (iconWidth) {
+            var cname = md.lyMaps["main"] + "~" + 3;
+            var opts = {};
+            if (!op.setOpts.image)
+                opts.backgroundImageUrls = [];
+            else
+                opts.backgroundImageUrls = [op.setOpts.image];
+            opts.borderType = "gridTr";
+            opts.borderWidth = 0;
+            opts.borderColor = "#888";
             md.newBlock(cname, opts, "Component~Cp_base~icons.sys0", "labelTitle");
         }
         if (titleWidth) {
-            var cname = md.lyMaps["main"] + "~" + 3;
+            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.innerText = setOpts.title;
             opts.fontSize = setOpts.titleFontSize;
             opts.textAlign = "left";
             opts.lpd = 4;
+            opts.borderWidth = 0;
             md.newBlock(cname, opts, "Component~Cp_base~label.sys0", "labelTitle");
         }
 
         for (var i = 0; i < actButtons.length; i++) {
-            var cname = md.lyMaps["main"] + "~" + (5 + i);
+            var cname = md.lyMaps["main"] + "~" + (6 + i);
             var opts = {};
             if (actButtons[i] === "inc") {
                 opts.innerText = '<i class="gf">&#xe145</i>';
@@ -4693,8 +4652,8 @@ class MdaSetLine {
             md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "actButton#" + actButtons[i]);
         }
 
+        var cname = md.lyMaps["main"] + "~" + 5;
         if (setOpts.setType === "buttonActs") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.xc = setOpts.enum.length;
             opts.xm = setOpts.xm;
@@ -4732,7 +4691,6 @@ class MdaSetLine {
 
         }
         if (setOpts.setType === "buttonChecks") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.xc = setOpts.enum.length;
             opts.xm = setOpts.xm;
@@ -4775,7 +4733,6 @@ class MdaSetLine {
             return;
         }
         if (setOpts.setType === "buttonOnOffs") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.xc = setOpts.enum.length;
             opts.xm = setOpts.xm;
@@ -4828,7 +4785,6 @@ class MdaSetLine {
 
         }
         if (setOpts.setType === "buttonSelect") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.xc = setOpts.enum.length;
             opts.xm = setOpts.xm;
@@ -4858,7 +4814,6 @@ class MdaSetLine {
             return;
         }
         if (setOpts.setType === "buttonRadio") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.xc = setOpts.enum.length;
             opts.xm = setOpts.xm;
@@ -4887,11 +4842,7 @@ class MdaSetLine {
             }
             return;
         }
-
-
-
         if (setOpts.setType === "inputText") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.actionFunc = retFunc;
             if (setOpts.fontSize)
@@ -4928,10 +4879,7 @@ class MdaSetLine {
 
             return;
         }
-
-
         if (setOpts.setType === "textArea") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.actionFunc = retFunc;
             if (setOpts.fontSize)
@@ -4965,17 +4913,13 @@ class MdaSetLine {
             };
             return;
         }
-
-
         if (setOpts.setType === "label") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.innerText = setOpts.value;
             md.newBlock(cname, opts, "Component~Cp_base~label.sys3", "label");
             return;
         }
         if (setOpts.setType === "select" || setOpts.setType === "inputSelect") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.actionFunc = retFunc;
             if (setOpts.fontSize)
@@ -4990,7 +4934,6 @@ class MdaSetLine {
             return;
         }
         if (setOpts.setType === "inputRange") {
-            var cname = md.lyMaps["main"] + "~" + 4;
             var opts = {};
             opts.actionFunc = retFunc;
             opts.editValue = setOpts.value;
@@ -5309,7 +5252,7 @@ class MdaPad {
             if (numId === "enter") {
                 var errStrs = setLine.mdClass.checkValue(1);
                 if (errStrs) {
-                    mda.errorBox({kvTexts: errStrs});
+                    box.errorBox({kvTexts: errStrs});
                     return;
                 }
                 iobj.sender = md;
@@ -5545,6 +5488,7 @@ class MdaPad {
         var layouts = op.layouts;
         st.juingStr = "";
         self.initKeyLayout();
+        op.setOpts.expandWidth=0;
 
         if (op.setOpts.setType === "textArea")
             op.setOpts.actButtons = [];
@@ -5796,7 +5740,7 @@ class MdaColorPicker {
             if (iobj.sender.name === "colorInput") {
                 var color = KvLib.transColor(iobj.value);
                 if (!color) {
-                    mda.errorBox({kvTexts: ["Format Error !!!"]});
+                    box.errorBox({kvTexts: ["Format Error !!!"]});
                     return;
                 }
                 op.cr = color.r;
