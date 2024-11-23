@@ -5,7 +5,6 @@ package org.kevin;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -93,8 +92,7 @@ public class Lib {
         }
 
     }
-    
-    
+
     static public int ping(String ip, int wait_tim) {
         int i = 0;
         try {
@@ -108,7 +106,7 @@ public class Lib {
             return -1;
         }
     }
-    
+
 //Ok return 0:
     //else return 1;
     public static final int ping(String hostname) {
@@ -127,8 +125,7 @@ public class Lib {
             return -1;
         }
     }
-    
-    
+
     static String readFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         return new String(bytes, 0, bytes.length, "UTF-8");
@@ -1018,7 +1015,24 @@ public class Lib {
 
     }
 
-    static int getOs() {
+    public static RetClass readFileToString(String fileName) {
+        RetClass retc = new RetClass();
+        File file = new File(fileName);
+        if (!file.exists() || file.isDirectory()) {
+            retc.messageStr = fileName + " is not existed !!!";
+            return retc;
+        }
+        retc.valueStr = Lib.readStringFile(fileName);
+        if (retc.valueStr == null) {
+            retc.messageStr = "Read File Content Error !!!";
+            return retc;
+        }
+        retc.errorF=false;
+        retc.messageStr="Read File OK";
+        return retc;
+    }
+
+    public static int getOs() {
         String OS = System.getProperty("os.name").toLowerCase();
         if (OS.contains("win")) {
             return 0;
@@ -1396,19 +1410,15 @@ class JsData {
     }
 }
 
-
-
 abstract class MapCbk {
 
     public abstract String prg(String sendJid, Map<String, String> map);
 }
 
 abstract class AbsRxBytes {
+
     public abstract void rx(byte[] bytes, int len);
 }
-
-
-
 
 interface StrCallback {
 
@@ -1416,6 +1426,7 @@ interface StrCallback {
 }
 
 interface BytesCallback {
+
     public String prg(byte[] bytes, int len);
 }
 
@@ -1428,6 +1439,7 @@ interface StrObjCallback {
 
     public String prg(String str, Object vobj);
 }
+
 
 class KvJson {
 

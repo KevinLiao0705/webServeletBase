@@ -51,19 +51,19 @@ class Describe {
         var optsCopy = self.optsCopy;
 
 
-        optsCopy.bool = {dataType: "int", checkType: "int", setType: "inputText", value: 0, actButtons: ["inc","pad"], loop_f: 1, min: 0, max: 1, group: "copy", dsc: ""};
+        optsCopy.bool = {dataType: "int", checkType: "int", setType: "inputText", value: 0, actButtons: ["inc"], loop_f: 1, min: 0, max: 1, group: "copy", dsc: ""};
         optsCopy.bool.image = "systemResource/icons8-flag-30.png";
 
         optsCopy.nature = {dataType: "int", checkType: "int", setType: "inputText", value: 0, actButtons: ["inc", "dec", "pad"], min: 0, group: "copy", dsc: ""};
         optsCopy.nature.image = "systemResource/icons8-add-48.png";
 
         optsCopy.int = {dataType: "int", checkType: "int", setType: "inputText", value: 0, actButtons: ["inc", "dec", "pad"], group: "copy", dsc: ""};
-        optsCopy.int.max=100;
-        optsCopy.int.min=-100;
+        optsCopy.int.max = 100;
+        optsCopy.int.min = -100;
         optsCopy.int.image = "systemResource/number123.png";
 
-        optsCopy.intA = {dataType: "int", checkType: "int", setType: "textArea", value: [1,2,3], actButtons: ["pad"], group: "copy", dsc: ""};
-        optsCopy.intA.array=1; 
+        optsCopy.intA = {dataType: "int", checkType: "int", setType: "textArea", value: [1, 2, 3], actButtons: ["pad"], group: "copy", dsc: ""};
+        optsCopy.intA.array = 1;
         optsCopy.intA.image = "systemResource/number123.png";
 
 
@@ -78,7 +78,7 @@ class Describe {
         optsCopy.str.image = "systemResource/icons8-abc-40.png";
 
         optsCopy.strA = {dataType: "str", checkType: "str", setType: "textArea", value: "", actButtons: ["pad"], group: "copy", dsc: ""};
-        optsCopy.strA.array=1; 
+        optsCopy.strA.array = 1;
         optsCopy.strA.image = "systemResource/icons8-abc-40.png";
 
 
@@ -92,13 +92,13 @@ class Describe {
         optsCopy.select.image = "systemResource/icons8-list-48.png";
         optsCopy.select.enum = ["select1", "select2", "select3"];
 
-        optsCopy.color = {dataType: "color", checkType: "color", setType: "inputText", value: "#000", actButtons: ["color","act"],  group: "copy", dsc: ""};
+        optsCopy.color = {dataType: "color", checkType: "color", setType: "inputText", value: "#000", actButtons: ["color", "act"], group: "copy", dsc: ""};
         optsCopy.color.image = "systemResource/color.png";
-        
-        optsCopy.colorA = {dataType: "color", checkType: "color", setType: "textArea", value: "#000", actButtons: ["pad"],  group: "copy", dsc: ""};
-        optsCopy.colorA.array=1;
+
+        optsCopy.colorA = {dataType: "color", checkType: "color", setType: "textArea", value: "#000", actButtons: ["pad"], group: "copy", dsc: ""};
+        optsCopy.colorA.array = 1;
         optsCopy.colorA.image = "systemResource/color.png";
-        
+
 
         optsCopy.inputSelect = {dataType: "str", checkType: "str", setType: "inputSelect", value: "select1", actButtons: ["pull", "pad"], enum: [], group: "copy", dsc: ""};
         optsCopy.inputSelect.image = "systemResource/icons8-editList-48.png";
@@ -106,11 +106,11 @@ class Describe {
 
         optsCopy.inputRange = {dataType: "int", checkType: "int", setType: "inputRange", value: 25, min: 0, max: 100, fixed: 0, actButtons: ["value"], group: "copy", dsc: ""};
         optsCopy.inputRange.image = "systemResource/icons8-add-48.png";
-        
-        optsCopy.group = {dataType: "int", setType: "group", value: 0,  group: "base"};
+
+        optsCopy.group = {dataType: "int", setType: "group", value: 0, group: "base"};
         optsCopy.group.image = "systemResource/icons8-group-50.png";
-        
-        optsBase.baseGroup = KvLib.copyObj(optsCopy.group, {group: "base"});
+
+        optsBase.baseGroup = KvLib.copyObj(optsCopy.group, {group: "base", value: 0});
         optsBase.bool = KvLib.copyObj(optsCopy.bool, {group: "base"});
         optsBase.nature = KvLib.copyObj(optsCopy.nature, {group: "base"});
         optsBase.int = KvLib.copyObj(optsCopy.int, {group: "base"});
@@ -123,32 +123,31 @@ class Describe {
         optsBase.kvType = KvLib.copyObj(optsCopy.kvType, {group: "base"});
         optsBase.select = KvLib.copyObj(optsCopy.select, {group: "base"});
         optsBase.inputSelect = KvLib.copyObj(optsCopy.inputSelect, {group: "base"});
-
         optsBase.inputRange = KvLib.copyObj(optsCopy.inputRange, {group: "base"});
         optsBase.color = KvLib.copyObj(optsCopy.color, {group: "base"});
-
-
-
         optsBase.disable_f = KvLib.copyObj(optsCopy.bool, {group: "base"});
         optsBase.propertyWidth = KvLib.copyObj(optsCopy.nature, {group: "base"});
         optsBase.propertyHeight = KvLib.copyObj(optsCopy.nature, {group: "base"});
-        optsBase.wAlign = KvLib.copyObj(optsCopy.select, {group: "margin", enum: ["left", "center", "right"], value: "center"});
-        optsBase.hAlign = KvLib.copyObj(optsCopy.select, {group: "margin", enum: ["top", "center", "bottom"], value: "center"});
+        optsBase.wAlign = KvLib.copyObj(optsCopy.select, {group: "base", enum: ["left", "center", "right"], value: "center"});
+        optsBase.hAlign = KvLib.copyObj(optsCopy.select, {group: "base", enum: ["top", "center", "bottom"], value: "center"});
         optsBase.iw = KvLib.copyObj(optsCopy.kvType, {group: "base"});
         optsBase.ih = KvLib.copyObj(optsCopy.kvType, {group: "base"});
 //==============================================================================================
+        optsBase.marginGroup = KvLib.copyObj(optsCopy.group, {group: "margin", value: 0});
         optsBase.margin = KvLib.copyObj(optsCopy.kvType, {group: "margin"});
         optsBase.tm = KvLib.copyObj(optsCopy.kvType, {group: "margin"});
         optsBase.rm = KvLib.copyObj(optsCopy.kvType, {group: "margin"});
         optsBase.bm = KvLib.copyObj(optsCopy.kvType, {group: "margin"});
         optsBase.lm = KvLib.copyObj(optsCopy.kvType, {group: "margin"});
 //==============================================================================================
+        optsBase.paddingGroup = KvLib.copyObj(optsCopy.group, {group: "padding", value: 0});
         optsBase.padding = KvLib.copyObj(optsCopy.kvType, {group: "padding"});
         optsBase.tpd = KvLib.copyObj(optsCopy.kvType, {group: "padding"});
         optsBase.rpd = KvLib.copyObj(optsCopy.kvType, {group: "padding"});
         optsBase.bpd = KvLib.copyObj(optsCopy.kvType, {group: "padding"});
         optsBase.lpd = KvLib.copyObj(optsCopy.kvType, {group: "padding"});
 //==============================================================================================
+        optsBase.backgroundGroup = KvLib.copyObj(optsCopy.group, {group: "background", value: 0});
         optsBase.baseColor = KvLib.copyObj(optsCopy.color, {group: "background"});
         optsBase.background = KvLib.copyObj(optsCopy.inputSelect, {group: "background"});
         optsBase.backgroundInx = KvLib.copyObj(optsCopy.nature, {group: "background"});

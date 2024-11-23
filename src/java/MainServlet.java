@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.kevin.*;
 public final class MainServlet extends HttpServlet {
 
     RetData retData = new RetData();
+    KvJson kj=new KvJson();
     public MainServlet() {
     }
 
@@ -93,7 +95,9 @@ public final class MainServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String filePath;
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-
+        JSONObject webInJo = new JSONObject();
+        JSONObject webOutJo = new JSONObject();
+        JSONObject webOutOptsJo = new JSONObject();
         if (isMultipart) {
             //int maxFileSize = 50 * 1024;
             //int maxMemSize = 4 * 1024;
@@ -122,12 +126,13 @@ public final class MainServlet extends HttpServlet {
                         String contentType = fi.getContentType();
                         boolean isInMemory = fi.isInMemory();
                         long sizeInBytes = fi.getSize();
-
+                        //=======================================================
                         System.out.println("fieldName=  " + fieldName);
                         System.out.println("fileName=  " + fileName);
                         System.out.println("contentType=  " + contentType);
                         System.out.println("isInMemory=  " + isInMemory);
                         System.out.println("sizeInBytes=  " + sizeInBytes);
+                        //========================================================
                         String[] strF = fieldName.split("~");
                         switch (strF[0]) {
                             case "unzipFileToDir":
@@ -161,105 +166,61 @@ public final class MainServlet extends HttpServlet {
 
                 JSONObject outJo = new JSONObject();
                 JSONObject outOpts = new JSONObject();
-                putJoO(outJo, "act", "response");
-                putJoO(outJo, "responseType", "response ok");
+                putJoO(outJo, "act", "filesProcess");
+                putJoO(outJo, "type", "response");
                 putJoO(outJo, "responseMessage", "Commands OK !");
                 putJoJo(outJo, "opts", outOpts);
                 response.setContentType("application/json;charset=utf-8");//指定返回的格式为JSON格式
                 try (PrintWriter out = response.getWriter()) {
                     out.print(outJo);
                 }
-                return;
-
             } catch (Exception ex) {
-                Lib.lp1(ex.toString());
-                return;
+                System.out.println(ex.toString());
             }
+            return;
         }
-
+        //===========================================================
         request.setCharacterEncoding("UTF-8");
-        StringBuilder myJson = new StringBuilder();
+        StringBuilder strBuilder = new StringBuilder();
         BufferedReader reader = request.getReader();
         String line;
-        String inpStr;
+        String webInJoStr;
+        JSONObject tempJo;
         //==========================================================
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
             ipAddress = request.getRemoteAddr();
         }
-        Lib.lp1("Connect ip= " + ipAddress);
         //==========================================================
         while ((line = reader.readLine()) != null) {
-            myJson.append(line);
+            strBuilder.append(line);
         }
-        inpStr = myJson.toString();
+        webInJoStr = strBuilder.toString();
         JSONObject outJo = new JSONObject();
         try {
-            switch (inpStr.charAt(0)) {
+            switch (webInJoStr.charAt(0)) {
                 case '[': {
-                    JSONArray ja = new JSONArray(inpStr);
-                    JSONObject inpJo = new JSONObject();
-                    inpJo.put("tmp", ja);
-                    anaJoA(inpJo, outJo);
+                    JSONArray webInJa = new JSONArray(webInJoStr);
+                    //========================
+                    //....
+                    //========================
                     break;
                 }
                 case '{': {
-                    JSONObject inpJo = new JSONObject(inpStr);
-                    if (!inpJo.get("act").toString().equals("commands")) {
-                        anaJo(inpJo, outJo);
+                    webInJo = new JSONObject(webInJoStr);
+                    if (!webInJo.get("type").toString().equals("command")) {//command or response
                         break;
                     }
-
-                    //=========================
-                    // name:commdands
-                    // type" ""
-                    // opts:{userName:"xxx",objs:[{},{},....]
-                    //
-                    JSONObject jsCommand;
-                    JSONObject inJsOpts = new JSONObject(inpJo.get("opts").toString());
-                    String actionStr;
-                    String keyStr;
-                    String valueStr;
-
-                    String userName = inJsOpts.get("userName").toString();
-                    //System.out.println("userName= "+userName);
-                    JSONArray jsCommandA = inJsOpts.getJSONArray("objs");
-                    int objsArrayLen = jsCommandA.length();
-                    int inx;
-                    for (inx = 0; inx < objsArrayLen; inx++) {
-                        //System.out.println("objsArray= "+objsArray.get(i));
-                        jsCommand = new JSONObject(jsCommandA.get(inx).toString());
-                        actionStr = getJoToStr(jsCommand, "action");
-                        keyStr = getJoToStr(jsCommand, "key");
-                        valueStr = getJoToStr(jsCommand, "value");
-                        //======================================================
-                        JSONObject newInJo = new JSONObject();
-                        JSONObject newInOptsJo = new JSONObject();
-                        JSONObject newOutJo = new JSONObject();
-                        putJoO(newInOptsJo, "table", userName);
-                        putJoO(newInOptsJo, "key", keyStr);
-                        putJoO(newInOptsJo, "value", valueStr);
-                        //======================================================
-                        putJoO(newInJo, "name", actionStr);
-                        putJoO(newInJo, "responseMessage", "");
-                        putJoJo(newInJo, "opts", newInOptsJo);
-                        anaJo(newInJo, newOutJo);
-                        if (newOutJo.get("responseType").toString().equals("response error")) {
-                            outJo = newOutJo;
-                            break;
-                        }
+                    
+                    if (!webInJo.get("act").toString().equals("command")) {
+                        //========================
+                        //....
+                        //========================
                     }
-                    if (inx != objsArrayLen) {
-                        break;
-                    }
-                    JSONObject outOpts = new JSONObject();
-                    System.out.println("inJsOpts= " + inJsOpts);
-                    putJoO(outJo, "responseMessage", "Commands OK !");
-                    putJoJo(outJo, "opts", outOpts);
+                    anaJo(webInJo, webOutJo);
                     break;
                 }
                 default:
-                    anaStr(inpStr, outJo);
                     break;
             }
 
@@ -269,11 +230,28 @@ public final class MainServlet extends HttpServlet {
         //====================================================
         response.setContentType("application/json;charset=utf-8");//指定返回的格式为JSON格式
         PrintWriter outPrint = response.getWriter();
-        outPrint.print(outJo);
+        outPrint.print(webOutJo);
         outPrint.close();
 
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public HashMap<String, Object> getParas() {
         HashMap<String, Object> paraMap = new HashMap();
         String fileName = GB.webRootPath + "user-" + "webIcs" + "/paraSet.json";
@@ -394,14 +372,14 @@ public final class MainServlet extends HttpServlet {
             responseType = this.retData.retStr;
         }
         switch (responseType) {
-            case "response ok":
-            case "response error":
-            case "response error message ok":
-                putJoO(outJo, "responseType", "response error");
+            case "responseDialogOk":
+            case "responseDialogError":
+            case "responseDialogErrorMessageOk":
+                putJoO(outJo, "responseType", "dialogError");
                 break;
-            case "message ok":
-            case "message error":
-                putJoO(outJo, "responseType", "message error");
+            case "messageOk":
+            case "messageError":
+                putJoO(outJo, "responseType", "messageError");
                 break;
             default:
                 putJoO(outJo, "responseType", responseType);
@@ -417,20 +395,22 @@ public final class MainServlet extends HttpServlet {
             putJoO(outJso, "responseType", "response none");
         } else {
             switch (this.retData.retStr) {
-                case "response ok":
-                    putJoO(outJso, "responseType", "response ok");
+                case "responseDialogOk"://ok or error
+                    putJoO(outJso, "responseType", "dialogOk");
                     break;
-                case "response error message ok":
-                case "message ok":
-                    putJoO(outJso, "responseType", "message ok");
+                case "responseErrorMessageOk":
+                case "messageOk":
+                    putJoO(outJso, "responseType", "messageOk");
                     break;
                 default:
-                    putJoO(outJso, "responseType", "response none");
+                    putJoO(outJso, "responseType", "responseNone");
                     break;
             }
         }
         putJoO(outJso, "responseMessage", okStr);
     }
+    
+    
 
     public HashMap<String, String> getUsreParaMap(String userName) {
         HashMap<String, String> paraMap = new HashMap();
@@ -460,21 +440,28 @@ public final class MainServlet extends HttpServlet {
     public void anaJo(JSONObject inJo, JSONObject outJo) {
         String action;
         JSONObject inOptsJo;
-        JSONObject retOptsJo;
+        JSONObject inRetOptsJo;
         JSONObject outOptsJo = new JSONObject();
+        JSONObject retOptsJo = new JSONObject();
+        
+        
         String outStr;
         String filePath;
         String fileName;
+        String appName;
         String userName;
         String password;
         String typeStr;
         String initDir;
         String[] strA;
+        RetClass retc;
+        File file;
 
         try {
             action = inJo.get("act").toString();
             inOptsJo = new JSONObject(inJo.get("opts").toString());
             retOptsJo = new JSONObject(inJo.get("retOpts").toString());
+            //====================================================================
             putJoO(outJo, "act", action);
             putJoO(outJo, "type", "response");
             putJoJo(outJo, "retOpts", retOptsJo);
@@ -567,82 +554,81 @@ public final class MainServlet extends HttpServlet {
 
                 case "login":
                     loadOutJoResponseError(inOptsJo, outJo, "login Error !!!");
-                    if (!geJoToRetStr(inOptsJo, "systemName")) {
-                        break;
+                    kj.jobj=inOptsJo;
+                    if(kj.rStr("appName")){
+                        return;
                     }
-                    String systemName = this.retData.retStr;
-                    if (!geJoToRetStr(inOptsJo, "userName")) {
-                        break;
+                    appName=kj.valueStr;
+                    if(kj.rStr("userName")){
+                        return;
                     }
-                    userName = this.retData.retStr;
-                    if (!geJoToRetStr(inOptsJo, "password")) {
-                        break;
+                    userName=kj.valueStr;
+                    if(kj.rStr("password")){
+                        return;
                     }
-                    password = this.retData.retStr;
-
-                    String fileFullName = GB.webRootPath + "systemSet.xml";
-                    HashMap<String, String> xmlMap;
-
-                    try {
-                        xmlMap = Lib.XMLMap(fileFullName, "user");
-                    } catch (Exception ex) {
-                        Logger.getLogger(MainServlet.class.getName()).log(Level.SEVERE, null, ex);
-                        break;
+                    password=kj.valueStr;
+                    //=======================================================
+                    fileName = GB.webRootPath + "user-" + appName + "/systemSet.json";
+                    retc=Lib.readFileToString(fileName);
+                    if(retc.errorF){
+                        putJoO(outJo, "responseMessage", retc.messageStr);
                     }
-
-                    /*
-                    xmlMap=new HashMap<String, String>();
-                    xmlMap.put("oled","password:1234,priority:0");
-                    xmlMap.put("sync","password:1234,priority:0");
-                    xmlMap.put("future","password:1234,priority:0");
-                     */
-                    String userValue = xmlMap.get(systemName + "~" + userName);
-                    if (userValue == null) {
-                        putJoO(outJo, "responseMessage", "User Name  Error !!!");
-                        break;
+                    String systemSetContent=retc.valueStr;
+                    //=======================================================                    
+                    fileName = GB.webRootPath + "user-" + appName + "/userSet.json";
+                    retc=Lib.readFileToString(fileName);
+                    if(retc.errorF){
+                        putJoO(outJo, "responseMessage", retc.messageStr);
                     }
-                    strA = userValue.split(",");
-                    String userPassword = "16020039";
-                    String userPriority = "9";
-                    for (int i = 0; i < strA.length; i++) {
-                        String[] strB = strA[i].split(":");
-                        if (strB.length != 2) {
+                    String userSetContent=retc.valueStr;
+                    //=======================================================                    
+                    fileName = GB.webRootPath + "user-" + appName + "/paraSet.json";
+                    retc=Lib.readFileToString(fileName);
+                    if(retc.errorF){
+                        putJoO(outJo, "responseMessage", retc.messageStr);
+                    }
+                    String paraSetContent=retc.valueStr;
+                    //=======================================================                    
+                    JSONObject systemSetJo = new JSONObject(systemSetContent);
+                    JSONObject paraSetJo = new JSONObject(paraSetContent);
+                    ArrayList<String> acounts=new ArrayList<String>();
+                    kj.jobj=systemSetJo;
+                    if(!kj.rStrA("systemAcounts")){
+                        for(int i=0;i<kj.strAL.size();i++){
+                            acounts.add(kj.strAL.get(i));
+                        }
+                    }
+                    kj.jobj=paraSetJo;
+                    if(!kj.rStrA("userAcounts")){
+                        for(int i=0;i<kj.strAL.size();i++){
+                            acounts.add(kj.strAL.get(i));
+                        }
+                    }
+                    
+                    int pass=0;
+                    for(int i=0;i<acounts.size();i++){
+                        strA=acounts.get(i).split("~");
+                        if(strA.length!=3)
                             continue;
-                        }
-                        if (strB[0].equals("password")) {
-                            userPassword = strB[1];
-                        }
-                        if (strB[0].equals("priority")) {
-                            userPriority = strB[1];
-                        }
-                    }
-
-                    fileName = GB.webRootPath + "user-" + systemName + "/userSet.json";
-                    File file = new File(fileName);
-                    if (!file.exists() || file.isDirectory()) {
-                        putJoO(outJo, "responseMessage", fileName + " is not existed !!!");
+                        if(!strA[0].equals(userName))
+                            continue;
+                        if(!strA[2].equals(password))
+                            continue;
+                        pass=1;
                         break;
                     }
-                    String content = Lib.readStringFile(fileName);
-                    if (content == null) {
-                        putJoO(outJo, "responseMessage", "Read File Content Error !!!");
-                        break;
-                    }
-                    String paraContent = "{}";
-                    fileName = GB.webRootPath + "user-" + systemName + "/paraSet.json";
-                    file = new File(fileName);
-                    if (file.exists() && !file.isDirectory()) {
-                        paraContent = Lib.readStringFile(fileName);
-                        if (paraContent == null) {
-                            paraContent = "{}";
-                        }
-                    }
-
+                    
+                    
+                    
+                    String userPassword="";
+                    
+                    
+                    
                     //GB.userParaMap=this.getUsreParaMap(systemName);
                     if (!password.equals(userPassword)) {
 
                         putJoO(outJo, "responseMessage", "Password Error !!!");
-                        JSONObject jsobj = new JSONObject(content);
+                        JSONObject jsobj = new JSONObject(userSetContent);
                         if (!geJoToRetStr(jsobj, "sysSet")) {
                             break;
                         }
@@ -658,8 +644,8 @@ public final class MainServlet extends HttpServlet {
 
                     GB.paraSetMap = this.getParas();
                     //JSONObject paraMap=new JSONObject(GB.paraMap);
-                    putJoO(outOptsJo, "value", content);
-                    putJoO(outOptsJo, "paras", paraContent);
+                    putJoO(outOptsJo, "userSet", userSetContent);
+                    putJoO(outOptsJo, "paraSet", paraSetContent);
                     putJoO(outOptsJo, "webIp", GB.nowIp_str);
                     putJoJo(outJo, "opts", outOptsJo);
                     loadOutJoResponseOk(inOptsJo, outJo, "Login OK.");
@@ -769,12 +755,12 @@ public final class MainServlet extends HttpServlet {
                     if (geJoToRetStr(inOptsJo, "outName")) {
                         outName = this.retData.retStr;
                     }
-                    content = Lib.readStringFile(fileName);
-                    if (content == null) {
+                    userSetContent = Lib.readStringFile(fileName);
+                    if (userSetContent == null) {
                         putJoO(outJo, "responseMessage", "Read File \"" + fileName + "\" Error !!!");
                         break;
                     }
-                    putJoO(outOptsJo, "value", content);
+                    putJoO(outOptsJo, "value", userSetContent);
                     if (outName != null) {
                         putJoO(outOptsJo, "outName", outName);
                     }

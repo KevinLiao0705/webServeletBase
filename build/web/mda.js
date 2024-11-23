@@ -37,7 +37,7 @@ class Mda {
     }
 
     popObj(width, height, kvObj, maskOff_f) {
-        kvObj.stas.popStackCnt = gr.mdSystem.mdClass.stackCnt;
+        kvObj.opts.popStackCnt = gr.mdSystem.mdClass.stackCnt;
         if (!width)
             width = 9999;
         if (!height)
@@ -50,16 +50,17 @@ class Mda {
         obj.borderWidth = 1;
         if (maskOff_f) {
             obj.actionFunc = function (iobj) {
-                MdaPopWin.popOffTo(kvObj.stas.popStackCnt);
+                MdaPopWin.popOffTo(kvObj.opts.popStackCnt);
             };
         }
         obj.maskColor = "rgba(0,0,0,0.5)";
         obj.center_f = 1;
-        MdaPopWin.popMaskObjA(obj);
+        obj.outsideShadowBlur = 10,
+                MdaPopWin.popMaskObjA(obj);
     }
 
     popObjOpts(opts) {
-        opts.kvObj.stas.popStackCnt = gr.mdSystem.mdClass.stackCnt;
+        opts.kvObj.opts.popStackCnt = gr.mdSystem.mdClass.stackCnt;
         var obj = {};
         obj.w = 9999;
         obj.h = 9999;
@@ -71,55 +72,48 @@ class Mda {
         KvLib.coverObject(obj, opts);
         if (obj.maskOff_f) {
             obj.actionFunc = function (iobj) {
-                MdaPopWin.popOffTo(obj.kvObj.stas.popStackCnt);
+                MdaPopWin.popOffTo(obj.kvObj.opts.popStackCnt);
             };
         }
         MdaPopWin.popMaskObjA(obj);
     }
 
-    
-    
-    
-
     intPadBox(_op) {
         var op = {};
+        op.setOpts = dsc.optsCopy.int;
+        KvLib.deepCoverObject(op, _op);
         op.headButtons = ["ESC"];
         op.headButtonIds = ["esc"];
-        op.intHex_f = 0;
-        op.value = 0;
-        KvLib.deepCoverObject(op, _op);
         this.intHexPadBox(op);
     }
 
     hexPadBox(_op) {
         var op = {};
+        op.setOpts = dsc.optsCopy.hex;
+        KvLib.deepCoverObject(op, _op);
         op.headButtons = ["ESC"];
         op.headButtonIds = ["esc"];
-        op.intHex_f = 1;
-        op.value = 257;
-        KvLib.deepCoverObject(op, _op);
         this.intHexPadBox(op);
     }
 
     colorPadBox(_op) {
         var op = {};
-        op.modelType = "Model~MdaPad~color";
+        op.modelType = "Model~MdaPad~base.sys0";
         KvLib.deepCoverObject(op, _op);
         this.intHexPadBox(op);
     }
 
     floatPadBox(_op) {
         var op = {};
+        op.setOpts = dsc.optsCopy.float;
+        KvLib.deepCoverObject(op, _op);
         op.headButtons = ["ESC"];
         op.headButtonIds = ["esc"];
-        op.float_f = 1;
-        KvLib.deepCoverObject(op, _op);
         this.intHexPadBox(op);
     }
 
     intHexPadBox(_op) {
         var op = {};
-        op.kvTexts = ["This is message1", "This is message2"];
         op.title = "InputTitle";
         op.headButtons = ["Hex/Dec", "ESC"];
         op.headButtonIds = ["hexDec", "esc"];
@@ -128,8 +122,7 @@ class Mda {
         op.buttonXm = 100;
         op.w = 600;
         op.h = 400;
-        op.intHex_f = 0;
-        op.float_f = 0;
+        op.setOpts = dsc.optsCopy.int;
         KvLib.deepCoverObject(op, _op);
         //=====================================
         if (op.setOpts.setType === "textArea")
@@ -146,11 +139,10 @@ class Mda {
         opts.buttons = [];
         mda.setMargin(opts, op);
         opts.ym = op.ym;
-        //opts.eh = op.kvTexts.length * 40;
         //=================
         var ksObj = opts.ksObj = {};
         ksObj.name = "mdaPad";
-        ksObj.type = "Model~MdaPad~sys0";
+        ksObj.type = "Model~MdaPad~base.sys0";
         var kopts = ksObj.opts = {};
         kopts.setOpts = op.setOpts;
         opts.actionFunc = function (iobj) {
@@ -185,14 +177,14 @@ class Mda {
                 var inputElem = inputObj.elems["inputText"];
                 var valueStr = inputElem.value;
 
-                if (iobj.sender.opts.ksObj.type !== "Model~MdaPad~hex") {
-                    iobj.sender.opts.ksObj.type = "Model~MdaPad~hex";
+                if (iobj.sender.opts.ksObj.opts.setOpts.checkType !== "hex") {
+                    iobj.sender.opts.ksObj.opts.setOpts.checkType = "hex";
                     iobj.sender.opts.ksObj.opts.setOpts.actButtons = [];
                     var kvObj = iobj.sender.reCreate();
                     var mdaPad = kvObj.blockRefs["mainMd"];
                     mdaPad.mdClass.intHexConvert(valueStr, 1);
                 } else {
-                    iobj.sender.opts.ksObj.type = "Model~MdaPad~int";
+                    iobj.sender.opts.ksObj.opts.setOpts.checkType = "int";
                     iobj.sender.opts.ksObj.opts.setOpts.actButtons = ["inc", "dec"];
                     var kvObj = iobj.sender.reCreate();
                     var mdaPad = kvObj.blockRefs["mainMd"];
@@ -218,7 +210,7 @@ class Mda {
         op.headButtonWidthes = [100, 100];
         op.titleBaseColor = "#ccf";
         op.buttonXm = 100;
-        op.modelType = "Model~MdaPad~hex";
+        op.modelType = "Model~MdaPad~base.sys0";
         if (_op.setOpts.setType === "textArea")
             op.h = 600;
         else
@@ -288,28 +280,22 @@ class Mda {
         var op = {};
         op.kvTexts = ["This is message1", "This is message2"];
         op.title = "InputTitle";
-        op.headButtons = ["OK", "ESC"];
-        op.headButtonIds = ["ok", "esc"];
-        op.headButtonWidthes = [100, 100];
-        op.titleBaseColor = "#ccf";
         op.buttonXm = 100;
         if (_op.setOpts.setType === "textArea")
             op.h = 700;
         else
             op.h = 500;
-        op.intHex_f = 0;
-        op.value = 123;
-        //op.max = 100;
-        //op.min = 0;
+        op.w = gr.clientW - 10;
+        op.setOpts = dsc.optsCopy.str;
         KvLib.deepCoverObject(op, _op);
         //=====================================
         var opts = {};
         opts.title = op.title;
         opts.titleColor = "#000";
-        opts.titleBaseColor = op.titleBaseColor;
-        opts.headButtons = op.headButtons;
-        opts.headButtonIds = op.headButtonIds;
-        opts.headButtonWidthes = op.headButtonWidthes;
+        opts.titleBaseColor = "#ccf";
+        opts.headButtons = ["OK", "ESC"];
+        opts.headButtonIds = ["OK", "ESC"];
+        opts.headButtonWidthes = [100, 100];
         opts.buttons = [];
         mda.setMargin(opts, op);
         opts.ym = op.ym;
@@ -317,7 +303,7 @@ class Mda {
         //=================
         var ksObj = opts.ksObj = {};
         ksObj.name = "mdaPad";
-        ksObj.type = "Model~MdaPad~keyboard";
+        ksObj.type = "Model~MdaPad~base.sys0";
         var kopts = ksObj.opts = {};
         var setOpts = kopts.setOpts = {};
         kopts.setOpts = op.setOpts;
@@ -372,154 +358,6 @@ class Mda {
         mda.popObj(op.w, op.h, kvObj);
     }
 
-    selectPageOkBox(op) {
-        var opts = {};
-        op.selectEsc_f = 0;
-        op.selectAble_f = 1;
-        op.selectInx = 0;
-        op.headButtons = ["OK", "ESC"];
-        op.headButtonIds = ["ok", "ESC"];
-        KvLib.deepCoverObject(opts, op);
-        this.selectPageBox(opts);
-    }
-
-    selectOkBox(op) {
-        var opts = {};
-        op.selectEsc_f = 0;
-        op.selectAble_f = 1;
-        op.selectInx = 0;
-        op.headButtons = ["OK", "ESC"];
-        op.headButtonIds = ["ok", "ESC"];
-        op.buttons = [];
-        op.buttonIds = [];
-        KvLib.deepCoverObject(opts, op);
-        this.selectPageBox(opts);
-
-    }
-
-    selectBox(op) {
-        var opts = {};
-        opts.headButtons = ["ESC"];
-        opts.headButtonIds = ["ESC"];
-        opts.buttons = [];
-        opts.buttonIds = [];
-        KvLib.deepCoverObject(opts, op);
-        this.selectPageBox(opts);
-
-    }
-
-    selectPageBox(_op) {
-        var op = {};
-        op.kvTexts = [];
-        for (var i = 0; i < 100; i++)
-            op.kvTexts.push("Select " + i);
-        op.xc = 2;
-        op.w = 800;
-        op.h = 600;
-        op.margin = 10;
-        op.ym = 10;
-        op.eh = 35;
-        op.exm = 20;
-        op.eym = 5;
-        op.baseColor = "#cce";
-        op.buttonXm = 20;
-        op.selectAble_f = 0;
-        op.selectInx = -1;
-        op.selectEsc_f = 1;
-        op.viewPage_f = 0;
-        op.title = "Selector";
-        KvLib.deepCoverObject(op, _op);
-        //=====================================
-        var opts = {};
-        opts.title = op.title;
-        opts.viewPage_f = op.viewPage_f;
-        opts.headButtons = op.headButtons;
-        opts.headButtonIds = op.headButtonIds;
-        opts.buttons = op.buttons;
-        opts.buttonIds = op.buttonIds;
-        opts.buttonXm = op.buttonXm;
-        opts.baseColor = op.baseColor;
-        opts.ym = op.ym;
-        mda.setMargin(opts, op);
-        //=================
-        var ksObj = opts.ksObj = {};
-        var kopts = ksObj.opts = {};
-        ksObj.name = "mdaSelector";
-        ksObj.type = "Model~MdaSelector~base.sys0";
-        kopts.margin = 0;
-        kopts.baseColor = op.baseColor;
-        kopts.xc = op.xc;
-        kopts.xm = op.exm;
-        kopts.ym = op.eym;
-        kopts.eh = op.eh;
-        kopts.selectAble_f = op.selectAble_f;
-        kopts.selectEsc_f = op.selectEsc_f;
-        kopts.selectInx = op.selectInx;
-        kopts.kvTexts = op.kvTexts;
-        //=================
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-            if (iobj.act === "selected") {
-                KvLib.exeFunc(_op.actionFunc, iobj);
-                MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
-            }
-            if (iobj.act === "mouseClick") {
-                if (iobj.kvObj.opts.id === "ok") {
-                    KvLib.exeFunc(_op.actionFunc, iobj);
-                }
-                MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
-            }
-        };
-        var kvObj = new Block("mdaBox", "Model~MdaBox~base.sys0", opts);
-        mda.popObj(op.w, op.h, kvObj);
-    }
-
-    pickColorBox(_op) {
-        var op = {};
-        op.xc = 2;
-        op.w = 400;
-        op.h = 500;
-        op.margin = 10;
-        op.headButtons = ["OK", "ESC"];
-        op.headButtonIds = ["ok", "esc"];
-        op.title = "Set Color";
-        op.color = "#000";
-        KvLib.deepCoverObject(op, _op);
-        //=====================================
-        var opts = {};
-        opts.title = op.title;
-        opts.headButtons = op.headButtons;
-        opts.headButtonIds = op.headButtonIds;
-        opts.buttons = [];
-        mda.setMargin(opts, op);
-        //=================
-        var ksObj = opts.ksObj = {};
-        var kopts = ksObj.opts = {};
-        ksObj.name = "mdaColorPicker";
-        ksObj.type = "Model~MdaColorPicker~base.sys0";
-        kopts.color = op.color;
-
-        //=================
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-            if (iobj.act === "colorSelected") {
-                KvLib.exeFunc(_op.actionFunc, iobj);
-            }
-            if (iobj.act === "mouseClick") {
-                if (iobj.kvObj.opts.id === "ok") {
-                    var mdaBox = iobj.sender;
-                    var colorPicker = mdaBox.blockRefs["mainMd"];
-                    iobj.act = "colorSelected";
-                    iobj.color = colorPicker.mdClass.getColor();
-                    KvLib.exeFunc(_op.actionFunc, iobj);
-                }
-            }
-            MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
-        };
-        var kvObj = new Block("mdaBox", "Model~MdaBox~base.sys0", opts);
-        mda.popObj(op.w, op.h, kvObj);
-    }
-
     containerFreeBox(op) {
         var opts = {};
         opts.containerType = "Model~MdaContainer~base.free";
@@ -558,8 +396,44 @@ class Mda {
     }
 
     setOptsBox(_op) {
+        _op.setOptsObj = dsc.optsBase;
+        var setOptsFunc = function (setOptss) {
+            var nowGroup = "";
+            var ksObjss = [];
+            var i = 0;
+            for (var objKey in setOptss) {
+                var ksObjs = [];
+                var ksObj = {};
+                ksObj.name = "setLine#" + i + "." + 0;
+                ksObj.type = "Model~MdaSetLine~base.sys0";
+                var kopts = ksObj.opts = {};
+                var setOpts = kopts.setOpts = setOptss[objKey];
+                if (setOpts.setType === "group") {
+                    nowGroup = setOpts.group;
+                    if (setOpts.value)
+                        nowGroup = "";
+                } else {
+                    if (setOpts.group !== nowGroup)
+                        nowGroup = "";
+                    else
+                        continue;
+                }
+                setOpts.title = objKey;
+                setOpts.titleWidth = 300;
+                setOpts.iconWidth = 25;
+                //setOpts.noWidth = 25;
+                setOpts.expandWidth = 30;
+                setOpts.no = "" + (i + 1);
+                setOpts.titleFontSize = 16;
+                ksObjs.push(ksObj);
+                ksObjss.push(ksObjs);
+                i++;
+            }
+            return ksObjss;
+
+
+        };
         var opts = {};
-        opts.ksObjss = [];
         opts.eh = 30;
         opts.etm = 1;
         opts.ebm = 1;
@@ -567,29 +441,26 @@ class Mda {
         opts.elm = 1;
         opts.xm = 0;
         opts.ym = 1;
-        var i = 0;
-        for (var objKey in dsc.optsBase) {
-            var ksObjs = [];
-            var ksObj = {};
-            ksObj.name = "setLine#" + i + "." + 0;
-            ksObj.type = "Model~MdaSetLine~base.sys0";
-            var kopts = ksObj.opts = {};
-            var setOpts = kopts.setOpts = dsc.optsBase[objKey];
-            setOpts.title = objKey;
-            setOpts.titleWidth = 300;
-            setOpts.iconWidth = 25;
-            //setOpts.noWidth = 25;
-            setOpts.expandWidth = 30;
-            setOpts.no = "" + (i + 1);
-            setOpts.titleFontSize = 16;
-            ksObjs.push(ksObj);
-            opts.ksObjss.push(ksObjs);
-            i++;
-        }
+        opts.setOptsObj = {};
+        KvLib.deepCoverObject(opts, _op);
+        opts.ksObjss = setOptsFunc(opts.setOptsObj);
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            if (iobj.act === "expand" || iobj.act === "collaps") {
+                var mdaBox = iobj.sender;
+                //mdaBox.opts.ksObjss=setOptsFunc(iobj.setOptsObj);
+                KvLib.deepCoverObject(opts.setOptsObj, iobj.setOptsObj);
+                mdaBox.opts.ksObj.opts.ksObjss = setOptsFunc(opts.setOptsObj);
+                var rowStart = mdaBox.blockRefs["mainMd"].stas.rowStart;
+                mdaBox.opts.ksObj.opts.rowStart = rowStart;
+                mdaBox.reCreate();
+            }
+        };
         mda.setLineBox(opts);
     }
 
-    setLineBox(_op) {
+    setLineBox(_op)
+    {
         var op = {};
         op.ksObjss = [];
         for (var i = 0; i < 12; i++) {
@@ -633,6 +504,7 @@ class Mda {
         opts.titleBaseColor = "#ccf";
         opts.headButtons = ["OK", "ESC"];
         opts.headButtonIds = ["ok", "esc"];
+        opts.buttons = op.buttons;
         opts.margin = 4;
         opts.ym = 4;
         opts.actionFunc = function (iobj) {
@@ -660,9 +532,35 @@ class Mda {
                 }
             };
             if (iobj.act === "expand") {
-                //var setOptsA=op.ksObjss;
+                var mdaBox = iobj.sender;
+                var setLineObj = mdaBox.opts.ksObj.opts.ksObjss[iobj.index][0];
+                setLineObj.opts.setOpts.value = 1;
+                var setOptsObj = {};
+                for (var i = 0; i < mdaBox.opts.ksObj.opts.ksObjss.length; i++) {
+                    var setLineObj = mdaBox.opts.ksObj.opts.ksObjss[i][0];
+                    setOptsObj[setLineObj.opts.setOpts.title] = setLineObj.opts.setOpts;
+                }
+                iobj.setOptsObj = setOptsObj;
+                iobj.rowStart = mdaBox.opts.ksObj.opts.rowStart;
+                KvLib.exeFunc(_op.actionFunc, iobj);
                 return;
             }
+            if (iobj.act === "collaps") {
+                var mdaBox = iobj.sender;
+                var setLineObj = mdaBox.opts.ksObj.opts.ksObjss[iobj.index][0];
+                setLineObj.opts.setOpts.value = 0;
+                var setOptsObj = {};
+                for (var i = 0; i < mdaBox.opts.ksObj.opts.ksObjss.length; i++) {
+                    var setLineObj = mdaBox.opts.ksObj.opts.ksObjss[i][0];
+                    setOptsObj[setLineObj.opts.setOpts.title] = setLineObj.opts.setOpts;
+                }
+                iobj.setOptsObj = setOptsObj;
+                iobj.rowStart = mdaBox.opts.ksObj.opts.rowStart;
+                KvLib.exeFunc(_op.actionFunc, iobj);
+                return;
+            }
+
+
             if (iobj.act === "checkPreChange") {
                 return preChangeFunc(iobj);
             }
@@ -673,12 +571,15 @@ class Mda {
                         return;
                     var mainMd = iobj.sender.blockRefs["mainMd"];
                     iobj.ksObjss = mainMd.opts.ksObjss;
+                    iobj.buttonId="ok";
                     KvLib.exeFunc(_op.actionFunc, iobj);
-                    MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                    MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                     return;
                 }
                 if (iobj.kvObj.opts.id === "esc") {
-                    MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                    iobj.buttonId="esc";
+                    KvLib.exeFunc(_op.actionFunc, iobj);
+                    MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                     return;
                 }
             }
@@ -772,7 +673,7 @@ class Mda {
         //=================
         opts.actionFunc = function (iobj) {
             if (iobj.act === "mouseClick") {
-                MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
             }
         };
         var kvObj = new Block("mdaBox", "Model~MdaBox~base.sys0", opts);
@@ -965,7 +866,7 @@ class Mda {
         var actionFunc = function (iobj) {
             console.log(iobj);
             KvLib.exeFunc(op.actionFunc, iobj);
-            MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+            MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
         };
         var opts = {};
         opts.actionFunc = actionFunc;
@@ -981,7 +882,7 @@ class Mda {
         var actionFunc = function (iobj) {
             console.log(iobj);
             KvLib.exeFunc(op.actionFunc, iobj);
-            MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+            MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
         };
         var opts = {};
         opts.actionFunc = actionFunc;
@@ -1046,7 +947,7 @@ class MdaMenu {
         var layouts = op.layouts;
         //======================================    
         var maskClickFunc = function () {
-            MdaPopWin.popOffTo(md.stas.popStackCnt);
+            MdaPopWin.popOffTo(md.opts.popStackCnt);
             for (var i = 0; i < op.menus.kvTexts.length; i++) {
                 var kobj = md.blockRefs["item#" + i];
                 kobj.stas.menuOn_f = 0;
@@ -1167,7 +1068,7 @@ class MdaMenu {
                     var rect = md.layouts["c"].stas.rects[0];
                     var pos = KvLib.getPosition(elem);
                     var box = {x1: pos.x, y1: pos.y, x2: pos.x + rect.w, y2: pos.y + rect.h};
-                    md.stas.popStackCnt = gr.mdSystem.mdClass.stackCnt;
+                    md.opts.popStackCnt = gr.mdSystem.mdClass.stackCnt;
                     var obj = {};
                     obj.box = box;
                     obj.maskColor = "rgba(0,0,0,0)";
@@ -1433,13 +1334,13 @@ class MdaList {
                         obj.center_f = 0;
                         obj.outsideShadowBlur = 10;
 
-                        md.stas.popStackCnt = gr.mdSystem.mdClass.stackCnt;
+                        md.opts.popStackCnt = gr.mdSystem.mdClass.stackCnt;
                         MdaPopWin.popObj(obj);
                         md.stas.popOnItem = listItem;
                     };
                     md.stas.timeOutId = setTimeout(timerFunc, 200);
                     if (md.stas.popOnItem) {
-                        MdaPopWin.popOffTo(md.stas.popStackCnt);
+                        MdaPopWin.popOffTo(md.opts.popStackCnt);
                         var elem = document.getElementById(md.stas.popOnItem.elemId);
                         elem.style.color = op.innerTextColor;
                         elem.style.backgroundColor = op.baseColor;
@@ -1465,7 +1366,7 @@ class MdaList {
                     elem.style.color = op.innerTextColor;
                     elem.style.backgroundColor = op.baseColor;
                     if (md.stas.popOnItem) {
-                        MdaPopWin.popOffTo(md.stas.popStackCnt);
+                        MdaPopWin.popOffTo(md.opts.popStackCnt);
                         md.stas.popOnItem = null;
                     }
                     return;
@@ -1767,18 +1668,12 @@ class MdaContainer {
             opts.layoutType = "table";
             opts.ksObjWs = [150, 200, 40, 250, 250, 80, 100];
         }
-
         if (this.md.subType1 === "free") {
             opts.layoutType = "free";
             opts.ksObjWs = [150, 200, 40, 250, 250, 80, 100];
             opts.ksObjss[2][1].iw = 50;
             opts.ksObjss[3][0].ih = 100;
         }
-
-
-
-
-
     }
 
     newScroll() {
@@ -1903,7 +1798,15 @@ class MdaContainer {
             st.yc = rowCnt;
             st.pageElemAmt = st.xc * st.yc;
             st.rowStart = Math.round(op.yPosRate * (st.allLine - st.yc));
-
+            if (op.rowStart !== null && op.rowStart !== undefined) {
+                st.rowStart = op.rowStart;
+                op.rowStart = null;
+                op.yPosRate = st.rowStart / ((st.allLine - st.yc));
+            }
+            if (st.rowStart < 0)
+                st.rowStart = 0;
+            if (op.yPosRate < 0)
+                op.yPosRate = 0;
             var opts = {};
             opts.tm = op.etm;
             opts.bm = op.ebm;
@@ -1924,6 +1827,7 @@ class MdaContainer {
             md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "listArrayBody");
 
             var inx = st.rowStart;
+
             for (var i = 0; i < rowCnt; i++) {
                 if (inx >= op.ksObjss.length)
                     break;
@@ -2373,6 +2277,7 @@ class MdaContainer {
 class MdaScroll {
     constructor() {
     }
+
     initOpts(md) {
         var self = this;
         var opts = {};
@@ -2389,6 +2294,7 @@ class MdaScroll {
 
         return opts;
     }
+
     subTypeOpts(opts) {
         if (this.md.subType === "base.sys0") {
             opts.baseColor = "#bbb";
@@ -2775,19 +2681,19 @@ class MdaMdTest {
                 return;
             }
             if (iobj.keyId === "testSelectBox~selectBox") {
-                mda.selectBox({});
+                box.selectBox({});
                 return;
             }
             if (iobj.keyId === "testSelectBox~selectOkBox") {
-                mda.selectOkBox({});
+                box.selectOkBox({});
                 return;
             }
             if (iobj.keyId === "testSelectBox~selectPageBox") {
-                mda.selectPageBox({});
+                box.selectPageBox({});
                 return;
             }
             if (iobj.keyId === "testSelectBox~selectPageOkBox") {
-                mda.selectPageOkBox({});
+                box.selectPageOkBox({});
                 return;
             }
             if (iobj.keyId === "testMdaList~base.sys0") {
@@ -2841,7 +2747,7 @@ class MdaMdTest {
             if (iobj.keyId === "testContainerBox~base.page") {
                 var actionFunc = function (iobj) {
                     console.log(iobj);
-                    MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                    MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                 };
                 mda.containerPageBox({});
                 return;
@@ -2849,7 +2755,7 @@ class MdaMdTest {
             if (iobj.keyId === "testContainerBox~base.table") {
                 var actionFunc = function (iobj) {
                     console.log(iobj);
-                    MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                    MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                 };
                 mda.containerTableBox({});
                 return;
@@ -2857,7 +2763,7 @@ class MdaMdTest {
             if (iobj.keyId === "testContainerBox~base.free") {
                 var actionFunc = function (iobj) {
                     console.log(iobj);
-                    MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                    MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                 };
                 mda.containerFreeBox({});
                 return;
@@ -2919,18 +2825,14 @@ class MdaMdTest {
             if (iobj.keyId === "testInputPad~intPad") {
                 var obj = {};
                 obj.name = "testClass";
-                obj.type = "Model~MdaPad~int";
+                obj.type = "Model~MdaPad~base.sys0";
                 obj.w = 600;
                 obj.h = 400;
                 var opts = obj.opts = {};
-                var setOpts = opts.setOpts = {};
-                setOpts.value = 34;
-                setOpts.dataType = "int";
-                setOpts.actButtons = ["inc", "dec"];
-
+                opts.setOpts = dsc.optsCopy.int;
                 opts.actionFunc = function (iobj) {
                     console.log(iobj);
-                    MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                    MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                 };
                 mda.popKs(obj);
                 return;
@@ -2938,45 +2840,32 @@ class MdaMdTest {
             if (iobj.keyId === "testInputPad~hexPad") {
                 var obj = {};
                 obj.name = "testClass";
-                obj.type = "Model~MdaPad~hex";
+                obj.type = "Model~MdaPad~base.sys0";
                 obj.w = 600;
                 obj.h = 400;
                 var opts = obj.opts = {};
-                var setOpts = opts.setOpts = {};
-                setOpts.value = 34;
-                setOpts.dataType = "int";
-                setOpts.checkType = "hex";
-                setOpts.actButtons = [];
-
+                opts.setOpts = dsc.optsCopy.hex;
                 opts.actionFunc = function (iobj) {
                     console.log(iobj);
-                    MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                    MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                 };
                 mda.popKs(obj);
                 return;
             }
             if (iobj.keyId === "testInputPad~intPadBox") {
-                var opts = {};
-                opts.setOpts = dsc.optsCopy.int;
-                mda.intPadBox(opts);
+                mda.intPadBox({});
                 return;
             }
             if (iobj.keyId === "testInputPad~hexPadBox") {
-                var opts = {};
-                opts.setOpts = dsc.optsCopy.hex;
-                mda.hexPadBox(opts);
+                mda.hexPadBox({});
                 return;
             }
             if (iobj.keyId === "testInputPad~intHexPadBox") {
-                var opts = {};
-                opts.setOpts = dsc.optsCopy.hex;
-                mda.intHexPadBox(opts);
+                mda.intHexPadBox({});
                 return;
             }
             if (iobj.keyId === "testInputPad~floatPadBox") {
-                var opts = {};
-                opts.setOpts = dsc.optsCopy.float;
-                mda.floatPadBox(opts);
+                mda.floatPadBox({});
                 return;
             }
 
@@ -2987,7 +2876,7 @@ class MdaMdTest {
                 return;
             }
             if (iobj.keyId === "testInputPad~pickColorBox") {
-                mda.pickColorBox({});
+                box.pickColorBox({});
                 return;
             }
 
@@ -3020,7 +2909,7 @@ class MdaMdTest {
             console.log(iobj);
             var actionFunc = function (iobj) {
                 console.log(iobj);
-                MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
             };
             mda.tableBox({});
         };
@@ -3033,7 +2922,7 @@ class MdaMdTest {
             console.log(iobj);
             var actionFunc = function (iobj) {
                 console.log(iobj);
-                MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
             };
             var opts = {};
             opts.actionFunc = actionFunc;
@@ -3051,28 +2940,11 @@ class MdaMdTest {
             var opts = {};
             var actionFunc = function (iobj) {
                 console.log(iobj);
-                MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
             };
             opts.actionFunc = actionFunc;
             var kvObj = new Block("testList", "Model~MdaList~base.sys0", opts);
             mda.popObj(300, 400, kvObj, 1);
-            return;
-
-
-
-            kvObj.stas.popStackCnt = gr.mdSystem.mdClass.stackCnt;
-            var maskClickFunc = function (iobj) {
-                MdaPopWin.popOffTo(kvObj.stas.popStackCnt);
-            };
-            var obj = {};
-            obj.w = 300;
-            obj.h = 400;
-            obj.kvObj = kvObj;
-            obj.borderColor = "#fff";
-            obj.borderWidth = 1;
-            obj.actionFunc = maskClickFunc;
-            obj.maskColor = "rgba(0,0,0,0.5)";
-            MdaPopWin.popMaskObjA(obj);
         };
         blocks[cname] = {name: "button#" + inx, type: "Component~Cp_base~button.sys2", opts: opts};
         inx++;
@@ -3184,7 +3056,7 @@ class MdaMdTest {
 
 
 
-        md.setTimer(md.opts, "t0", 60, 10, function (tobj, nmd) {
+        md.setTimer("t0", 60, 10, function (tobj, nmd) {
             //nmd.clear(nmd.lyMaps["mainBody"] + "~" + tobj.repeatCnt);
         });
 
@@ -3193,8 +3065,7 @@ class MdaMdTest {
         //
         var cname = lyMaps["mainBody"] + "~" + inx;
         var opts = {};
-        md.setTimer(opts, "t0", 60, 0, function (tobj, nmd) {
-            return;
+        Block.setTimer(opts, "t0", 60, 0, function (tobj, nmd) {
             nmd.opts.backgroundInxTmp++;
             if (nmd.opts.backgroundInxTmp > 5)
                 nmd.opts.backgroundInxTmp = 0;
@@ -3238,22 +3109,7 @@ class MdaPopWin {
         return opts;
     }
 
-    static popMaskObjA(iobj) {
-        var opts = {
-            kvObj: iobj.kvObj,
-            actionFunc: iobj.actionFunc,
-            borderWidth: iobj.borderWidth,
-            borderColor: iobj.borderColor,
-            outsideShadowBlur: 10,
-            x: iobj.x,
-            y: iobj.y,
-            w: iobj.w,
-            h: iobj.h,
-            maskY: iobj.maskY,
-            maskX: iobj.maskX,
-            maskColor: iobj.maskColor,
-            center_f: iobj.center_f
-        };
+    static popMaskObjA(opts) {
         MdaPopWin.popMaskObj(opts);
     }
 
@@ -3518,11 +3374,14 @@ class MdaBase {
         if (this.md.subType === "base.sys0") {
         }
     }
-
     afterCreate() {
         var md = this.md;
         var op = md.opts;
         var st = md.stas;
+        var iobj = {};
+        iobj.act = "afterCreate";
+        iobj.sender = md;
+        KvLib.exe(op.actionFunc, iobj);
     }
     build() {
         var self = this;
@@ -3546,12 +3405,12 @@ class MdaBase {
             return 1;
         };
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
-
-        var cname = lyMaps["body"] + "~" + 0;
-        var opts = {};
-        opts.xArr = [9999, 20];
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["main"] = cname;
+        //======================================    
+        //var cname = lyMaps["body"] + "~" + 0;
+        //var opts = {};
+        //opts.iw=300;
+        //opts.ih=100;
+        //blocks[cname] = {name: "basePanel", type: "Component~Cp_base~button.sys0", opts: opts};
     }
 }
 
@@ -3589,21 +3448,8 @@ class MdaBox {
         return opts;
     }
     subTypeOpts(opts) {
-        if (this.md.subType === "base.sys0") {
-        }
-        if (this.md.subType === "base.sys1") {
-        }
-        if (this.md.subType === "base.ok") {
-        }
-        if (this.md.subType === "base.page") {
-        }
-        if (this.md.subType === "base.pageOk") {
-        }
     }
     afterCreate() {
-        var md = this.md;
-        var op = md.opts;
-        var st = md.stas;
     }
     build() {
         var self = this;
@@ -4326,7 +4172,10 @@ class MdaSetLine {
                     iobj.act = "collaps";
                 else
                     iobj.act = "expand";
-                iobj.groupName = md.setOpts.group;
+                iobj.groupName = md.opts.setOpts.group;
+                var strA = md.name.split("#");
+                var strB = strA[1].split(".");
+                iobj.index = KvLib.toInt(strB[0], 0);
                 KvLib.exeFunc(op.actionFunc, iobj);
 
             };
@@ -4477,7 +4326,7 @@ class MdaSetLine {
                     opts.actionFunc = function (iobj) {
                         console.log(iobj);
                         //maskClickFunc();
-                        MdaPopWin.popOffTo(iobj.sender.stas.popStackCnt);
+                        MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                         iobj.sender = md;
                         setOpts.value = KvLib.getKvText(iobj.kvText, "").text;
 
@@ -4524,7 +4373,7 @@ class MdaSetLine {
                         var inputTextObj = md.blockRefs["inputText"];
                         var elem = inputTextObj.elems["inputText"];
                         opts.color = elem.value;
-                        mda.pickColorBox(opts);
+                        box.pickColorBox(opts);
                         return;
                     }
 
@@ -4864,6 +4713,8 @@ class MdaSetLine {
             opts.innerText = "";
             opts.lpd = 0;
             opts.rpd = 0;
+            if(setOpts.password_f)
+                opts.password_f=1;
             //if (!op.disBlur_f)
             //    opts.blur_f = 1;
             md.newBlock(cname, opts, "Component~Cp_base~inputText.sys0", "inputText");
@@ -5488,7 +5339,7 @@ class MdaPad {
         var layouts = op.layouts;
         st.juingStr = "";
         self.initKeyLayout();
-        op.setOpts.expandWidth=0;
+        op.setOpts.expandWidth = 0;
 
         if (op.setOpts.setType === "textArea")
             op.setOpts.actButtons = [];

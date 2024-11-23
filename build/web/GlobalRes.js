@@ -1,7 +1,13 @@
 class GlobalRes {
     constructor() {
         //this.language = "eng";
+        this.appName="webBuilder";
+        this.appType="Model~MdaMdTest~base.sys0";
         this.language = "chnT";
+        this.appPageCnt=0;
+        this.logoImage="systemResource/josn_elec_a_169x40.png";
+        this.logoImageWidth=500;
+        this.logoImageHeight=80;
         //==============================
         this.kid = 0;
         // this.kidMap=new Map();
@@ -69,7 +75,7 @@ class GlobalRes {
         
         this.showLogo_f = 1;
         this.showLogoTime=1000;//ms
-        this.enabelLogin_f = 0;
+        this.enabelLogin_f = 1;
         this.logoUrl='./systemResource/robot_aiot_1920x1080.jpg';
         this.defaultUserName = "admin";
         this.defaultUserPassword = "1234";

@@ -227,7 +227,21 @@ class Block {
 
     }
 
-    setTimer(opts, name, tCount, repeatCount, func) {
+    static setTimer(opts, name, tCount, repeatCount, func){
+        if (!opts.timerObj)
+            opts.timerObj = {};
+        var tobj = {};
+        tobj.tCount = tCount;
+        tobj.cnt = 0;
+        tobj.func = func;
+        tobj.repeatCount = repeatCount;
+        tobj.repeatCnt = 0;
+        opts.timerObj[name] = tobj;
+    }
+    setTimer(name, tCount, repeatCount, func) {
+        Block.setTimer(this.opts,name, tCount, repeatCount, func);
+        return;
+        
         if (!opts.timerObj)
             opts.timerObj = {};
         var tobj = {};
@@ -252,6 +266,7 @@ class Block {
         var op = this.opts;
         opts.innerTextColor = op.innerTextColor;
         opts.baseColor = op.baseColor;
+        opts.background=op.background;
         opts.borderWidth = op.borderWidth;
         opts.borderColor = op.borderColor;
         opts.basePanel_f = 1;
@@ -952,6 +967,7 @@ class Block {
 
     chkTimer() {
         var md = this;
+        
         for (var key in  md.opts.timerObj) {
             var tobj = md.opts.timerObj[key];
             tobj.cnt++;
@@ -1556,6 +1572,9 @@ class Cp_base {
         sonElem.style.width = (st.cw - st.titleWidth - 6 - paddingLeft) + "px";
         sonElem.style.height = (st.ch - 6) + "px";
         sonElem.style.fontSize = KvLib.transUnit(op.editFontSize, 20, st.cw, st.ch) + "px";
+        if(op.password_f){
+            sonElem.style["-webkit-text-security"]="disc";        
+        }
         if (op.editFontFamily)
             sonElem.style.fontFamily = op.editFontFamily;
         if (op.readOnly_f) {
@@ -1569,6 +1588,7 @@ class Cp_base {
         sonElem.value = op.editValue;
         sonElem.md = md;
         sonElem.style.paddingLeft = "10px";
+            
         elem.appendChild(sonElem);
         md.elems["inputText"] = sonElem;
     }

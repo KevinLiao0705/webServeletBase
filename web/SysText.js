@@ -16,6 +16,24 @@ class SysText {
             ,eng:"Data less than minimum value of "
             ,chnT:"數值不能小於 "
         };
+        this.login={
+            objName:"textObj"
+            ,eng:"Login"
+            ,chnT:"登入"
+        };
+        this.userName={
+            objName:"textObj"
+            ,eng:"UserName"
+            ,chnT:"使用者"
+        };
+        this.password={
+            objName:"textObj"
+            ,eng:"Password"
+            ,chnT:"密碼"
+        };
+        
+        
+        
     }
     
     

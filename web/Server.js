@@ -30,6 +30,26 @@ class Server {
     }
 
 //================================================
+    serverLogin(responseType, responseAction, userName, password) {
+        var opts;
+        var obj = {};
+        obj["act"] = "login";
+        obj["type"] = "command";
+        //=============================
+        var retOpts = obj["retOpts"]={};
+        retOpts["cmdInx"] = sv.cmdInx;
+        retOpts["responseType"] = "responseError";
+        retOpts["responseAction"] = responseAction;
+        //=============================
+        var opts=obj["opts"] = {};
+        opts["appName"]=gr.appName;
+        opts["userName"] = userName;
+        opts["password"] = password;
+        this.callServer(JSON.stringify(obj));
+    }
+
+
+
     callServer(dataJson, url) {
         var self = this;
         self.serverCallBackMes = null;
@@ -40,7 +60,10 @@ class Server {
             data: dataJson,
             dataType: "json",
             success: self.serverBackOk,
-            error: self.serverBackError
+            error: self.serverBackError,
+            headers : {
+                dataType: "json"
+            }            
         };
         if (url)
             if (url !== "MainServlet") {
@@ -216,7 +239,7 @@ class Server {
                         var opts;
                         var obj = {};
                         var elem;
-                        obj["name"] = "login";
+                        obj["act"] = "login";
                         obj["type"] = "";
                         obj["opts"] = {};
                         opts = obj["opts"];
