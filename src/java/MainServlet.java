@@ -38,7 +38,8 @@ import org.kevin.*;
 public final class MainServlet extends HttpServlet {
 
     RetData retData = new RetData();
-    KvJson kj=new KvJson();
+    KvJson kj = new KvJson();
+
     public MainServlet() {
     }
 
@@ -97,7 +98,6 @@ public final class MainServlet extends HttpServlet {
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
         JSONObject webInJo = new JSONObject();
         JSONObject webOutJo = new JSONObject();
-        JSONObject webOutOptsJo = new JSONObject();
         if (isMultipart) {
             //int maxFileSize = 50 * 1024;
             //int maxMemSize = 4 * 1024;
@@ -196,8 +196,11 @@ public final class MainServlet extends HttpServlet {
             strBuilder.append(line);
         }
         webInJoStr = strBuilder.toString();
-        JSONObject outJo = new JSONObject();
         try {
+            webOutJo.put("act", "none");
+            webOutJo.put("type", "response");
+            webOutJo.put("status", "error");
+            webOutJo.put("message", "Command Format Error !!!");
             switch (webInJoStr.charAt(0)) {
                 case '[': {
                     JSONArray webInJa = new JSONArray(webInJoStr);
@@ -211,11 +214,8 @@ public final class MainServlet extends HttpServlet {
                     if (!webInJo.get("type").toString().equals("command")) {//command or response
                         break;
                     }
-                    
-                    if (!webInJo.get("act").toString().equals("command")) {
-                        //========================
-                        //....
-                        //========================
+                    if (!kj.rJo(webInJo, "retOpts")) {
+                        webOutJo.put("retOpts", kj.valueJo);
                     }
                     anaJo(webInJo, webOutJo);
                     break;
@@ -235,23 +235,6 @@ public final class MainServlet extends HttpServlet {
 
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     public HashMap<String, Object> getParas() {
         HashMap<String, Object> paraMap = new HashMap();
         String fileName = GB.webRootPath + "user-" + "webIcs" + "/paraSet.json";
@@ -365,7 +348,6 @@ public final class MainServlet extends HttpServlet {
         return true;
     }
 
-    
     public void loadOutJoResponseError(JSONObject inOptsJo, JSONObject outJo, String errStr) {
         String responseType = "response none";
         if (geJoToRetStr(inOptsJo, "responseType")) {
@@ -409,8 +391,6 @@ public final class MainServlet extends HttpServlet {
         }
         putJoO(outJso, "responseMessage", okStr);
     }
-    
-    
 
     public HashMap<String, String> getUsreParaMap(String userName) {
         HashMap<String, String> paraMap = new HashMap();
@@ -442,9 +422,6 @@ public final class MainServlet extends HttpServlet {
         JSONObject inOptsJo;
         JSONObject inRetOptsJo;
         JSONObject outOptsJo = new JSONObject();
-        JSONObject retOptsJo = new JSONObject();
-        
-        
         String outStr;
         String filePath;
         String fileName;
@@ -460,11 +437,8 @@ public final class MainServlet extends HttpServlet {
         try {
             action = inJo.get("act").toString();
             inOptsJo = new JSONObject(inJo.get("opts").toString());
-            retOptsJo = new JSONObject(inJo.get("retOpts").toString());
+            kj.wStr(outJo, "act", action);
             //====================================================================
-            putJoO(outJo, "act", action);
-            putJoO(outJo, "type", "response");
-            putJoJo(outJo, "retOpts", retOptsJo);
             switch (action) {
                 case "writeImageFile":
                     loadOutJoResponseError(inOptsJo, outJo, "writeImageFile Error !!!");
@@ -553,102 +527,103 @@ public final class MainServlet extends HttpServlet {
                     break;
 
                 case "login":
-                    loadOutJoResponseError(inOptsJo, outJo, "login Error !!!");
-                    kj.jobj=inOptsJo;
-                    if(kj.rStr("appName")){
+                    kj.wStr(outJo, "message", "login Error !!!");
+                    kj.jobj = inOptsJo;
+                    if (kj.rStr("appName")) {
                         return;
                     }
-                    appName=kj.valueStr;
-                    if(kj.rStr("userName")){
+                    appName = kj.valueStr;
+                    if (kj.rStr("userName")) {
                         return;
                     }
-                    userName=kj.valueStr;
-                    if(kj.rStr("password")){
+                    userName = kj.valueStr;
+                    if (kj.rStr("password")) {
                         return;
                     }
-                    password=kj.valueStr;
+                    password = kj.valueStr;
                     //=======================================================
                     fileName = GB.webRootPath + "user-" + appName + "/systemSet.json";
-                    retc=Lib.readFileToString(fileName);
-                    if(retc.errorF){
-                        putJoO(outJo, "responseMessage", retc.messageStr);
+                    retc = Lib.readFileToString(fileName);
+                    if (retc.errorF) {
+                        kj.wStr(outJo, "message", "Read 'systemSet.json' error !!!");
+                        return;
                     }
-                    String systemSetContent=retc.valueStr;
+                    String systemSetContent = retc.valueStr;
                     //=======================================================                    
                     fileName = GB.webRootPath + "user-" + appName + "/userSet.json";
-                    retc=Lib.readFileToString(fileName);
-                    if(retc.errorF){
-                        putJoO(outJo, "responseMessage", retc.messageStr);
+                    retc = Lib.readFileToString(fileName);
+                    if (retc.errorF) {
+                        kj.wStr(outJo, "message", "Read 'userSet.json' error !!!");
+                        return;
                     }
-                    String userSetContent=retc.valueStr;
+                    String userSetContent = retc.valueStr;
                     //=======================================================                    
                     fileName = GB.webRootPath + "user-" + appName + "/paraSet.json";
-                    retc=Lib.readFileToString(fileName);
-                    if(retc.errorF){
-                        putJoO(outJo, "responseMessage", retc.messageStr);
+                    retc = Lib.readFileToString(fileName);
+                    if (retc.errorF) {
+                        kj.wStr(outJo, "message", "Read 'paraSet.json' error !!!");
+                        return;
                     }
-                    String paraSetContent=retc.valueStr;
+                    String paraSetContent = retc.valueStr;
+                    //=======================================================                    
+                    fileName = GB.webRootPath + "user-" + appName + "/paraSet.json";
+                    retc = Lib.readFileToString(fileName);
+                    if (retc.errorF) {
+                        kj.wStr(outJo, "message", "Read 'paraSet.json' error !!!");
+                        return;
+                    }
                     //=======================================================                    
                     JSONObject systemSetJo = new JSONObject(systemSetContent);
                     JSONObject paraSetJo = new JSONObject(paraSetContent);
-                    ArrayList<String> acounts=new ArrayList<String>();
-                    kj.jobj=systemSetJo;
-                    if(!kj.rStrA("systemAcounts")){
-                        for(int i=0;i<kj.strAL.size();i++){
+                    JSONObject userSetJo = new JSONObject(userSetContent);
+                    ArrayList<String> acounts = new ArrayList<String>();
+                    kj.jobj = systemSetJo;
+                    if (!kj.rStrA("systemAcounts")) {
+                        for (int i = 0; i < kj.strAL.size(); i++) {
                             acounts.add(kj.strAL.get(i));
                         }
                     }
-                    kj.jobj=paraSetJo;
-                    if(!kj.rStrA("userAcounts")){
-                        for(int i=0;i<kj.strAL.size();i++){
+                    kj.jobj = paraSetJo;
+                    if (!kj.rStrA("userAcounts")) {
+                        for (int i = 0; i < kj.strAL.size(); i++) {
                             acounts.add(kj.strAL.get(i));
                         }
                     }
-                    
-                    int pass=0;
-                    for(int i=0;i<acounts.size();i++){
-                        strA=acounts.get(i).split("~");
-                        if(strA.length!=3)
+
+                    int pass = 0;
+                    int user=0;
+                    for (int i = 0; i < acounts.size(); i++) {
+                        user=0;
+                        strA = acounts.get(i).split("~");
+                        if (strA.length != 3) {
                             continue;
-                        if(!strA[0].equals(userName))
+                        }
+                        if (!strA[0].equals(userName)) {
                             continue;
-                        if(!strA[2].equals(password))
-                            continue;
-                        pass=1;
+                        }
+                        user=1;
+                        if (!strA[2].equals(password)) {
+                            break;
+                        }
+                        pass = 1;
                         break;
                     }
-                    
-                    
-                    
-                    String userPassword="";
-                    
-                    
-                    
-                    //GB.userParaMap=this.getUsreParaMap(systemName);
-                    if (!password.equals(userPassword)) {
-
-                        putJoO(outJo, "responseMessage", "Password Error !!!");
-                        JSONObject jsobj = new JSONObject(userSetContent);
-                        if (!geJoToRetStr(jsobj, "sysSet")) {
-                            break;
-                        }
-                        String sysSet = this.retData.retStr;
-                        jsobj = new JSONObject(sysSet);
-                        if (!geJoToRetStr(jsobj, "loginPassword")) {
-                            break;
-                        }
-                        if (!password.equals(this.retData.retStr)) {
-                            break;
-                        }
+                    if(user==0 && pass==0){
+                        kj.wStr(outJo, "message", "Login Error !!!");
+                        return;
                     }
-
+                    if(user==1 && pass==0){
+                        kj.wStr(outJo, "message", "Password Error !!!");
+                        return;
+                    }
                     GB.paraSetMap = this.getParas();
-                    //JSONObject paraMap=new JSONObject(GB.paraMap);
-                    putJoO(outOptsJo, "userSet", userSetContent);
-                    putJoO(outOptsJo, "paraSet", paraSetContent);
-                    putJoO(outOptsJo, "webIp", GB.nowIp_str);
-                    putJoJo(outJo, "opts", outOptsJo);
-                    loadOutJoResponseOk(inOptsJo, outJo, "Login OK.");
+                    kj.wObj(outOptsJo, "userSet", userSetJo);
+                    kj.wObj(outOptsJo, "paraSet", paraSetJo);
+                    kj.wObj(outOptsJo, "webIp", GB.nowIp_str);
+                    kj.wObj(outJo, "opts", outOptsJo);
+                    kj.wStr(outJo, "status", "ok");
+                    kj.wStr(outJo, "message", "Login OK.");
+
                     break;
 //=============================================================================================================================                    
 

@@ -1572,7 +1572,10 @@ class Cp_base {
         sonElem.style.width = (st.cw - st.titleWidth - 6 - paddingLeft) + "px";
         sonElem.style.height = (st.ch - 6) + "px";
         sonElem.style.fontSize = KvLib.transUnit(op.editFontSize, 20, st.cw, st.ch) + "px";
+        sonElem.autocomplete="none";
+        sonElem.name=md.kid+Math.floor(Date.now()/1000);//disable auto fill
         if(op.password_f){
+            sonElem.type = "text";
             sonElem.style["-webkit-text-security"]="disc";        
         }
         if (op.editFontFamily)

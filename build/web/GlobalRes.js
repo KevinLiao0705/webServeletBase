@@ -4,10 +4,13 @@ class GlobalRes {
         this.appName="webBuilder";
         this.appType="Model~MdaMdTest~base.sys0";
         this.language = "chnT";
-        this.appPageCnt=0;
+        this.appPageCnt=1;
         this.logoImage="systemResource/josn_elec_a_169x40.png";
         this.logoImageWidth=500;
         this.logoImageHeight=80;
+        this.defaultUserName = "kevinAdmin";
+        this.defaultUserPassword = "16020039";
+        this.clearCookie_f = 0;
         //==============================
         this.kid = 0;
         // this.kidMap=new Map();
@@ -77,9 +80,6 @@ class GlobalRes {
         this.showLogoTime=1000;//ms
         this.enabelLogin_f = 1;
         this.logoUrl='./systemResource/robot_aiot_1920x1080.jpg';
-        this.defaultUserName = "admin";
-        this.defaultUserPassword = "1234";
-        this.clearCookie_f = 0;
 
         this.mouseFuncPara = null;
         //this.googleMapKeys = ["AIzaSyDOlTL0xvlXJGN1gnqcV4zxEPhQW5rmd8Q"];

@@ -1174,11 +1174,11 @@ class KvLib {
         if (!_func)
             return;
         if (typeof _func === 'function') {
-            _func(para0, para1, para2, para3);
+            return _func(para0, para1, para2, para3);
         } else {
             var func = getInstByString(_func);
             if (func) {
-                func(para0, para1, para2, para3);
+                return func(para0, para1, para2, para3);
             }
         }
     }

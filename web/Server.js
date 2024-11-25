@@ -36,19 +36,17 @@ class Server {
         obj["act"] = "login";
         obj["type"] = "command";
         //=============================
-        var retOpts = obj["retOpts"]={};
+        var retOpts = obj["retOpts"] = {};
         retOpts["cmdInx"] = sv.cmdInx;
-        retOpts["responseType"] = "responseError";
+        retOpts["responseType"] = responseType;
         retOpts["responseAction"] = responseAction;
         //=============================
-        var opts=obj["opts"] = {};
-        opts["appName"]=gr.appName;
+        var opts = obj["opts"] = {};
+        opts["appName"] = gr.appName;
         opts["userName"] = userName;
         opts["password"] = password;
         this.callServer(JSON.stringify(obj));
     }
-
-
 
     callServer(dataJson, url) {
         var self = this;
@@ -61,9 +59,9 @@ class Server {
             dataType: "json",
             success: self.serverBackOk,
             error: self.serverBackError,
-            headers : {
+            headers: {
                 dataType: "json"
-            }            
+            }
         };
         if (url)
             if (url !== "MainServlet") {
@@ -126,16 +124,58 @@ class Server {
         let gr = window.gr;
         self.waitServer_f = 0;
         self.serverCallBackMes = mes;
+        if (!mes.retOpts)
+            return;
+        if (mes.retOpts.responseAction === "exeCallBackFunc") {
+            if(!KvLib.exe(gr.serverCallBack, mes))
+                return;
+        }
+        
+        
+        
         switch (mes.retOpts.responseType)
         {
             case "responseNone":
-                if (gr.serverResponseFunc) {
-                    gr.serverResponseFunc(mes);
-                    break;
+                return;
+            case "responseDialogOk":
+                if(mes.status==="ok")
+                    box.errorBox({kvTexts: [mes.message]});
+                if(mes.status==="error")
+                    box.okBox({kvTexts: [mes.message]});
+                return;
+            case "responseDialogError":
+                if(mes.status==="error")
+                    box.errorBox({kvTexts: [mes.message]});
+                return;
+            case "responseDialogErrorMessageOk":
+                if(mes.status==="error"){
+                    box.okBox({kvTexts: [mes.message]});
+                    return;
                 }
-
-
-                break;
+                return;
+            case "messageOk":
+                gr.message = mes.message;
+                if(mes.retOpts.messageTime)
+                    gr.messageTime=mes.retOpts.messageTime;
+                return;
+            case "messageError":
+                if(mes.status==="error"){
+                    gr.message = mes.message;
+                    if(mes.retOpts.messageTime)
+                        gr.messageTime=mes.retOpts.messageTime;
+                }    
+                return;
+                
+                
+        }        
+        return;
+        
+        
+        
+        switch (mes.retOpts.responseType)
+        {
+            case "responseNone":
+                return;
             case "responseOk":
                 if (mes.opts.messageTime)
                     var buttons = [];
@@ -161,8 +201,8 @@ class Server {
                 }
                 break;
             case "responseError":
-                if(mes.responeStatus==="error"){
-                   mda.errorBox({kvTexts: mes.responseMessage.split("<br>")});
+                if (mes.responeStatus === "error") {
+                    mda.errorBox({kvTexts: mes.responseMessage.split("<br>")});
                     return;
                 }
                 break;
@@ -187,7 +227,7 @@ class Server {
         switch (mes.retOpts.responseAction) {
             case "exeCallBackFunc":
                 var obj = null;
-                KvLib.exe(gr.serverCallBack,mes);
+                KvLib.exe(gr.serverCallBack, mes);
                 break;
             case "toStringArray":
                 var strA = mes.opts.value.split("\n");

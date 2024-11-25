@@ -77,42 +77,68 @@ class Macro {
         return logoPage;
     }
 
-    showLogin(_op) {
+    loginBox(_op) {
         var op = {};
         op.background = "linear-gradient(to top, #c5d5fa, #c3dc99)";
         op.width = 800;
         op.height = 160;
-        op.userName = "admin";
-        op.password = "password";
+        op.userName = gr.defaultUserName;
+        op.password = gr.defaultUserPassword;
+        if (!gr.defaultUserName) {
+            var cookieObj = KvLib.anaString(document.cookie, ";", "=");
+            if (gr.clearCookie_f)
+                cookieObj = {};
+            if (cookieObj.userName) {
+                if (cookieObj.password) {
+                    op.userName = cookieObj.userName;
+                    op.password = cookieObj.password;
+                }
+            }
+        }
         KvLib.deepCoverObject(op, _op);
         //=====================================================
-        var loginPrg = function (responseType, userName, password) {
-            var loginReturn = function (valueObj, mes) {
-                if (valueObj) {
-                    us.set = valueObj;
-                    gr.paraSet = JSON.parse(mes.opts.paras);
-                    gr.webIp = mes.opts.webIp;
-                    gr.showLogo_f = 0;
-                    gr.repaint_f = 1;
+        var loginPrg = function (userName, password) {
+            var loginReturn = function (mes) {
+                if (mes.status === "error") {
+                    if (gr.defaultUserName) {
+                        gr.defaultUserName = "";
+                        gr.defaultUserPassword = "";
+                        gr.appPageCnt = 1;
+                        sys.dispWebPage();
+                        return;
+                    }
+                    var opts = {};
+                    opts.kvTexts = [mes.message];
+                    opts.actionFunc = function (iobj) {
+                        console.log(iobj);
+                        gr.appPageCnt = 1;
+                        sys.dispWebPage();
+                    };
+                    box.errorBox(opts);
+                }
+                if (mes.status === "ok") {
+                    us.set = mes.opts.userSet;
+                    gr.paraSet = mes.opts.paraSet;
                     document.cookie = 'userName=' + userName + "; max-age=3600";
                     document.cookie = 'password=' + password + "; max-age=3600";
                     gr.userName = userName;
                     gr.password = password;
-                    gr.paras = JSON.parse(mes.opts.paras);
-                } else {
-                    if (responseType === "response error")
-                        return;
-                    loginBoxPrg();
-
+                    gr.appPageCnt = 2;
+                    sys.dispWebPage();
                 }
+                return;
             };
             gr.serverCallBack = loginReturn;
-            sv.serverLogin("responseError", "exeCallBackFunc", userName, password);
+            sv.serverLogin("responseDialogError", "exeCallBackFunc", userName, password);
             return;
         };
-
-
-
+        if (gr.defaultUserName) {
+            if (gr.defaultUserPassword) {
+                loginPrg(gr.defaultUserName, gr.defaultUserPassword);
+                return;
+            }
+        }
+        
         var opts = {};
         opts.baseColor = op.baseColor;
         opts.background = op.background;
@@ -156,7 +182,7 @@ class Macro {
                     if (iobj.buttonId === "ok") {
                         var userName = iobj.ksObjss[0][0].opts.setOpts.value;
                         var password = iobj.ksObjss[1][0].opts.setOpts.value;
-                        loginPrg("response error", userName, password);
+                        loginPrg(userName, password);
                     }
                 }
             };
@@ -288,9 +314,9 @@ class KvBox {
         //=================
         opts.actionFunc = function (iobj) {
             console.log(iobj);
-            KvLib.exeFunc(_op.actionFunc, iobj);
             MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
             gr.mesBoxOn_f = 0;
+            KvLib.exeFunc(_op.actionFunc, iobj);
         };
         var kvObj = new Block("mdaBox", "Model~MdaBox~base.sys0", opts);
         var mesObj = mda.popObj(op.w, op.h, kvObj);

@@ -17,6 +17,7 @@ public class KvJson {
 
     public String messageStr = "Error";
     public String valueStr = "";
+    public JSONObject valueJo;
     public boolean errorF = true;
     public JSONObject jobj;
     public JSONArray jary;
@@ -64,6 +65,26 @@ public class KvJson {
         errorF = false;
         return errorF;
     }
+
+
+    public boolean rJo(JSONObject iobj, String key) {
+        jobj = iobj;
+        return rJo(key);
+    }
+    
+    public boolean rJo(String key) {
+        errorF = true;
+        try {
+            this.valueJo = new JSONObject(jobj.get(key).toString());
+        } catch (JSONException ex) {
+            messageStr = "Read Json(key:" + key + ") To String Error !!!";
+            return errorF;
+        }
+        errorF = false;
+        return errorF;
+    }
+    
+    
 
     public boolean wObj(JSONObject jo, String key, Object value) {
         errorF = true;

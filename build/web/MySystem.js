@@ -49,14 +49,9 @@ class MySystem {
         if (gr.appPageCnt === 1) {
             if (gr.enabelLogin_f) {
                 var opts = {};
-                opts.actionFunc = function () {
-                    console.log("logoTimeUp");
-                    gr.appPageCnt = 2;
-                    self.dispWebPage();
-                    return;
-                };
-                gr.mdMain = mac.showLogin(opts);
-                gr.mdMain.create("rootBody");
+                gr.mdMain = mac.loginBox(opts);
+                if(gr.mdMain)
+                    gr.mdMain.create("rootBody");
                 return;
 
             }
