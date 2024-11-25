@@ -11,6 +11,7 @@ class GlobalRes {
         this.defaultUserName = "kevinAdmin";
         this.defaultUserPassword = "16020039";
         this.clearCookie_f = 0;
+        this.gitTest=1;
         //==============================
         this.kid = 0;
         // this.kidMap=new Map();
