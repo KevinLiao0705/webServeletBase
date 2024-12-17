@@ -913,6 +913,20 @@ class Block {
             self.opts[optsName] = value;
     }
 
+
+    static setInputWatch(opts, type, regName, optName, redraw_f) {
+        var ipObj = {};
+        ipObj.cnt = 0;
+        ipObj.period = 1;
+        ipObj.type = type;
+        ipObj.inputName = regName;
+        ipObj.optName = optName;
+        ipObj.redraw_f = redraw_f;
+        if (!opts.inputRegs)
+            opts.inputRegs = [];
+        opts.inputRegs.push(ipObj);
+    }
+
     setInputWatch(opts, type, regName, optName, redraw_f) {
         var ipObj = {};
         ipObj.cnt = 0;
@@ -935,8 +949,8 @@ class Block {
                 continue;
             ipObj.cnt = 0;
             if (ipObj.type === "directName") {
-                if (ipObj.inputName === "self.fatherMd.fatherMd.opts.icsDatas.sipData0.sipStatus") {
-                    var obj = self.fatherMd.fatherMd.opts.icsDatas.sipData0.sipStatus;
+                if (ipObj.inputName === "self.fatherMd.opts.hecButColor") {
+                    var obj = self.fatherMd.opts.hecButColor;
                     var uu = 0;
                 }
                 var value;

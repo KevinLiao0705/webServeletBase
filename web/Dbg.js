@@ -12,8 +12,14 @@ class Dbg {
         var kvs0 = menus.kvTexts;
         kvs0[0].chnT = "";
         kvs0[0].image = "systemResource/color.png";
-        kvs0[7].chnT = "測試 A";
-        kvs0[7].id = "testA";
+        
+        kvs0[6].eng = "ComponentTest";
+        kvs0[6].id = "componentTest";
+        kvs0[6].menus=this.getMenus(kvs0[6].id, 8);
+        var kvs1=kvs0[6].menus.kvTexts;
+        //
+        kvs0[7].eng = "DialogTest";
+        kvs0[7].id = "dialogTest";
         kvs0[7].menus=this.getMenus(kvs0[0].id, 8);
         var kvs1=kvs0[7].menus.kvTexts;
         //===============================
@@ -130,8 +136,8 @@ class Dbg {
         kvs2[5].id="inputText";
         kvs2[5].eng="Show inputText";
         kvs2[5].image = "systemResource/icons8-list-100.png";
-        kvs2[6].id="label";
-        kvs2[6].eng="Show label";
+        kvs2[6].id="labelViews";
+        kvs2[6].eng="Show labelViews";
         kvs2[6].image = "systemResource/icons8-list-100.png";
         kvs2[7].id="select";
         kvs2[7].eng="Show select";
@@ -224,7 +230,7 @@ class Dbg {
             tobj.id = "itemId#" + i;
             tobj.objName = "textObj";
             tobj.type = "text";//default text,hLine
-            tobj.eng = "Test--" + i;
+            tobj.eng = "Menu-" + i;
             //tobj.chnT = "測試--" + i;
             tobj.image = "";
             //tobj.image = "systemResource/color.png";
@@ -234,6 +240,22 @@ class Dbg {
             kvTexts.push(tobj);
         }
         return menus;
+    }
+    
+    getButtonsType(){
+        var types=[];
+        types.push("Component~Cp_base~button.sys0")
+        types.push("Component~Cp_base~button.sys1")
+        types.push("Component~Cp_base~button.sys2")
+        types.push("Component~Cp_base~button.sys3")
+        types.push("Component~Cp_base~button.sys4")
+        types.push("Component~Cp_base~button.list")
+        types.push("Component~Cp_base~button.none")
+        types.push("Component~Cp_base~button.menu0")
+        types.push("Component~Cp_base~button.sys0")
+        types.push("Component~Cp_base~button.sys0")
+        return types;
+        
     }
 
 }
