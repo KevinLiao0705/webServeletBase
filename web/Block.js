@@ -42,6 +42,7 @@ class Block {
         this.stas = {};
         this.watch = {};
         this.elems = {};
+        this.objs = {};
         this.blocks = {};
         this.layouts = {};
         this.blockRefs = {};
@@ -227,7 +228,7 @@ class Block {
 
     }
 
-    static setTimer(opts, name, tCount, repeatCount, func){
+    static setTimer(opts, name, tCount, repeatCount, func) {
         if (!opts.timerObj)
             opts.timerObj = {};
         var tobj = {};
@@ -239,9 +240,9 @@ class Block {
         opts.timerObj[name] = tobj;
     }
     setTimer(name, tCount, repeatCount, func) {
-        Block.setTimer(this.opts,name, tCount, repeatCount, func);
+        Block.setTimer(this.opts, name, tCount, repeatCount, func);
         return;
-        
+
         if (!opts.timerObj)
             opts.timerObj = {};
         var tobj = {};
@@ -266,7 +267,7 @@ class Block {
         var op = this.opts;
         opts.innerTextColor = op.innerTextColor;
         opts.baseColor = op.baseColor;
-        opts.background=op.background;
+        opts.background = op.background;
         opts.borderWidth = op.borderWidth;
         opts.borderColor = op.borderColor;
         opts.basePanel_f = 1;
@@ -913,7 +914,6 @@ class Block {
             self.opts[optsName] = value;
     }
 
-
     static setInputWatch(opts, type, regName, optName, redraw_f) {
         var ipObj = {};
         ipObj.cnt = 0;
@@ -981,7 +981,7 @@ class Block {
 
     chkTimer() {
         var md = this;
-        
+
         for (var key in  md.opts.timerObj) {
             var tobj = md.opts.timerObj[key];
             tobj.cnt++;
@@ -1586,11 +1586,11 @@ class Cp_base {
         sonElem.style.width = (st.cw - st.titleWidth - 6 - paddingLeft) + "px";
         sonElem.style.height = (st.ch - 6) + "px";
         sonElem.style.fontSize = KvLib.transUnit(op.editFontSize, 20, st.cw, st.ch) + "px";
-        sonElem.autocomplete="none";
-        sonElem.name=md.kid+Math.floor(Date.now()/1000);//disable auto fill
-        if(op.password_f){
+        sonElem.autocomplete = "none";
+        sonElem.name = md.kid + Math.floor(Date.now() / 1000);//disable auto fill
+        if (op.password_f) {
             sonElem.type = "text";
-            sonElem.style["-webkit-text-security"]="disc";        
+            sonElem.style["-webkit-text-security"] = "disc";
         }
         if (op.editFontFamily)
             sonElem.style.fontFamily = op.editFontFamily;
@@ -1605,7 +1605,7 @@ class Cp_base {
         sonElem.value = op.editValue;
         sonElem.md = md;
         sonElem.style.paddingLeft = "10px";
-            
+
         elem.appendChild(sonElem);
         md.elems["inputText"] = sonElem;
     }
@@ -1616,6 +1616,132 @@ class Cp_base {
         var st = md.stas;
         if (md.subType0 !== "textArea")
             return;
+        var sonElem = document.createElement("textArea");
+        sonElem.id = md.kid + "~textArea";
+        st.inputTextElemId = sonElem.id;
+        sonElem.style.position = "absolute";
+        sonElem.style.overflow = "hidden";
+        //=====================================
+        sonElem.style.left = (0) + "px";
+        sonElem.style.top = (0) + "px";
+        sonElem.style.width = (st.cw) + "px";
+        sonElem.style.height = (st.ch) + "px";
+        sonElem.style.fontSize = KvLib.transUnit(op.editFontSize, 20, st.cw, st.ch) + "px";
+        if (op.editFontFamily)
+            sonElem.style.fontFamily = op.editFontFamily;
+        if (op.readOnly_f) {
+            sonElem.readOnly = true;
+            sonElem.style.backgroundColor = "#eee";
+        }
+        if (op.blur_f)
+            sonElem.addEventListener('blur', md.blurFunc);
+        if (op.keyPress_f)
+            sonElem.addEventListener('keypress', md.keyPressFunc);
+        var paddingLeft = KvLib.setValue(op.inputPadding, 4);
+        sonElem.value = op.editValue;
+        sonElem.md = md;
+        sonElem.style.padding = paddingLeft + "px";
+        sonElem.style.overflowY = "scroll";
+        elem.appendChild(sonElem);
+        md.elems["textArea"] = sonElem;
+    }
+
+    setEditor(elem) {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        if (md.subType0 !== "editor")
+            return;
+        var sonElem = document.createElement("div");
+        sonElem.id = md.kid + "_editorDiv";
+        sonElem.style.position = "absolute";
+        sonElem.style.left = 0;
+        sonElem.style.top = 0;
+        sonElem.style.right = 0;
+        sonElem.style.bottom = 0;
+        sonElem.style.backgroundColor = op.baseColor;
+        sonElem.style.fontSize=op.fontSize;
+        sonElem.style.color = op.innerTextColor;
+
+        md.elems["editor"] = sonElem;
+        elem.appendChild(sonElem);
+
+        var retFunc = function (data) {
+            if (!data)
+                data = "";
+            //var elem = md.elems["editor"];
+            //elem.innerHTML = data;
+            var mode = "ace/mode/text";
+            if (op.exName === "js")
+                var mode = "ace/mode/javascript";
+            if (op.exName === "css")
+                var mode = "ace/mode/css";
+            if (op.exName === "html")
+                var mode = "ace/mode/html";
+            if (op.exName === "txt")
+                var mode = "ace/mode/text";
+            if (op.exName === "xml")
+                var mode = "ace/mode/xml";
+            if (op.exName === "json")
+                var mode = "ace/mode/json";
+
+            var hideNo = true;
+            if (op.hideNo_f)
+                hideNo = false;
+            //var editor = ace.edit(md.elems["editor"].id, {fontSize: 20, theme: "ace/theme/monokai"});
+            
+
+             var editor = ace.edit(md.elems["editor"].id, {
+             //maxLines: 30, // 最大行数，超过会自动出现滚动条
+             //minLines: 10, // 最小行数，还未到最大行数时，编辑器会自动伸缩大小
+             fontSize: op.fontSize, // 编辑器内字体大小
+             //fontSize: st.fontSize, // 编辑器内字体大小
+             theme: "ace/theme/monokai", // 默认设置的主题
+             mode: mode, // 默认设置的语言模式
+             //value: data.toString(),
+             wrap: 100,//op.wrapLine,
+             //useWrapMode: true,   // wrap text to view
+             indentedSoftWrap: true,
+             behavioursEnabled: false, // disable autopairing of brackets and tags
+             showLineNumbers: hideNo, // hide the gutter                        
+             
+             tabSize: 4 // 制表符设置为 4 个空格大小
+             });
+            //editor.session.setMode("ace/mode/custom");
+            //var kkk = editor.session.getMode("ace/mode/custom");
+            //var modes = ace.require('ace/ext/modelist');
+            if (op.readOnly_f){
+                editor.setReadOnly(true);
+                editor.renderer.$cursorLayer.element.style.display = "none";
+            }    
+            else{
+                editor.setReadOnly(false);
+            }    
+            editor.setShowPrintMargin(false);
+            //editor.getSession().getValue();
+            //editor.setOptions({readOnly: true, highlightActiveLine: false, highlightGutterLine: false});
+            editor.setOptions({
+                autoScrollEditorIntoView: true,
+                copyWithEmptySelection: true
+            });
+
+            editor.getSession().setValue(data.toString());
+            md.objs["editor"] = editor;
+
+            //var Range = ace.require('ace/range').Range;
+            //editor.session.addMarker(new Range(0, 0, 1, 1), "myRedMarker", "fullLine");
+
+
+        };
+        if (op.urls)
+            KvLib.getTextFileFromServer(op.urls[op.urlsInx], retFunc);
+        else {
+            retFunc("md.opts.editValue");
+        }
+
+
+        return;
+
         var sonElem = document.createElement("textArea");
         sonElem.id = md.kid + "~textArea";
         st.inputTextElemId = sonElem.id;
@@ -1754,6 +1880,7 @@ class Cp_base {
             self.setInputText(elem);
             self.setInputRange(elem);
             self.setTextArea(elem);
+
             if (op.styles) {
                 try {
                     var styles = "";
@@ -1771,6 +1898,7 @@ class Cp_base {
             elem.md = md;
             felem.appendChild(elem);
             md.elems["base"] = elem;
+            self.setEditor(elem);
 
         }
 

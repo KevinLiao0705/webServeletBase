@@ -8,9 +8,9 @@ class GlobalRes {
         
         this.language = "chnT";
         this.appPageCnt=0;
-        this.logoImage="systemResource/josn_elec_a_169x40.png";
-        this.logoImageWidth=500;
-        this.logoImageHeight=80;
+        this.logoImage="systemResource/dummyTargetLogo.png";
+        this.logoImageWidth=1000;
+        this.logoImageHeight=630;
         this.defaultUserName = "kevinAdmin";
         this.defaultUserPassword = "16020039";
         this.clearCookie_f = 0;

@@ -17,7 +17,7 @@ class SubOpts {
             opts.mouseOnBorderColor = "#aaf";
             //=================
             opts.innerText = "1.2Wi8";//"1234568<br>abcd";
-            opts.fontSize = 0;
+            opts.fontSize = "0.7rh";
             opts.textShadow = "1px 1px 1px #fff";
             opts.innerTextColor = "#000";
             opts.disableTextColor = "#aaa";
@@ -236,6 +236,19 @@ class SubOpts {
             opts.backgroundInx=0;
             opts.baseColor="rgba(0,0,0,0)";
         }
+        if ("Component~Cp_base~icons.led"){
+            var opts = gr.blockSubOpts["Component~Cp_base~icons.led"] = {};
+            KvLib.deepCoverObject(opts, gr.blockSubOpts["Component~Cp_base~plate.none"]);
+            opts.backgroundImageUrls=[];
+            opts.backgroundImageUrls.push("systemResource/gray_light.png");
+            opts.backgroundImageUrls.push("systemResource/green_light.png");
+            opts.backgroundImageUrls.push("systemResource/red_light.png");
+            opts.backgroundImageUrls.push("systemResource/yellow_light.png");
+            opts.backgroundImageUrls.push("systemResource/blue_light.png");
+            opts.backgroundInx=0;
+            opts.baseColor="rgba(0,0,0,0)";
+        }
+        
         
         if ("Component~Cp_base~images.lcd"){
             var opts = gr.blockSubOpts["Component~Cp_base~images.lcd"] = {};
@@ -273,6 +286,37 @@ class SubOpts {
             opts.textShadow = "2px 2px 2px #000";
         }
 
+        if ("Component~Cp_base~label.led"){
+            var opts = gr.blockSubOpts["Component~Cp_base~label.led"] = {};
+            opts.propertyWidth = 40;
+            opts.propertyHeight = 40;
+            //=================
+            opts.borderRadius = "0.2rh";
+            opts.borderWidth = 2;
+            //=================
+            opts.baseColor="#ccc";
+            //opts.altColors=["#888","#f88","#0f0","#88f","#ff0","#fff"];
+            //opts.altColorInx=0;
+            opts.insideShadowBlur = "0.2rh";
+            opts.borderType="normal";
+            opts.outsideShadowOffx=0;
+            opts.outsideShadowOffy=0;
+            opts.outsideShadowBlur = "0.1rh";
+            opts.innerTextColor="#000";
+            //opts.iw="0.9rh";
+            //opts.ih="0.9rh";
+        }
+
+
+        if ("Component~Cp_base~label.sys2"){
+            var opts = gr.blockSubOpts["Component~Cp_base~label.sys2"] = {};
+            KvLib.deepCoverObject(opts, gr.blockSubOpts["Component~Cp_base~label.sys0"]);
+            opts.baseColor = "#888";
+            opts.innerTextColor="#fff";
+            opts.textShadow = "3px 3px 3px #000";
+        }
+
+
         if ("Component~Cp_base~label.gridTr"){
             var opts = gr.blockSubOpts["Component~Cp_base~label.gridTr"] = {};
             KvLib.deepCoverObject(opts, gr.blockSubOpts["Component~Cp_base~label.sys0"]);
@@ -303,7 +347,20 @@ class SubOpts {
             opts.keyPress_f=1;
             opts.editValue="1234";
             opts.editFontFamily = "monospace";
+            
         }
+        
+        if ("Component~Cp_base~editor.sys0"){
+            var opts = gr.blockSubOpts["Component~Cp_base~editor.sys0"] = {};
+            opts.propertyWidth = 400;
+            opts.propertyHeight = 400;
+            opts.baseColor="#222";
+            opts.fontSize=20;
+            opts.readOnly_f=0;
+            opts.innerTextColor="#0f0";
+            //=================
+        }
+        
         
         if ("Component~Cp_base~led.sys0"){
             var opts = gr.blockSubOpts["Component~Cp_base~led.sys0"] = {};
@@ -315,7 +372,7 @@ class SubOpts {
             //=================
             opts.baseColor="#ccc";
             opts.altColors=["#888","#f88","#0f0","#88f","#ff0","#fff"];
-            opts.altColorInx=2;
+            opts.altColorInx=1;
             opts.insideShadowBlur = "0.8rh";
             opts.borderType="normal";
             opts.outsideShadowOffx=0;

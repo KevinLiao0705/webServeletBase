@@ -244,16 +244,16 @@ class Dbg {
     
     getButtonsType(){
         var types=[];
-        types.push("Component~Cp_base~button.sys0")
-        types.push("Component~Cp_base~button.sys1")
-        types.push("Component~Cp_base~button.sys2")
-        types.push("Component~Cp_base~button.sys3")
-        types.push("Component~Cp_base~button.sys4")
-        types.push("Component~Cp_base~button.list")
-        types.push("Component~Cp_base~button.none")
-        types.push("Component~Cp_base~button.menu0")
-        types.push("Component~Cp_base~button.sys0")
-        types.push("Component~Cp_base~button.sys0")
+        types.push("Component~Cp_base~button.sys0");
+        types.push("Component~Cp_base~button.sys1");
+        types.push("Component~Cp_base~button.sys2");
+        types.push("Component~Cp_base~button.sys3");
+        types.push("Component~Cp_base~button.sys4");
+        types.push("Component~Cp_base~button.list");
+        types.push("Component~Cp_base~button.none");
+        types.push("Component~Cp_base~button.menu0");
+        types.push("Component~Cp_base~button.sys0");
+        types.push("Component~Cp_base~button.sys0");
         return types;
         
     }

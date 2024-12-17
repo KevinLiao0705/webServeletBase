@@ -221,16 +221,16 @@ class Macro {
         op.title = "Test mda.setLineBox";
         op.w = 800;
         op.h = 600;
-        op.eh = 40;
+        op.eh = 50;
         op.xm = 4;
-        op.ym = 4;
-        op.etm = 4;
-        op.ebm = 4;
+        op.ym = 8;
+        op.etm = 8;
+        op.ebm = 8;
         op.erm = 4;
         op.elm = 4;
         op.eBorderColor = "#ccc";
         op.eBorderWidth = 0;
-        op.eBaseColor = "#888";
+        op.eBaseColor = "#222";
         KvLib.deepCoverObject(op, _op);
         //=======================================================
         var opts = {};
@@ -535,8 +535,8 @@ class KvSetOpts {
         setOpts.xm = 4;
         setOpts.lm = 0;
         setOpts.fontSize = 24;
-        setOpts.titleFontSize = 20;
-        setOpts.titleWidth = 200;
+        setOpts.titleFontSize = 25;
+        setOpts.titleWidth = 300;
         setOpts.title = "buttonSelect";
         return setOpts;
     }

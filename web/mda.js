@@ -4518,6 +4518,7 @@ class MdaSetLine {
                 if (setOpts.value === i)
                     opts.checked_f = 1;
                 opts.actionFunc = buttonFunc;
+                opts.radioName=setOpts.radioName;
                 if (setOpts.fontSize)
                     opts.fontSize = setOpts.fontSize;
                 md.newBlock(cname, opts, "Component~Cp_base~radioBox.sys0", "buttonMain#" + i);
