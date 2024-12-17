@@ -3,15 +3,17 @@ class GlobalRes {
         //this.language = "eng";
         this.appName="webBuilder";
         this.appType="Model~MdaMdTest~base.sys0";
+        this.appType="Model~DummyTarget~base.sys0";
+        
+        
         this.language = "chnT";
-        this.appPageCnt=1;
+        this.appPageCnt=0;
         this.logoImage="systemResource/josn_elec_a_169x40.png";
         this.logoImageWidth=500;
         this.logoImageHeight=80;
         this.defaultUserName = "kevinAdmin";
         this.defaultUserPassword = "16020039";
         this.clearCookie_f = 0;
-        this.gitTest=1;
         //==============================
         this.kid = 0;
         // this.kidMap=new Map();
