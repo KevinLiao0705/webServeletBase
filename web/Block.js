@@ -747,8 +747,8 @@ class Block {
             st.xm = KvLib.transUnit(op.xm, 0, st.rw, st.rh);
         if (op.ym !== null)
             st.ym = KvLib.transUnit(op.ym, 0, st.rw, st.rh);
-        
-        
+
+
         //================================================    
         st.ix = st.rx + st.lm;
         st.iy = st.ry + st.tm;
@@ -1662,7 +1662,7 @@ class Cp_base {
         sonElem.style.right = 0;
         sonElem.style.bottom = 0;
         sonElem.style.backgroundColor = op.baseColor;
-        sonElem.style.fontSize=op.fontSize;
+        sonElem.style.fontSize = op.fontSize;
         sonElem.style.color = op.innerTextColor;
 
         md.elems["editor"] = sonElem;
@@ -1691,34 +1691,33 @@ class Cp_base {
             if (op.hideNo_f)
                 hideNo = false;
             //var editor = ace.edit(md.elems["editor"].id, {fontSize: 20, theme: "ace/theme/monokai"});
-            
 
-             var editor = ace.edit(md.elems["editor"].id, {
-             //maxLines: 30, // 最大行数，超过会自动出现滚动条
-             //minLines: 10, // 最小行数，还未到最大行数时，编辑器会自动伸缩大小
-             fontSize: op.fontSize, // 编辑器内字体大小
-             //fontSize: st.fontSize, // 编辑器内字体大小
-             theme: "ace/theme/monokai", // 默认设置的主题
-             mode: mode, // 默认设置的语言模式
-             //value: data.toString(),
-             wrap: 100,//op.wrapLine,
-             //useWrapMode: true,   // wrap text to view
-             indentedSoftWrap: true,
-             behavioursEnabled: false, // disable autopairing of brackets and tags
-             showLineNumbers: hideNo, // hide the gutter                        
-             
-             tabSize: 4 // 制表符设置为 4 个空格大小
-             });
+
+            var editor = ace.edit(md.elems["editor"].id, {
+                //maxLines: 30, // 最大行数，超过会自动出现滚动条
+                //minLines: 10, // 最小行数，还未到最大行数时，编辑器会自动伸缩大小
+                fontSize: op.fontSize, // 编辑器内字体大小
+                //fontSize: st.fontSize, // 编辑器内字体大小
+                theme: "ace/theme/monokai", // 默认设置的主题
+                mode: mode, // 默认设置的语言模式
+                //value: data.toString(),
+                wrap: 100, //op.wrapLine,
+                //useWrapMode: true,   // wrap text to view
+                indentedSoftWrap: true,
+                behavioursEnabled: false, // disable autopairing of brackets and tags
+                showLineNumbers: hideNo, // hide the gutter                        
+
+                tabSize: 4 // 制表符设置为 4 个空格大小
+            });
             //editor.session.setMode("ace/mode/custom");
             //var kkk = editor.session.getMode("ace/mode/custom");
             //var modes = ace.require('ace/ext/modelist');
-            if (op.readOnly_f){
+            if (op.readOnly_f) {
                 editor.setReadOnly(true);
                 editor.renderer.$cursorLayer.element.style.display = "none";
-            }    
-            else{
+            } else {
                 editor.setReadOnly(false);
-            }    
+            }
             editor.setShowPrintMargin(false);
             //editor.getSession().getValue();
             //editor.setOptions({readOnly: true, highlightActiveLine: false, highlightGutterLine: false});
@@ -1741,39 +1740,58 @@ class Cp_base {
             retFunc("md.opts.editValue");
         }
 
-
-        return;
-
-        var sonElem = document.createElement("textArea");
-        sonElem.id = md.kid + "~textArea";
-        st.inputTextElemId = sonElem.id;
-        sonElem.style.position = "absolute";
-        sonElem.style.overflow = "hidden";
-        //=====================================
-        sonElem.style.left = (0) + "px";
-        sonElem.style.top = (0) + "px";
-        sonElem.style.width = (st.cw) + "px";
-        sonElem.style.height = (st.ch) + "px";
-        sonElem.style.fontSize = KvLib.transUnit(op.editFontSize, 20, st.cw, st.ch) + "px";
-        if (op.editFontFamily)
-            sonElem.style.fontFamily = op.editFontFamily;
-        if (op.readOnly_f) {
-            sonElem.readOnly = true;
-            sonElem.style.backgroundColor = "#eee";
-        }
-        if (op.blur_f)
-            sonElem.addEventListener('blur', md.blurFunc);
-        if (op.keyPress_f)
-            sonElem.addEventListener('keypress', md.keyPressFunc);
-        var paddingLeft = KvLib.setValue(op.inputPadding, 4);
-        sonElem.value = op.editValue;
-        sonElem.md = md;
-        sonElem.style.padding = paddingLeft + "px";
-        sonElem.style.overflowY = "scroll";
-        elem.appendChild(sonElem);
-        md.elems["textArea"] = sonElem;
     }
 
+    setCanvas(elem) {
+        if (this.md.subType0 !== "container")
+            return;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        st.containerWidth = st.cw;
+        st.containerHeight = st.ch;
+        st.containerBaseId = this.kid;
+        return;
+        
+        var selem = document.createElement("canvas");
+        selem.id = md.kid + "_canvas";
+        selem.width = st.cw;
+        selem.height = st.ch;
+        selem.style.position = "absolute";
+        selem.style.left = 0 + "px";
+        selem.style.top = 0 + "px";
+        selem.style.width = "100%";
+        selem.style.height = "100%";
+        selem.style.backgroundColor = op.baseColor;
+        elem.appendChild(selem);
+        md.elems["canvas"] = selem;
+        md.opts.canvasId = selem.id;
+    }
+
+
+    /*
+    setScope(elem) {
+        if (this.md.subType0 !== "scope")
+            return;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        if (this.baseType === "scope") {
+            var opts = {};
+            opts.width = st.cw;
+            opts.height = st.ch;
+            opts.baseId = this.kid;
+            KvLib.deepCoverObject(op, opts);
+            var scope = new MyNewScope("", "scope~sys", op);
+            scope.build();
+            scope.create();
+            md.objs["scope"] = scope;
+            md.stas.frameTimer = scope.frameTimer;
+            md.stas.chkWatch = scope.chkWatch;
+        }
+    }
+     * 
+     */
     setInputRange(elem) {
         var md = this.md;
         var op = md.opts;
@@ -1901,6 +1919,7 @@ class Cp_base {
             felem.appendChild(elem);
             md.elems["base"] = elem;
             self.setEditor(elem);
+            self.setCanvas(elem);
 
         }
 
