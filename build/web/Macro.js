@@ -452,20 +452,24 @@ class KvSetOpts {
     constructor() {
     }
 
-    getLabelViews() {
+    getLabelViews(op) {
         var setOpts = {};
         setOpts.setType = "labelViews";
         setOpts.enum = ["label1", "label2", "label3"];
+        setOpts.enumColors = ["#cfc", "#cfc", "#cfc"];
         setOpts.xm = 4;
         setOpts.lm = 0;
         setOpts.fontSize = 20;
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "labelViews";
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 
-    getButttonActs() {
+    getButttonActs(op) {
         var setOpts = {};
         setOpts.setType = "buttonActs";
         setOpts.enum = ["button1", "button2", "button3"];
@@ -475,10 +479,13 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonActs";
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 
-    getButtonOnOffs() {
+    getButtonOnOffs(op) {
         var setOpts = {};
         setOpts.setType = "buttonOnOffs";
         setOpts.value = 5;
@@ -491,10 +498,13 @@ class KvSetOpts {
         setOpts.fontSize = 14;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonOnOffs";
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 
-    getButtonSelect() {
+    getButtonSelect(op) {
         var setOpts = {};
         setOpts.setType = "buttonSelect";
         setOpts.value = 0;
@@ -507,10 +517,13 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonSelect";
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 
-    getButtonChecks() {
+    getButtonChecks(op) {
         var setOpts = {};
         setOpts.setType = "buttonChecks";
         setOpts.value = 5;
@@ -526,7 +539,7 @@ class KvSetOpts {
         return setOpts;
     }
 
-    getButtonRadio() {
+    getButtonRadio(op) {
         var setOpts = {};
         setOpts.setType = "buttonRadio";
         setOpts.value = 0;
@@ -536,12 +549,14 @@ class KvSetOpts {
         setOpts.lm = 0;
         setOpts.fontSize = 24;
         setOpts.titleFontSize = 25;
-        setOpts.titleWidth = 300;
-        setOpts.title = "buttonSelect";
+        setOpts.titleWidth = 0;
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 
-    getInputSelect() {
+    getInputSelect(op) {
         var setOpts = {};
         setOpts.setType = "inputSelect";
         setOpts.dataType = "str";
@@ -552,10 +567,13 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.actButtons = ["pull", "pad"];
         setOpts.enum = ["select 1", "select 2", "select 3"];
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 
-    getSelect() {
+    getSelect(op) {
         var setOpts = {};
         setOpts.setType = "select";
         setOpts.value = "select 1";
@@ -565,10 +583,13 @@ class KvSetOpts {
         setOpts.dataType = "str";
         setOpts.actButtons = ["pull"];
         setOpts.enum = ["select 1", "select 2", "select 3"];
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 
-    getIntInputText() {
+    getIntInputText(op) {
         var setOpts = {};
         setOpts.setType = "inputText";
         setOpts.dataType = "int";
@@ -580,10 +601,47 @@ class KvSetOpts {
         setOpts.min = -100;
         setOpts.max = 100;
         setOpts.actButtons = ["inc", "dec", "pad"];
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+    
+    getInputSimple(op) {
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "str";
+        setOpts.checkType = "str";
+        setOpts.value = "";
+        setOpts.titleWidth = 0;
+        setOpts.title = "";
+        setOpts.titleFontSize = 20;
+        setOpts.actButtons = [];
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 
-    getTextArea() {
+    getEditUnit(op) {
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "str";
+        setOpts.checkType = "str";
+        setOpts.value = "";
+        setOpts.titleFontSize = 20;
+        setOpts.actButtons = [];
+        setOpts.unitWidth=100;
+        setOpts.unit="unit";
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+    
+    
+
+    getTextArea(op) {
         var opts = {};
         var setOpts =  {};
         setOpts.setType = "textArea";
@@ -591,6 +649,9 @@ class KvSetOpts {
         setOpts.titleWidth = 0;
         setOpts.dataType = "str";
         setOpts.actButtons = [];
+        if(op){
+            KvLib.deepCoverObject(setOpts, op);
+        }
         return setOpts;
     }
 

@@ -3673,8 +3673,9 @@ class MdaSetLine {
         opts.yc = 10;
         opts.xm = 0;
         opts.ym = 0;
-        opts.titleBorderWidth=1;
-        opts.titleBaseColor="#eee";
+        opts.titleBorderWidth=0;
+        opts.borderWidth=1;
+        opts.titleBaseColor="#ccc";
         var setOpts = opts.setOpts = {};
         setOpts.setType = "buttonActs";
         this.subTypeOpts(opts);
@@ -3954,7 +3955,8 @@ class MdaSetLine {
         var noWidth = KvLib.setValue(setOpts.noWidth, 0);
         var iconWidth = KvLib.setValue(setOpts.iconWidth, 0);
         var titleWidth = KvLib.setValue(setOpts.titleWidth, 0);
-        opts.xArr = [expandWidth, checkWidth, noWidth, iconWidth, titleWidth, 9999];
+        var unitWidth = KvLib.setValue(setOpts.unitWidth, 0);
+        opts.xArr = [expandWidth, checkWidth, noWidth, iconWidth, titleWidth, 9999,unitWidth];
         var actButtons = KvLib.setValue(setOpts.actButtons, []);
         var actButtonWidth = KvLib.setValue(setOpts.actButtonWidth, 50);
         for (var i = 0; i < actButtons.length; i++)
@@ -3987,8 +3989,6 @@ class MdaSetLine {
                 md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "buttonExpand");
             }
         }
-
-
         if (checkWidth) {
             var cname = md.lyMaps["main"] + "~" + 1;
             var opts = {};
@@ -4041,9 +4041,20 @@ class MdaSetLine {
             opts.borderWidth=op.titleBorderWidth;
             md.newBlock(cname, opts, "Component~Cp_base~label.sys0", "labelTitle");
         }
+        if (unitWidth) {
+            var cname = md.lyMaps["main"] + "~" + 6;
+            var opts = {};
+            opts.innerText = setOpts.unit;
+            opts.fontSize = setOpts.titleFontSize;
+            opts.baseColor=op.titleBaseColor;
+            opts.textAlign = "left";
+            opts.lpd = 4;
+            opts.borderWidth=0;
+            md.newBlock(cname, opts, "Component~Cp_base~label.sys0", "labelTitle");
+        }
 
         for (var i = 0; i < actButtons.length; i++) {
-            var cname = md.lyMaps["main"] + "~" + (6 + i);
+            var cname = md.lyMaps["main"] + "~" + (7 + i);
             var opts = {};
             if (actButtons[i] === "inc") {
                 opts.innerText = '<i class="gf">&#xe145</i>';
@@ -4302,8 +4313,6 @@ class MdaSetLine {
         }
 
         var cname = md.lyMaps["main"] + "~" + 5;
-        
-        
         if (setOpts.setType === "labelViews") {
             var opts = {};
             opts.xc = setOpts.enum.length;
@@ -4317,6 +4326,10 @@ class MdaSetLine {
                 var cname = md.lyMaps["mainBody"] + "~" + i;
                 var opts = {};
                 opts.innerText = setOpts.enum[i];
+                opts.baseColor="#ccc";
+                if(setOpts.enumColors){
+                    opts.baseColor=setOpts.enumColors[i];
+                }
                 if (setOpts.fontSize)
                     opts.fontSize = setOpts.fontSize;
                 opts.actionFunc = function (iobj) {
@@ -4365,6 +4378,7 @@ class MdaSetLine {
                     iobj.buttonText = md.opts.setOpts.enum[inx];
                     KvLib.exeFunc(op.actionFunc, iobj);
                 };
+                opts.baseColor="#ccf";
                 md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "buttonMain#" + i);
             }
             return;

@@ -747,6 +747,8 @@ class Block {
             st.xm = KvLib.transUnit(op.xm, 0, st.rw, st.rh);
         if (op.ym !== null)
             st.ym = KvLib.transUnit(op.ym, 0, st.rw, st.rh);
+        
+        
         //================================================    
         st.ix = st.rx + st.lm;
         st.iy = st.ry + st.tm;
