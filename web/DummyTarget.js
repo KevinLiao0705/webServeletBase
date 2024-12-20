@@ -1751,41 +1751,16 @@ class MyRadar {
         opts.baseColor = "#fcc";
         opts.bufferSize = 2000;
         opts.powerOn_f = 1;
-        opts.grid_f = 0;
         opts.run_f = 1;
-        opts.testSinWave_f = 0;
-        opts.centerLine_f = 1;
         opts.axeWidth = 0.5;
         //===
-        opts.mainAxeColor = "#aaa";
-        opts.subAxeColor = "#444";
-        opts.centerLineColor = "#fff";
         //===============
-        opts.xAxeOffsV = 0;
-        opts.xScale = 1000000;//unit=ns;
-        opts.xyOffx = 50;    //total 1000    //origin point x 
-        opts.xAxeLen = 900;  //total 1000    //x axile len rate    
-        opts.xAxeGridAmt = 10;
-        opts.xSubAxeGridAmt = 5;
-        //===============
-        opts.xAxeTotalV = 500;
-        opts.xScale = 500;
-
-
-
-        opts.xyOffy = 50;    //total 1000    //origin point y 
-        opts.yAxeLen = 900;
-        opts.yAxeOffsV = -100;
-        opts.yAxeTotalV = 200;
-        opts.yUnit = "(mV)";
 
 
 
 
-        opts.xyOffy = 50;    //total 1000    //origin point y 
-        opts.yAxeLen = 900;
-        opts.yAxeGridAmt = 10;
-        opts.ySubAxeGridAmt = 5;
+
+
         //===============
         opts.messages = [];
         var mesObj = {};
@@ -1796,77 +1771,6 @@ class MyRadar {
         mesObj.font = "20px monospace";
         opts.messages.push(mesObj);
         //===============
-        opts.sampleUnit = "ns";
-        opts.sampleAmt = 1000;
-        opts.sampleSize = 2000;
-        opts.ySubAxeGridAmt = 5;
-        opts.lines = [];
-        opts.bufs = [0, 0, 0, 0];
-        //===============
-        var lineObj = {};
-        var buffer = [];
-        for (var i = 0; i < opts.sampleSize; i++) {
-            var sin = Math.sin(Math.PI * 2 * i / 100);
-            buffer.push(sin * 50);
-        }
-        lineObj.offOn_f = 0;
-        lineObj.name = "CH1";
-        lineObj.color = "#f00";
-        lineObj.offset = 0;//1=main grid len 
-        lineObj.scale = 25;//
-        lineObj.unit = "mv";
-        lineObj.stInx = 0;
-        lineObj.buffer = buffer;
-        opts.lines.push(lineObj);
-        //=======================
-        var lineObj = {};
-        var buffer = [];
-        for (var i = 0; i < opts.sampleSize; i++) {
-            var sin = Math.sin(Math.PI * 2 * i / 100);
-            buffer.push(sin * 75);
-        }
-        lineObj.offOn_f = 0;
-        lineObj.name = "CH2";
-        lineObj.color = "#0f0";
-        lineObj.offset = 0;//1=main grid len 
-        lineObj.scale = 25;//
-        lineObj.unit = "mv";
-        lineObj.stInx = 0;
-        lineObj.buffer = buffer;
-        opts.lines.push(lineObj);
-        //=======================
-        var lineObj = {};
-        var buffer = [];
-        for (var i = 0; i < opts.sampleSize; i++) {
-            var sin = Math.sin(Math.PI * 2 * i / 100);
-            buffer.push(sin * 25);
-        }
-        lineObj.offOn_f = 0;
-        lineObj.name = "CH3";
-        lineObj.color = "#ff0";
-        lineObj.offset = 0;//1=main grid len 
-        lineObj.scale = 25;//
-        lineObj.unit = "mv";
-        lineObj.stInx = 0;
-        lineObj.buffer = buffer;
-        opts.lines.push(lineObj);
-        //=======================
-        var lineObj = {};
-        var buffer = [];
-        for (var i = 0; i < opts.sampleSize; i++) {
-            var sin = Math.sin(Math.PI * 2 * i / 100);
-            buffer.push(sin * 12);
-        }
-        lineObj.offOn_f = 0;
-        lineObj.name = "CH4";
-        lineObj.color = "#0ff";
-        lineObj.offset = 0;//1=main grid len 
-        lineObj.scale = 25;//
-        lineObj.unit = "mv";
-        lineObj.stInx = 0;
-        lineObj.buffer = buffer;
-        opts.lines.push(lineObj);
-        //=======================
         return opts;
     }
 
@@ -1880,22 +1784,7 @@ class MyRadar {
         st.containerWidth = plotObj.stas.containerWidth;
         st.containerHeight = plotObj.stas.containerHeight;
         //=======================================================
-        st.radarBuf = [];
-        for (var i = 0; i < st.containerWidth; i++){
-            for (var j = 0; j < st.containerHeight; j++) {
-                st.radarBuf.push(0xff00ff00);
-            }
-        }    
-        st.wRate = st.containerWidth / 1000.0;
-        st.hRate = st.containerHeight / 1000.0;
-        st.xAxeLen = op.xAxeLen * st.wRate;
-        st.yAxeLen = op.yAxeLen * st.hRate;
-        st.xyOffx = op.xyOffx * st.wRate;
-        st.xyOffy = op.xyOffy * st.hRate;
-        //==
-        st.xPixelDivUnit = (st.xAxeLen - 10) / (op.xAxeTotalV);
-        //==
-        st.yPixelDivUnit = (st.yAxeLen - 10) / (op.yAxeTotalV);
+        
         //==========================================================
         var selem = document.createElement("canvas");
         selem.id = md.kid + "_canvas";
@@ -1932,7 +1821,7 @@ class MyRadar {
         st.ctx = st.canvas.getContext('2d');
         st.ctx1 = st.canvasLy1.getContext('2d');
         this.createScope();
-        //===
+        //=========================================
         var iobj = {};
         iobj.act = "afterCreate";
         iobj.sender = md;
@@ -1956,80 +1845,16 @@ class MyRadar {
         var st = md.stas;
         if (!op.run_f)
             return;
+        self.drawFade();
         self.drawScan();
-        return;
-        self.drawClear();
-        if (!op.testSinWave_f) {
-            var opts = op.lines[0];
-            self.drawBufs(opts, op.bufs[0]);
-            var opts = op.lines[1];
-            self.drawBufs(opts, op.bufs[0]);
-            var opts = op.lines[2];
-            self.drawBufs(opts, op.bufs[0]);
-            var opts = op.lines[3];
-            self.drawBufs(opts, op.bufs[0]);
-            return;
-        }
-
-        //=========================================
-        var opts = op.lines[0];
-        opts.stInx += 1;
-        if (opts.stInx >= 2000)
-            opts.stInx -= 2000;
-        self.drawLine(opts);
-        //=========================================
-        var opts = op.lines[1];
-        opts.stInx += 2;
-        if (opts.stInx >= 2000)
-            opts.stInx -= 2000;
-        self.drawLine(opts);
-        //=========================================
-        var opts = op.lines[2];
-        opts.stInx += 3;
-        if (opts.stInx >= 2000)
-            opts.stInx -= 2000;
-        self.drawLine(opts);
-        //=========================================
-        var opts = op.lines[3];
-        opts.stInx += 4;
-        if (opts.stInx >= 2000)
-            opts.stInx -= 2000;
-        self.drawLine(opts);
-        //=========================================
 
     }
 
     createScope(editObj) {
         var self = this;
-        var md = this.md;
-        var op = md.opts;
-        var st = md.stas;
-        var ctx = st.ctx;
-        if (editObj) {
-            if (editObj.setName === "xScale") {
-                op.xAxeOffsV = op.xAxeOffsV * editObj.preValue / editObj.newValue;
-            }
-        }
         self.drawAxe(1);
-        self.drawClear();
-        if (op.testSinWave_f) {
-            for (var i = 0; i < op.lines.length; i++) {
-                var opts = op.lines[i];
-                self.drawLine(opts);
-            }
-        } else {
-            for (var i = 0; i < op.bufs.length; i++) {
-                var opts = op.lines[i];
-                self.drawBufs(opts, op.bufs[i]);
-            }
-        }
+        self.clearRadar();
 
-    }
-
-    clearScr() {
-        var st = this.md.stas;
-        var ctx = st.ctx1;
-        ctx.clearRect(0, 0, st.containerWidth, st.containerHeight);
     }
 
     clearAll() {
@@ -2040,189 +1865,54 @@ class MyRadar {
         ctx1.clearRect(0, 0, st.containerWidth, st.containerHeight);
     }
 
-    drawClear() {
+    clearRadar() {
         var st = this.md.stas;
         var ctx = st.ctx1;
         ctx.clearRect(0, 0, st.containerWidth, st.containerHeight);
     }
-
-    drawLine(opts, clr) {
-        var op = this.md.opts;
+    
+    drawFade() {
         var st = this.md.stas;
-        var ctx = st.ctx1;
-        if (clr)
-            ctx.clearRect(0, 0, st.containerWidth, st.containerHeight);
-        if (!opts.offOn_f)
+        if (!st.ctx1Data)
             return;
-        ctx.strokeStyle = opts.color;
-        ctx.beginPath();
-        var xzero = st.xyOffx;
-        var ycen = st.containerHeight - st.xyOffy - st.yAxeLen / 2;
-        var yGridLen = st.yAxeLen / op.yAxeGridAmt;
-        var yOffset = st.yAxeLen * opts.offset / 1000;
-        //============================================
-        var maxY = st.containerHeight - st.xyOffy;
-        var minY = st.containerHeight - st.xyOffy - st.yAxeLen;
-        if (st.xoffs === null || st.xoffs === undefined) {
-            st.xoffs = 0;
+        if (!st.fadeCnt)
+            st.fadeCnt = 0;
+        if (++st.fadeCnt < 5) {
+            return;
         }
-        if (!st.sampleTime)
-            st.sampleTime = op.xScale * op.xAxeGridAmt / op.sampleAmt;
-        if (op.run_f) {
-            //st.sampleTime = op.xScale * op.xAxeGridAmt / op.sampleAmt;
-            var stepLen = st.xAxeLen * st.sampleTime / (op.xScale * 10);
-        } else {
-            var stepLen = st.xAxeLen * st.sampleTime / (op.xScale * 10);
-        }
+        st.fadeCnt = 0;
 
-
-        var first_f = 0;
-        var timev = 0;
-        var halfSamples = parseInt(op.sampleAmt / 2) + 1;
-        var first_f = 0;
-        var offx = st.xAxeLen * op.xAxeOffsV / (op.xScale * 10);
-        var xlen = st.xAxeLen / 2 + offx;
-        var inx = opts.stInx - halfSamples - 1;
-        if (inx < 0)
-            inx += op.sampleSize;
-        for (var i = 0; i < halfSamples; i++) {
-            var vv = opts.buffer[inx];
-            var ylen = vv * yGridLen / opts.scale;
-            var realY = ycen + ylen - yOffset;
-            if (realY > maxY)
-                realY = maxY;
-            if (realY < minY)
-                realY = minY;
-
-            if (xlen >= 0) {
-                if (!first_f)
-                    ctx.moveTo(xzero + xlen, realY);
-                else
-                    ctx.lineTo(xzero + xlen, realY);
-                first_f = 1;
-            }
-            inx++;
-            if (inx >= op.sampleSize)
-                inx -= op.sampleSize;
-            xlen += stepLen;
-            if (xlen > st.xAxeLen)
-                break;
-        }
-
-        var first_f = 0;
-        var xlen = st.xAxeLen / 2 + offx;
-        var inx = opts.stInx - halfSamples - 1;
-        if (inx < 0)
-            inx += op.sampleSize;
-        for (var i = 0; i < halfSamples; i++) {
-            var vv = opts.buffer[inx];
-            var ylen = vv * yGridLen / opts.scale;
-            var realY = ycen + ylen - yOffset;
-            if (realY > maxY)
-                realY = maxY;
-            if (realY < minY)
-                realY = minY;
-
-
-            if (xlen <= st.xAxeLen) {
-                if (!first_f)
-                    ctx.moveTo(xzero + xlen, realY);
-                else
-                    ctx.lineTo(xzero + xlen, realY);
-                first_f = 1;
-            }
-
-            inx--;
-            if (inx < 0)
-                inx += op.sampleSize;
-            xlen -= stepLen;
-            if (xlen < 0)
-                break;
-        }
-        ctx.stroke();
-        return;
-    }
-
-    drawBufs(opts, bufObj, clr) {
-        var op = this.md.opts;
         var st = this.md.stas;
-        var ctx = st.ctx1;
-        var vrate = st.yAxeStrokePeriod / op.yAxePeriodV;
-        if (clr)
-            ctx.clearRect(0, 0, st.containerWidth, st.containerHeight);
-        if (!opts.offOn_f)
-            return;
-        ctx.strokeStyle = opts.color;
-        ctx.beginPath();
-        var x = st.xyOffx;
-        var y = st.containerHeight - st.xyOffy;
-        var inx;
 
-        var maxLen = parseInt(op.xAxeTotalV / op.xScale);
-        if (bufObj.bufLen < maxLen)
-            var backLen = bufObj.bufLen;
-        else
-            var backLen = maxLen;
-
-        for (var i = 0; i < bufObj.bufLen; i++) {
-
-            if ((i * op.xScale) >= op.xAxeTotalV)
-                break;
-            var inxSt = bufObj.bufEnd - backLen;
-            if (inxSt < 0)
-                inxSt += bufObj.bufMax;
-            inx = inxSt + i;
-            if (inx >= bufObj.bufMax)
-                inx -= bufObj.bufMax;
-            var vv = bufObj.buffer[inx][bufObj.bufName];
-            vv -= opts.offset;
-            vv *= opts.scale;
-            if (vv < op.yAxeOffsV)
-                vv = op.yAxeOffsV;
-            if (vv > op.yAxeTotalV + op.yAxeOffsV)
-                vv = op.yAxeTotalV + op.yAxeOffsV;
-            var vlen = vv - op.yAxeOffsV;
-            var xv = i * op.xScale;
-            if (xv > (op.xAxeTotalV + op.xAxeOffsV))
-                break;
-            if (i === 0)
-                ctx.moveTo(x + xv * st.xPixelDivUnit, y - vlen * st.yPixelDivUnit);
-            else
-                ctx.lineTo(x + xv * st.xPixelDivUnit, y - vlen * st.yPixelDivUnit);
+        for (var yy = 0; yy < st.containerHeight; yy++) {
+            for (var xx = 0; xx < st.containerWidth; xx++) {
+                var index = (xx + yy * st.containerWidth) * 4 + 3;
+                if (st.ctx1Data.data[index])
+                    st.ctx1Data.data[index]--;
+            }
         }
-        ctx.stroke();
+        st.ctx1.putImageData(st.ctx1Data, st.scanOffX, st.scanOffY);
     }
 
     drawScan() {
-        var op = this.md.opts;
         var st = this.md.stas;
-        var ctx = st.ctx1;
-        var canvasData = st.ctx1.getImageData(0, 0, st.containerWidth, st.containerHeight);
-        function drawPixel(x, y, r, g, b, a) {
-            var index = (x + y * st.containerWidth) * 4;
-            canvasData.data[index + 0] = r;
-            canvasData.data[index + 1] = g;
-            canvasData.data[index + 2] = b;
-            canvasData.data[index + 3] = a;
-        }
-        for (var xx = 0; xx < st.containerWidth; xx++)
-            for (var yy = 0; yy < st.containerHeight; yy++) {
-                var index = (xx + yy * st.containerWidth);
-                var point = st.radarBuf[index];
-                var bb = point & 255;
-                var gg = (point >> 8) & 255;
-                var rr = (point >> 16) & 255;
-                var aa = (point >> 24) & 255;
-                if (aa)
-                    aa =aa- 1;
-                var index4=index*4;
-                canvasData.data[index4 + 0] = rr;
-                canvasData.data[index4 + 1] = gg;
-                canvasData.data[index4 + 2] = bb;
-                canvasData.data[index4 + 3] = aa;
-                point = (aa << 24) + (rr << 16) + (gg << 16) + bb;
-                st.radarBuf[index] = point;
+        if (!st.ctx1Data)
+            return;
+        for (var i = 0; i < 40; i++) {
+            st.scanAngle += 1;
+            var sin = Math.sin(Math.PI * 2 * st.scanAngle / (3600*5));
+            var cos = Math.cos(Math.PI * 2 * st.scanAngle / (3600*5));
+            for (var j = 0; j < st.sRadius; j++) {
+                var xx = ((j * cos) | 0) + st.sRadius;
+                var yy = ((j * sin) | 0) + st.sRadius;
+                var index = (xx + yy * st.scanWidth) * 4;
+                st.ctx1Data.data[index + 0] = 0;
+                st.ctx1Data.data[index + 1] = 255;
+                st.ctx1Data.data[index + 2] = 0;
+                st.ctx1Data.data[index + 3] = 20;
             }
+        }
+        st.ctx1.putImageData(st.ctx1Data, st.scanOffX, st.scanOffY);
     }
 
     drawAxe(clr) {
@@ -2241,6 +1931,8 @@ class MyRadar {
         if (st.axe_drawed_f)
             return;
         st.axe_drawed_f = 1;
+        
+        
 
         /*
          op.messages = [];
@@ -2362,34 +2054,8 @@ class MyRadar {
          ctx.fillStyle = mesObj.color;
          ctx.font = mesObj.font;
          ctx.fillText(mesObj.text, mesObj.x, mesObj.y * st.hRate);
-         }
-         }
+        }
          
-         ctx.strokeStyle = op.subAxeColor;
-         //===============================
-         ctx.lineWidth = op.axeWidth;
-         ctx.beginPath();
-         var x = st.xyOffx;
-         var y = st.containerHeight - st.xyOffy;
-         
-         var xSubAmt = op.xAxeGridAmt * op.xSubAxeGridAmt;
-         var ySubAmt = op.yAxeGridAmt * op.ySubAxeGridAmt;
-         
-         var xadd = st.xAxeLen / xSubAmt;
-         var yadd = st.yAxeLen / ySubAmt;
-         if (op.grid_f) {
-         for (var i = 0; i < ySubAmt + 1; i++) {
-         ctx.moveTo(x, y - i * yadd);
-         ctx.lineTo(x + st.xAxeLen, y - i * yadd);
-         }
-         for (var i = 0; i < xSubAmt + 1; i++) {
-         ctx.moveTo(x + xadd * i, y);
-         ctx.lineTo(x + xadd * i, y - st.yAxeLen);
-         }
-         
-         
-         
-         }
          ctx.stroke();
          * 
          */
@@ -2406,16 +2072,27 @@ class MyRadar {
          return;
          * 
          */
+        var centerX = (st.containerWidth / 2) | 0;
+        var centerY = (st.containerHeight / 2) | 0;
+        var radius = (st.containerWidth * op.sizeRate / 2) | 0;
+        var sRadius = radius - 12;
+        var ssRadius = radius - 5;
 
+        st.centerX = centerX;
+        st.centerY = centerY;
+        st.sRadius = sRadius;
+
+        st.scanWidth = (sRadius * 2 + 1) | 0;
+        st.scanHeight = (sRadius * 2 + 1) | 0;
+        st.scanOffX = ((st.containerWidth - st.scanWidth) / 2) | 0;
+        st.scanOffY = ((st.containerHeight - st.scanHeight) / 2) | 0;
+        st.ctx1Data = st.ctx1.getImageData(st.scanOffX, st.scanOffY, st.scanWidth, st.scanHeight);
+
+        st.scanAngle = 0;
 
         ctx.strokeStyle = "#fcc";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        var centerX = st.containerWidth / 2;
-        var centerY = st.containerHeight / 2;
-        var radius = st.containerWidth * op.sizeRate / 2;
-        var sRadius = radius - 12;
-        var ssRadius = radius - 5;
         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         ctx.stroke();
         //======================
@@ -2481,66 +2158,7 @@ class MyRadar {
             ctx.fillText(text, 0, fontSize / 2);
             ctx.restore();
         }
-        //ctx.stroke();
-
-
-
-
-
-        return;
-        //===============================
-        if (op.centerLine_f) {
-            ctx.strokeStyle = op.centerLineColor;
-            ctx.lineWidth = op.axeWidth;
-            ctx.beginPath();
-            var x = st.xyOffx;
-            var y = st.conrainerHeight - st.xyOffy;
-            var xadd = st.xAxeLen / 2;
-            var yadd = st.yAxeLen / 2;
-            ctx.moveTo(x + xadd * 1, y);
-            ctx.lineTo(x + xadd * 1, y - st.yAxeLen);
-            ctx.moveTo(x, y - 1 * yadd);
-            ctx.lineTo(x + st.xAxeLen, y - 1 * yadd);
-            ctx.stroke();
-        }
-        //===============================
-        for (var i = 0; i < 4; i++) {
-            if (op.lines[i].offOn_f) {
-                var fontSize = 12;
-                ctx.font = "" + fontSize + "px monospace";
-                ctx.fillStyle = op.lines[i].color;
-                var str = (i + 1) + "\u27a4";
-                var size = ctx.measureText(str);
-                ctx.fillText(str, x - size.width - 2, y - st.yAxeLen / 2 + fontSize / 2 - 2 - op.lines[i].offset * st.yAxeLen / 1000);
-            }
-        }
-
-        var fontSize = 12;
-        ctx.font = "" + fontSize + "px monospace";
-        ctx.fillStyle = "#ccc";
-        var str = "▼";
-        var x = -3 + st.xyOffx + st.xAxeLen / 2;
-        var y = st.containerHeight - st.xyOffy - st.yAxeLen + 7;
-        ctx.fillText(str, x, y);
-
-        var xoff = st.xAxeLen * op.xAxeOffsV / (op.xScale * 10);
-
-        xoff += st.xAxeLen * 5 / 10;
-        if (xoff < 0)
-            xoff = 0;
-        if (xoff > st.xAxeLen)
-            xoff = st.xAxeLen;
-        var fontSize = 12;
-        ctx.font = "" + fontSize + "px monospace";
-        ctx.fillStyle = "#fff";
-        var str = "▼";
-        var x = -3 + st.xyOffx + xoff;
-        var y = st.containerHeight - st.xyOffy - st.yAxeLen + 7;
-        ctx.fillText(str, x, y);
-
-
-
-        return;
+        //var str = "▼";
 
 
 
@@ -2558,7 +2176,6 @@ class MyRadar {
             if (iobj.keyId === "radarPaneSetButton") {
             }
         }
-
     }
 
     build() {
