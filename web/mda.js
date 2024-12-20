@@ -3900,6 +3900,12 @@ class MdaSetLine {
              }*
              * 
              */
+            if(iobj.act==="blur"){
+                iobj.sender = md;
+                iobj.setOpts = md.opts.setOpts;
+                KvLib.exeFunc(op.actionFunc, iobj);
+                return;
+            }
             if (iobj.act === "pressEnter") {
                 console.log(iobj);
                 var errStrs = md.mdClass.checkValue(1);
@@ -4083,7 +4089,6 @@ class MdaSetLine {
                 md.newBlock(cname + "#0", opts, "Component~Cp_base~plate.sys0", "colorPlate");
                 continue;
             }
-
 
             opts.actionFunc = function (iobj) {
                 console.log(iobj);
@@ -4378,6 +4383,7 @@ class MdaSetLine {
                     iobj.buttonText = md.opts.setOpts.enum[inx];
                     KvLib.exeFunc(op.actionFunc, iobj);
                 };
+                opts.fontSize="0.7rh";
                 opts.baseColor="#ccf";
                 md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "buttonMain#" + i);
             }
@@ -4563,8 +4569,8 @@ class MdaSetLine {
             opts.rpd = 0;
             if (setOpts.password_f)
                 opts.password_f = 1;
-            //if (!op.disBlur_f)
-            //    opts.blur_f = 1;
+            if (!op.disBlur_f)
+                opts.blur_f = 1;
             md.newBlock(cname, opts, "Component~Cp_base~inputText.sys0", "inputText");
             document.onkeydown = function (evt) {
                 evt = evt || window.event;
@@ -4888,6 +4894,9 @@ class MdaPad {
 
         var actionFunc = function (iobj) {
             console.log(iobj);
+            if(iobj.act==="blur"){
+                return;
+            }
             var numId = iobj.kvObj.opts.id;
             var keyInx = KvLib.toInt(iobj.kvObj.name.split("#")[1], 0);
             var setLine = md.blockRefs["lcd"];
@@ -5188,6 +5197,7 @@ class MdaPad {
         st.juingStr = "";
         self.initKeyLayout();
         op.setOpts.expandWidth = 0;
+        op.setOpts.blur_f=0;
 
         if (op.setOpts.setType === "textArea")
             op.setOpts.actButtons = [];

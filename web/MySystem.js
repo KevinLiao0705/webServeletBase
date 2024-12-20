@@ -227,6 +227,7 @@ class MySystem {
         if (deltaTime > 30)
             console.log("baseTimer Over 30ms: " + deltaTime.toFixed(2));
         //=================
+
         self.repaint(0);
         if (gr.mdMain) {
             gr.mdMain.chkWatch();

@@ -371,7 +371,7 @@ class Macro {
             KvLib.exe(op.actionFunc);
         };
         return {type: "Model~MdaBox~base.sys0", opts: opts};
-    }  
+    }
 
     containerBoxOpts(_op) {
         var op = {};
@@ -463,13 +463,13 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "labelViews";
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
     }
 
-    getButttonActs(op) {
+    getButtonActs(op) {
         var setOpts = {};
         setOpts.setType = "buttonActs";
         setOpts.enum = ["button1", "button2", "button3"];
@@ -479,7 +479,7 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonActs";
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
@@ -498,7 +498,7 @@ class KvSetOpts {
         setOpts.fontSize = 14;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonOnOffs";
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
@@ -517,7 +517,7 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonSelect";
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
@@ -550,7 +550,7 @@ class KvSetOpts {
         setOpts.fontSize = 24;
         setOpts.titleFontSize = 25;
         setOpts.titleWidth = 0;
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
@@ -560,14 +560,14 @@ class KvSetOpts {
         var setOpts = {};
         setOpts.setType = "inputSelect";
         setOpts.dataType = "str";
-        setOpts.checkType="str";
+        setOpts.checkType = "str";
         setOpts.value = "select 1";
         setOpts.titleWidth = 200;
         setOpts.title = "inputSelect";
         setOpts.titleFontSize = 20;
         setOpts.actButtons = ["pull", "pad"];
         setOpts.enum = ["select 1", "select 2", "select 3"];
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
@@ -583,7 +583,7 @@ class KvSetOpts {
         setOpts.dataType = "str";
         setOpts.actButtons = ["pull"];
         setOpts.enum = ["select 1", "select 2", "select 3"];
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
@@ -601,12 +601,12 @@ class KvSetOpts {
         setOpts.min = -100;
         setOpts.max = 100;
         setOpts.actButtons = ["inc", "dec", "pad"];
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
     }
-    
+
     getInputSimple(op) {
         var setOpts = {};
         setOpts.setType = "inputText";
@@ -617,7 +617,7 @@ class KvSetOpts {
         setOpts.title = "";
         setOpts.titleFontSize = 20;
         setOpts.actButtons = [];
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
@@ -626,35 +626,33 @@ class KvSetOpts {
     getEditUnit(op) {
         var setOpts = {};
         setOpts.setType = "inputText";
-        setOpts.dataType = "str";
-        setOpts.checkType = "str";
-        setOpts.value = "";
+        setOpts.dataType = "int";
+        setOpts.checkType = "int";
+        setOpts.value = 0;
+        setOpts.min = 0;
         setOpts.titleFontSize = 20;
         setOpts.actButtons = [];
-        setOpts.unitWidth=100;
-        setOpts.unit="unit";
-        if(op){
+        setOpts.unitWidth = 100;
+        setOpts.unit = "unit";
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
     }
-    
-    
 
     getTextArea(op) {
         var opts = {};
-        var setOpts =  {};
+        var setOpts = {};
         setOpts.setType = "textArea";
         setOpts.value = "content.....";
         setOpts.titleWidth = 0;
         setOpts.dataType = "str";
         setOpts.actButtons = [];
-        if(op){
+        if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
     }
-
 
 }
 var sopt = new KvSetOpts;
@@ -776,9 +774,11 @@ class KvBox {
         //=================
         opts.actionFunc = function (iobj) {
             console.log(iobj);
-            MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
-            gr.mesBoxOn_f = 0;
-            KvLib.exeFunc(_op.actionFunc, iobj);
+            if (iobj.act === "mouseClick") {
+                MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
+                gr.mesBoxOn_f = 0;
+                KvLib.exeFunc(_op.actionFunc, iobj);
+            }
         };
         var kvObj = new Block("mdaBox", "Model~MdaBox~base.sys0", opts);
         var mesObj = mda.popObj(op.w, op.h, kvObj);
