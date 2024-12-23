@@ -350,7 +350,12 @@ class Block {
         var op = this.opts;
         var st = this.stas;
         var lines = st.innerText.split("<br>").length;
-        elem.style.lineHeight = ((st.ch / lines)) + "px";
+        if (!op.writingMode)
+            elem.style.lineHeight = (st.ch / lines) + "px";
+        else {
+            elem.style.writingMode = op.writingMode;
+            elem.style.lineHeight = (st.cw - 8) + "px";
+        }
         elem.style.verticalAlign = "center";
         elem.style.fontFamily = op.fontFamily;
         elem.style.fontWeight = op.fontWeight;
@@ -1752,7 +1757,7 @@ class Cp_base {
         st.containerHeight = st.ch;
         st.containerBaseId = this.kid;
         return;
-        
+
         var selem = document.createElement("canvas");
         selem.id = md.kid + "_canvas";
         selem.width = st.cw;
@@ -1768,28 +1773,27 @@ class Cp_base {
         md.opts.canvasId = selem.id;
     }
 
-
     /*
-    setScope(elem) {
-        if (this.md.subType0 !== "scope")
-            return;
-        var md = this.md;
-        var op = md.opts;
-        var st = md.stas;
-        if (this.baseType === "scope") {
-            var opts = {};
-            opts.width = st.cw;
-            opts.height = st.ch;
-            opts.baseId = this.kid;
-            KvLib.deepCoverObject(op, opts);
-            var scope = new MyNewScope("", "scope~sys", op);
-            scope.build();
-            scope.create();
-            md.objs["scope"] = scope;
-            md.stas.frameTimer = scope.frameTimer;
-            md.stas.chkWatch = scope.chkWatch;
-        }
-    }
+     setScope(elem) {
+     if (this.md.subType0 !== "scope")
+     return;
+     var md = this.md;
+     var op = md.opts;
+     var st = md.stas;
+     if (this.baseType === "scope") {
+     var opts = {};
+     opts.width = st.cw;
+     opts.height = st.ch;
+     opts.baseId = this.kid;
+     KvLib.deepCoverObject(op, opts);
+     var scope = new MyNewScope("", "scope~sys", op);
+     scope.build();
+     scope.create();
+     md.objs["scope"] = scope;
+     md.stas.frameTimer = scope.frameTimer;
+     md.stas.chkWatch = scope.chkWatch;
+     }
+     }
      * 
      */
     setInputRange(elem) {

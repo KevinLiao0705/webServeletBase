@@ -24,7 +24,7 @@ class SubOpts {
             //opts.fontWeight="bold";
             opts.disable_f = 0;
             //=================
-            opts.baseColor="#ccc";
+            opts.baseColor="#ccf";
             opts.borderType = "buttonFree";//none|normal|buttonPush|buttonFree
             opts.borderRadius = "0.15rh";
             opts.borderWidth = 2;
@@ -315,6 +315,17 @@ class SubOpts {
             opts.innerTextColor="#fff";
             opts.textShadow = "3px 3px 3px #000";
         }
+
+        if ("Component~Cp_base~label.title"){
+            var opts = gr.blockSubOpts["Component~Cp_base~label.title"] = {};
+            KvLib.deepCoverObject(opts, gr.blockSubOpts["Component~Cp_base~label.sys0"]);
+            opts.baseColor = "#444";
+            opts.innerTextColor="#fff";
+            opts.fontFamily = "Impact";
+            opts.lpd=4;
+            opts.textShadow = "3px 3px 3px #000";
+        }
+
 
 
         if ("Component~Cp_base~label.gridTr"){

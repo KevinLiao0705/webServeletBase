@@ -3295,12 +3295,12 @@ class MdaBox {
         var opts = {};
         opts.fontFamily = "Impact";
         opts.innerText = op.title;
-        opts.innerTextColor = op.titleColor;
+        //opts.innerTextColor = op.titleColor;
         if (op.headButtons.length) {
             opts.lpd = 4;
             opts.textAlign = "left";
         }
-        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.none", opts: opts};
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
         for (var i = 0; i < op.headButtons.length; i++) {
             var cname = lyMaps["headBody"] + "~" + (i + 1);
             var opts = {};
@@ -4541,6 +4541,7 @@ class MdaSetLine {
                 opts.radioName=setOpts.radioName;
                 if (setOpts.fontSize)
                     opts.fontSize = setOpts.fontSize;
+                opts.baseColor="#ccf";
                 md.newBlock(cname, opts, "Component~Cp_base~radioBox.sys0", "buttonMain#" + i);
             }
             return;
@@ -5768,6 +5769,185 @@ class MdaBlocksSelect {
 }
 
 
+class MdaSetGroup {
+    constructor() {
+    }
+    initOpts(md) {
+        var self = this;
+        var opts = {};
+        Block.setBaseOpts(opts);
+        opts.baseColor = "#222";
+        opts.title = "GroupSet";
+        opts.titleWidth = 100;
+        opts.titleColor = "#fff";
+        opts.titleIconColor = "#ccc";
+        opts.titleIcon = "";
+        opts.setBorderWidth = 1;
+        opts.editIndex = -1;
+        opts.editButtonIndex = 0;
+        opts.ym = 2;
+        opts.setOptss = [];
+        var setOptss = opts.setOptss;
+        setOptss.push(sopt.getEditUnit({title: "緯度:", titleWidth: 60, "unit": "度", unitWidth: 50}));
+        setOptss.push(sopt.getEditUnit({"unit": "分", unitWidth: 50}));
+        opts.yArr = [45, 45, 45, 45, 9999];
+        opts.xyArr = [
+            [200, 100, 100, 9999],
+            [100, 100, 100, 9999],
+            [100, 100, 100, 9999],
+            [100, 100, 100, 9999],
+            [9999]
+        ];
+
+        return opts;
+    }
+    create() {
+    }
+
+    chkWatch(optName) {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        if (st.blurObjName) {
+            if (!st.blurTime)
+                st.blurTime = 0;
+            st.blurTime++;
+            if (st.blurTime > 30) {
+                st.blurObjName = "";
+            }
+        }
+    }
+
+    actionFunc(iobj) {
+        console.log(iobj);
+        var md = iobj.sender.fatherMd;
+        var st = md.stas;
+        var op = md.opts;
+        if (iobj.act === "mouseClick") {
+            if (iobj.sender.name === ("mdaSetLine#" + op.editIndex)) {
+                if (iobj.buttonInx === op.editButtonIndex) {
+                    if (st.blurObjName) {
+                        console.log(st.blurObjName);
+                        var obj = md.blockRefs[st.blurObjName];
+                        var opts = {};
+                        opts.setOpts = {};
+                        KvLib.deepCoverObject(opts.setOpts, obj.opts.setOpts);
+                        opts.setOpts.titleWidth = 0;
+                        opts.setOpts.unitWidth = 0;
+                        opts.title = opts.setOpts.title;
+                        mda.intPadBox(opts);
+                    }
+                    return;
+                }
+                return;
+            }
+            iobj.nameId = iobj.sender.name;
+            iobj.sender=iobj.sender.fatherMd;
+            KvLib.exe(op.actionFunc, iobj);
+            return;
+        }
+        if (iobj.act === "blur") {
+            var sender = iobj.sender;
+            st.blurTime = 0;
+            st.blurObjName = sender.name;
+        }
+    }
+
+    build() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var lyMaps = md.lyMaps;
+        var blocks = op.blocks;
+        var layouts = op.layouts;
+        //======================================    
+        var cname = "c";
+        var opts = {};
+        md.setPns(opts);
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["body"] = cname;
+        //======================================    
+        var opts = {};
+        md.setPns(opts);
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
+        //=======================================
+        var cname = lyMaps["body"] + "~" + 0;
+        var opts = {};
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["mainBody"] = cname;
+        var cname = lyMaps["mainBody"] + "~" + 0;
+        var opts = {};
+        opts.baseColor = op.baseColor;
+        opts.margin = 4;
+        opts.tm = 12;
+        opts.borderColor = "#fff";
+        blocks[cname + "#0"] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
+        //=====================================
+        if (op.titleIcon) {
+            var opts = {};
+            opts.iw = 26;
+            opts.ih = 26;
+            opts.wAlign = "left";
+            opts.hAlign = "top";
+            opts.lm = 20;
+            opts.tm = 0;
+            opts.lpd = 4;
+            opts.innerText = op.titleIcon;
+            opts.innerTextColor = op.titleIconColor;
+            opts.textAlign = "left";
+            opts.baseColor = op.baseColor;
+            blocks[cname + "#1"] = {name: "titleIcon", type: "Component~Cp_base~plate.none", opts: opts};
+        }
+        //======================================
+        var opts = {};
+        opts.innerText = op.title;
+        opts.fontSize = 20;
+        opts.fontWeight = "normal";
+        opts.fontFamily = "nomospace";
+        var wobj = KvLib.measureText(op.title, opts.fontSize, opts.fontWeight, opts.fontFamily);
+        opts.iw = wobj.w + 10;//op.titleWidth;
+        opts.ih = 26;
+        opts.wAlign = "left";
+        opts.hAlign = "top";
+        opts.lm = 20;
+        if (op.titleIcon)
+            opts.lm = 20 + 26;
+        opts.tm = 0;
+        opts.lpd = 4;
+        opts.innerTextColor = op.titleColor;
+        opts.textAlign = "left";
+        opts.baseColor = op.baseColor;
+        blocks[cname + "#2"] = {name: "title", type: "Component~Cp_base~plate.none", opts: opts};
+
+
+        //=====================================
+
+        var cname = lyMaps["mainBody"] + "~" + 0;
+        var opts = {};
+        opts.margin = 8;
+        opts.tm = 30;
+        opts.xm = 2;
+        opts.ym = op.ym;
+        opts.yArr = op.yArr;
+        opts.xyArr = op.xyArr;
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["gridBody"] = cname;
+        //===
+        for (var i = 0; i < op.setOptss.length; i++) {
+            var cname = lyMaps["gridBody"] + "~" + i;
+            var opts = {};
+            opts.setOpts = op.setOptss[i];
+            opts.titleBorderWidth = 1;
+            if (opts.setOpts) {
+                opts.actionFunc = this.actionFunc;
+                blocks[cname ] = {name: "mdaSetLine#" + i, type: "Model~MdaSetLine~base.sys0", opts: opts};
+            }
+        }
+        return;
+    }
+}
+
+
 class MdaButtons {
     constructor() {
     }
@@ -5780,11 +5960,14 @@ class MdaButtons {
         opts.buttonColor="#ccf";
         opts.buttons=["button1","button2","button3"];
         opts.layoutType="row";//row,collum,array
+        opts.buttonAmt=8;
         opts.buttonIds=[];
         opts.iw=9999;
         opts.ih=9999;
         opts.margin=4;
         opts.xm=30;
+        opts.ym=10;
+        opts.fontSize="0.7rh";
         return opts;
     }
     subTypeOpts(opts) {
@@ -5823,11 +6006,15 @@ class MdaButtons {
         if (op.buttons.length) {
             var cname = lyMaps["body"] + "~" + 0;
             var opts = {};
-            opts.xc = op.buttons.length;
-            //opts.iw=op.iw;
+            if(op.layoutType==="row")
+                opts.xc = op.buttonAmt;
+            if(op.layoutType==="collum")
+                opts.yc = op.buttonAmt;
             opts.ih=op.ih;
             opts.xm = op.xm;
             opts.ew = op.iw;
+            opts.ym=op.ym;
+            
             opts.wAlign = "center";
             opts.margin=op.margin;
             layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
@@ -5849,6 +6036,7 @@ class MdaButtons {
                     iobj.buttonText=iobj.kvObj.opts.innerText;
                     KvLib.exe(op.actionFunc, iobj);
                 };
+                opts.fontSize=op.fontSize;
                 blocks[cname] = {name: "button#"+i, type: "Component~Cp_base~button.sys0", opts: opts};
             }
         }

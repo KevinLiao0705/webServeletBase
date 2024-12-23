@@ -235,7 +235,7 @@ class Macro {
         //=======================================================
         var opts = {};
         opts.title = op.title;
-        opts.titleBaseColor = "#ccf";
+        opts.titleBaseColor = "#ccc";
         opts.headButtons = ["OK", "ESC"];
         opts.headButtonIds = ["ok", "esc"];
         opts.buttons = op.buttons;
