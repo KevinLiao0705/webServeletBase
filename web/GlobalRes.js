@@ -1,7 +1,8 @@
 class GlobalRes {
     constructor() {
-        //this.language = "eng";
-        this.appName="webBuilder";
+        //this.appName="webBuilder";
+        this.appName="sync";
+        //=========
         this.appType="Model~MdaMdTest~base.sys0";
         this.appType="Model~DummyTarget~base.sys0";
         

@@ -237,7 +237,8 @@ public final class MainServlet extends HttpServlet {
 
     public HashMap<String, Object> getParas() {
         HashMap<String, Object> paraMap = new HashMap();
-        String fileName = GB.webRootPath + "user-" + "webIcs" + "/paraSet.json";
+        //String fileName = GB.webRootPath + "user-" + "webIcs" + "/paraSet.json";
+        String fileName = GB.paraSetPath + "/paraSet.json";
         File file = new File(fileName);
         if (file.exists() && !file.isDirectory()) {
             String jsonStr = Lib.readStringFile(fileName);
@@ -254,6 +255,7 @@ public final class MainServlet extends HttpServlet {
                 }
                 return paraMap;
             } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
         return paraMap;
@@ -558,7 +560,7 @@ public final class MainServlet extends HttpServlet {
                     }
                     String userSetContent = retc.valueStr;
                     //=======================================================                    
-                    fileName = GB.webRootPath + "user-" + appName + "/paraSet.json";
+                    fileName = GB.paraSetPath +  "/paraSet.json";
                     retc = Lib.readFileToString(fileName);
                     if (retc.errorF) {
                         kj.wStr(outJo, "message", "Read 'paraSet.json' error !!!");

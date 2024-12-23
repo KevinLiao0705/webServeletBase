@@ -156,8 +156,8 @@ class DummyTarget {
         //==============================
         var cname = lyMaps["mainBody"] + "~" + 1;
         var opts = {};
-        opts.buttons = ["佈署", "自測", "同步", "設定"];
-        opts.buttonIds = ["location", "selfTest", "sync", "setting"];
+        opts.buttons = ["佈署", "自測", "同步", "波形", "設定"];
+        opts.buttonIds = ["location", "selfTest", "sync", "wave", "setting"];
         opts.actionFunc = function (iobj) {
             if (iobj.buttonId === "location") {
                 gr.appType = "Model~LocationTarget~base.sys0";
@@ -174,8 +174,49 @@ class DummyTarget {
                 sys.dispWebPage();
                 return;
             }
+
+            if (iobj.buttonId === "setting") {
+                var opts = {};
+                opts.title = "輸入密碼";
+                opts.setOpts = sopt.getIntPassword({});
+                opts.actionFunc = function (iobj) {
+                    
+                    var yes_f=0;
+                    if (iobj.inputText === "16020039") {
+                        yes_f=1;
+                    }
+                    if (iobj.inputText === gr.paraSet.paraSetPassword) {
+                        yes_f=1;
+                    }
+                    if (!yes_f) {
+                        console.log(iobj);
+                        var opts = {};
+                        opts.kvTexts = ["密碼錯誤"];
+                        box.errorBox(opts);
+                        return;
+                    }
+                    MdaPopWin.popOff(2);
+                    var opts = {};
+                    opts.title = "設定";
+                    opts.xc = 1;
+                    opts.yc = 10;
+                    opts.kvTexts = [];
+                    opts.kvTexts.push("主控雷達設定");
+                    opts.kvTexts.push("測試脈波設定");
+                    opts.kvTexts.push("同步參數設定");
+                    opts.kvTexts.push("GPS參數設定");
+                    opts.kvTexts.push("下載記錄檔");
+                    opts.kvTexts.push("系統重啟");
+
+
+                    box.selectBox(opts);
+
+
+                };
+                box.intPadBox(opts);
+            }
         };
-        opts.buttonAmt=4;
+        opts.buttonAmt = 5;
         blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
 
 
@@ -215,7 +256,7 @@ class DummyTarget {
         var opts = {};
         opts.title = "主控雷達";
         opts.actionFunc = self.actionFunc;
-        opts.baseColor="#ccc";
+        opts.baseColor = "#ccc";
         blocks[cname] = {name: "radarPane", type: "Model~RadarPane~base.sys0", opts: opts};
         //==============================
 
@@ -635,6 +676,7 @@ class LocationTarget {
         var self = this;
         var opts = {};
         Block.setBaseOpts(opts);
+        opts.baseColor="#000";
         return opts;
     }
     create() {
@@ -660,34 +702,49 @@ class LocationTarget {
         var opts = {};
         layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
         lyMaps["body"] = cname;
-
+        //================
         var opts = {};
         md.setPns(opts);
-        opts.mouseClick_f = 1;
-        opts.baseColor = "#222";
-        opts.actionFunc = function (iobj) {
-        };
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.none", opts: opts};
-
         //======================================    
         var cname = lyMaps["body"] + "~" + 0;
         var opts = {};
-        opts.yArr = [9999];
+        opts.yArr = [50,9999];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["mainBody"] = cname;
         //==============================
         var cname = lyMaps["mainBody"] + "~" + 0;
         var opts = {};
+        opts.xArr = [9999, 150];
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["titleBody"] = cname;
+        //==============================
+        var cname = lyMaps["titleBody"] + "~" + 0;
+        var opts = {};
+        opts.innerText = "雷達位置圖";
+        opts.textAlign = "left";
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
+
+        var cname = lyMaps["titleBody"] + "~" + 1;
+        var opts = {};
+        opts.innerText = "離開";
+        opts.baseColor = "#ccf";
+        opts.actionFunc = function (iobj) {
+            gr.appType = "Model~DummyTarget~base.sys0";
+            sys.dispWebPage();
+        };
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~button.sys0", opts: opts};
+        //==========================
+        var cname = lyMaps["mainBody"] + "~" + 1;
+        var opts = {};
         opts.xArr = [530, 9999];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["upBody"] = cname;
+        lyMaps["centerBody"] = cname;
         //==============================
-        var cname = lyMaps["upBody"] + "~" + 0;
+        var cname = lyMaps["centerBody"] + "~" + 0;
         var opts = {};
         opts.ym = 4;
-        opts.tm = 4;
-        opts.lm = 4;
-        opts.yArr = [100, "0.24rh", "0.24rh", "0.24rh", "0.18rh", "0.1rh", 9999];
+        opts.yArr = ["0.1rh", "0.24rh", "0.24rh", "0.24rh", "0.18rh"];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["leftBody"] = cname;
         //==============================
@@ -779,44 +836,21 @@ class LocationTarget {
         setOptss.push(null);
         blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         //=========================
-        var cname = lyMaps["upBody"] + "~" + 1;
+        var cname = lyMaps["centerBody"] + "~" + 1;
         var opts = {};
         opts.ym = 4;
-        opts.tm = 4;
-        opts.margin = 4;
-        opts.yArr = [50, 9999, 170];
+        opts.yArr = [9999, "0.18rh"];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["rightBody"] = cname;
         //==============================
+
+
+
         var cname = lyMaps["rightBody"] + "~" + 0;
-        var opts = {};
-        opts.xArr = [9999, 150];
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["titleBody"] = cname;
-        //==============================
-        var cname = lyMaps["titleBody"] + "~" + 0;
-        var opts = {};
-        opts.innerText = "雷達位置圖";
-        opts.textAlign = "left";
-        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
-
-        var cname = lyMaps["titleBody"] + "~" + 1;
-        var opts = {};
-        opts.innerText = "離開";
-        opts.baseColor = "#ccf";
-        opts.actionFunc = function (iobj) {
-            gr.appType = "Model~DummyTarget~base.sys0";
-            sys.dispWebPage();
-        };
-        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~button.sys0", opts: opts};
-
-
-
-        var cname = lyMaps["rightBody"] + "~" + 1;
         var opts = {};
         blocks[cname] = {name: "radarScreen", type: "Model~MyRadar~base.sys0", opts: opts};
 
-        var cname = lyMaps["rightBody"] + "~" + 2;
+        var cname = lyMaps["rightBody"] + "~" + 1;
         var opts = {};
         opts.title = "雷達模擬";
         opts.setOptss = [];
@@ -1530,7 +1564,7 @@ class SelfTest {
         var cname = lyMaps["headBody"] + "~" + 0;
         var opts = {};
         opts.innerText = "系統測試";
-        opts.textAlign="left";
+        opts.textAlign = "left";
         blocks[cname] = {name: "titlePanel", type: "Component~Cp_base~label.title", opts: opts};
         //===
         var cname = lyMaps["headBody"] + "~" + 1;
@@ -1547,7 +1581,7 @@ class SelfTest {
         var opts = {};
         opts.xc = 8;
         opts.margin = 10;
-        opts.iw=800;
+        opts.iw = 800;
         layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
         lyMaps["slotBody"] = cname;
         //===
@@ -1560,23 +1594,23 @@ class SelfTest {
             opts.writingMode = "vertical-lr";
             opts.fontSize = "0.4rw";
             opts.textAlign = "left";
-            opts.tpd=20;
-            opts.fontSize=30;
+            opts.tpd = 20;
+            opts.fontSize = 30;
             opts.textShadow = "1px 1px 1px #aaa";
-            opts.zIndex="0";
-            blocks[cname+"#0"] = {name: "slotPanel#" + i, type: "Component~Cp_base~images.sys0", opts: opts};
-            
-            
+            opts.zIndex = "0";
+            blocks[cname + "#0"] = {name: "slotPanel#" + i, type: "Component~Cp_base~images.sys0", opts: opts};
+
+
             var opts = {};
             opts.backgroundInx = 1;
-            opts.zIndex="1";
-            opts.iw=50;
-            opts.ih=50;
-            opts.hAlign="bottom";
-            opts.bm=20;
-            blocks[cname+"#1"] = {name: "startLed", type: "Component~Cp_base~icons.led", opts: opts};
-            
-            
+            opts.zIndex = "1";
+            opts.iw = 50;
+            opts.ih = 50;
+            opts.hAlign = "bottom";
+            opts.bm = 20;
+            blocks[cname + "#1"] = {name: "startLed", type: "Component~Cp_base~icons.led", opts: opts};
+
+
         }
 
 
@@ -1586,24 +1620,25 @@ class SelfTest {
         opts.xArr = [9999, 150];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["footBody"] = cname;
-        
-        
+
+
         var cname = lyMaps["footBody"] + "~" + 0;
         var opts = {};
         blocks[cname] = {name: "editor", type: "Component~Cp_base~editor.sys0", opts: opts};
-        
-        
-        
+
+
+
         var cname = lyMaps["footBody"] + "~" + 1;
         var opts = {};
         opts.buttons = ["測試開始", "測試停止", "清除"];
-        opts.buttonAmt=6;
-        opts.buttonIds = ["location", "selfTest", "sync", "setting","location", "selfTest", "sync", "setting"];
-        opts.layoutType="collum";
-        opts.margin=4;
-        opts.fontSize="0.5rh";
-        opts.xm=4;
-        opts.ym=10;;
+        opts.buttonAmt = 6;
+        opts.buttonIds = ["location", "selfTest", "sync", "setting", "location", "selfTest", "sync", "setting"];
+        opts.layoutType = "collum";
+        opts.margin = 4;
+        opts.fontSize = "0.5rh";
+        opts.xm = 4;
+        opts.ym = 10;
+        ;
         opts.actionFunc = function (iobj) {
             if (iobj.buttonId === "location") {
                 return;
@@ -1613,7 +1648,7 @@ class SelfTest {
             }
         };
         blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
-        
+
         //===
 
 
@@ -1666,7 +1701,8 @@ class SyncTest {
         //======================================    
         var cname = lyMaps["body"] + "~" + 0;
         var opts = {};
-        opts.yArr = [50,200,9999,200];
+        opts.yArr = [50, 160, 9999, 80];
+        opts.ym = 10;
         opts.margin = 4;
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["mainBody"] = cname;
@@ -1698,45 +1734,131 @@ class SyncTest {
         //==============================
         var cname = lyMaps["mainBody"] + "~" + 2;
         var opts = {};
-        opts.xc = 8;
-        opts.margin = 10;
-        opts.iw=800;
-        opts.xArr = [0.3,9999, 400,400];
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        opts.xc = 2;
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
         lyMaps["centerBody"] = cname;
-        
-        
-        
         //===
-
-
         var cname = lyMaps["mainBody"] + "~" + 3;
         var opts = {};
         opts.xArr = [9999, 150];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["footBody"] = cname;
-        
-        
+
+
         var cname = lyMaps["mainBody"] + "~" + 1;
         var opts = {};
-        opts.title = "距離";
+        opts.title = "系統";
         opts.setOptss = [];
         var setOptss = opts.setOptss;
         opts.yArr = ["0.5rw", 9999];
+        opts.xm = 10;
+        opts.ym = 5;
         opts.xyArr = [
-            ["0.33rw","0.33rw",9999],
-            ["0.33rw","0.33rw",9999]
+            ["0.33rw", "0.33rw", 9999],
+            ["0.33rw", "0.33rw", 9999]
         ];
-        setOptss.push(sopt.getLabelViews({title: "雷達距誘標1:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
-        setOptss.push(sopt.getLabelViews({title: "雷達距誘標2:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
-        setOptss.push(sopt.getLabelViews({title: "誘標1距誘標2:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
-        setOptss.push(sopt.getLabelViews({title: "雷達距誘標1:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
-        setOptss.push(sopt.getLabelViews({title: "雷達距誘標2:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
-        setOptss.push(sopt.getLabelViews({title: "誘標1距誘標2:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
+        setOptss.push(sopt.getEditView({title: "時鐘運算偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
+        setOptss.push(sopt.getEditView({title: "時鐘最大誤差:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
+        setOptss.push(sopt.getSelect({title: "1588封包數:", titleWidth: 150, value: 0, dataType: "int"}));
+        setOptss[2].enum = ["1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048"];
+        setOptss.push(sopt.getEditView({title: "時間微調:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
+        setOptss.push(sopt.getEditView({title: "時間修正偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
+        setOptss.push(sopt.getEditView({title: "VG時間誤差:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
         blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
 
-        
-        
+
+
+
+        var targFunc = function (opts) {
+            opts.setOptss = [];
+            var setOptss = opts.setOptss;
+            opts.yArr = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 9999];
+            opts.ym = 10;
+            opts.xm = 8;
+            opts.xyArr = [
+                [9999, 230],
+                [9999],
+                [9999],
+                [9999, 260],
+                [9999, 260],
+                [9999, 260],
+                ["0.5rw", 9999],
+                ["0.5rw", 9999],
+                ["0.5rw", 9999],
+                ["0.5rw", 9999],
+
+                [9999],
+                [9999],
+                [9999],
+                [9999],
+                [9999]
+            ];
+            setOptss.push(sopt.getButtonRadio({title: "傳輸方式:", titleWidth: 140, enum: ["光纖", "無線"], value: 0, dataType: "int", radioName: opts.title + "_rn1"}));
+            setOptss.push(sopt.getLabelViews({title: "傳輸狀態:", titleWidth: 120, enum: ["斷線"], dataType: "int"}));
+            setOptss.push(sopt.getButtonRadio({title: "通道設定:", titleWidth: 140, enum: ["開啟", "關閉"], value: 0, dataType: "int", radioName: opts.title + "_rn2"}));
+            setOptss.push(sopt.getButtonRadio({title: "同步模式:", titleWidth: 140, enum: ["固定延時偏移", "1588延時追蹤"], value: 0, dataType: "int"}));
+            setOptss.push(sopt.getEditView({title: "光纖延時偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int", radioName: opts.title + "_rn3"}));
+            setOptss.push(sopt.getLabelViews({title: "1588修正:", titleWidth: 140, enum: ["123"], dataType: "int"}));
+            setOptss.push(sopt.getEditView({title: "RF延時偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
+            setOptss.push(sopt.getLabelViews({title: "1588修正:", titleWidth: 140, enum: ["123"], dataType: "int"}));
+            setOptss.push(sopt.getEditView({title: "延時運算偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
+            setOptss.push(sopt.getEditView({title: "無線頻道:", titleWidth: 140, value: 123, dataType: "int"}));
+
+            setOptss.push(sopt.getLabelViews({title: "同時偏移:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+            setOptss.push(sopt.getLabelViews({title: "回傳封包遺失數:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+
+            setOptss.push(sopt.getLabelViews({title: "封包發送數 x256:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+            setOptss.push(sopt.getLabelViews({title: "封包接收數 x256:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+
+            setOptss.push(sopt.getLabelViews({title: "正確率/1000:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+            setOptss.push(sopt.getLabelViews({title: "副控封包遺失數:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+
+            setOptss.push(sopt.getLabelViews({title: "主雷達RF接收能量:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+            setOptss.push(sopt.getLabelViews({title: "誘標RF接收能量:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+
+
+        };
+
+        var cname = lyMaps["centerBody"] + "~" + 0;
+        var opts = {};
+        opts.title = "誘標1";
+        targFunc(opts);
+        blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+
+        var cname = lyMaps["centerBody"] + "~" + 1;
+        var opts = {};
+        opts.title = "誘標2";
+        targFunc(opts);
+        blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+
+
+
+        var cname = lyMaps["mainBody"] + "~" + 3;
+        var opts = {};
+        opts.buttons = ["傳輸開始", "傳輸停止", "邏輯分析", "波形顯示"];
+        opts.buttonIds = ["location", "selfTest", "sync", "setting"];
+        opts.actionFunc = function (iobj) {
+            if (iobj.buttonId === "location") {
+                gr.appType = "Model~LocationTarget~base.sys0";
+                sys.dispWebPage();
+                return;
+            }
+            if (iobj.buttonId === "selfTest") {
+                gr.appType = "Model~SelfTest~base.sys0";
+                sys.dispWebPage();
+                return;
+            }
+            if (iobj.buttonId === "sync") {
+                gr.appType = "Model~SyncTest~base.sys0";
+                sys.dispWebPage();
+                return;
+            }
+        };
+        opts.buttonAmt = 4;
+        blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
+
+
+
 
 
     }
