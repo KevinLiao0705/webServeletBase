@@ -322,6 +322,7 @@ class SubOpts {
             opts.baseColor = "#004";
             opts.innerTextColor="#fff";
             opts.fontFamily = "Impact";
+            opts.borderWidth=0;
             opts.lpd=4;
             opts.textShadow = "3px 3px 3px #000";
         }

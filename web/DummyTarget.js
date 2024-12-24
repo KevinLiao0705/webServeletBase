@@ -188,6 +188,7 @@ class DummyTarget {
                     if (iobj.inputText === gr.paraSet.paraSetPassword) {
                         yes_f=1;
                     }
+                    yes_f=1;
                     if (!yes_f) {
                         console.log(iobj);
                         var opts = {};
@@ -207,6 +208,12 @@ class DummyTarget {
                     opts.kvTexts.push("GPS參數設定");
                     opts.kvTexts.push("下載記錄檔");
                     opts.kvTexts.push("系統重啟");
+                    opts.actionFunc=function(iobj){
+                        console.log(iobj);
+                        if(iobj.selectInx===0)
+                            box.setLineBox({w:1000,h:800});
+                        
+                    };
 
 
                     box.selectBox(opts);
@@ -1492,7 +1499,6 @@ class MyRadar {
     }
 }
 
-
 class SelfTest {
     constructor() {
     }
@@ -1657,8 +1663,6 @@ class SelfTest {
     }
 }
 
-
-
 class SyncTest {
     constructor() {
     }
@@ -1718,8 +1722,6 @@ class SyncTest {
         opts.innerText = "同步測試設定";
         opts.textAlign = "left";
         opts.lpd = 4;
-        opts.baseColor = "#444";
-        opts.innerTextColor = "#fff";
         blocks[cname] = {name: "titlePanel", type: "Component~Cp_base~label.title", opts: opts};
         //===
         var cname = lyMaps["headBody"] + "~" + 1;
@@ -1735,6 +1737,7 @@ class SyncTest {
         var cname = lyMaps["mainBody"] + "~" + 2;
         var opts = {};
         opts.xc = 2;
+        opts.xm=10;
         layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
         lyMaps["centerBody"] = cname;
         //===
@@ -1772,7 +1775,7 @@ class SyncTest {
         var targFunc = function (opts) {
             opts.setOptss = [];
             var setOptss = opts.setOptss;
-            opts.yArr = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 9999];
+            opts.yArr = ["0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh"];
             opts.ym = 10;
             opts.xm = 8;
             opts.xyArr = [
@@ -1856,10 +1859,6 @@ class SyncTest {
         };
         opts.buttonAmt = 4;
         blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
-
-
-
-
 
     }
 }

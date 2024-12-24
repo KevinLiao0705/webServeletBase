@@ -186,7 +186,7 @@ class Macro {
                     }
                 }
             };
-            mda.setLineBox(opts);
+            box.setLineBox(opts);
         };
         var loginPage = new Block("loginPage", "Model~MdaBase~base.sys0", opts);
         return loginPage;
@@ -235,7 +235,7 @@ class Macro {
         //=======================================================
         var opts = {};
         opts.title = op.title;
-        opts.titleBaseColor = "#ccc";
+        opts.titleBaseColor = "#004";
         opts.headButtons = ["OK", "ESC"];
         opts.headButtonIds = ["ok", "esc"];
         opts.buttons = op.buttons;
@@ -956,12 +956,12 @@ class KvBox {
         op.selectEsc_f = 1;
         op.viewPage_f = 0;
         op.title = "Selector";
-        op.titleBaseColor="#444";
+        op.titleBaseColor="#004";
         KvLib.deepCoverObject(op, _op);
         //=====================================
         var opts = {};
         opts.title = op.title;
-        opts.titleBaseColor=op.titleBaseColor
+        opts.titleBaseColor=op.titleBaseColor;
         opts.viewPage_f = op.viewPage_f;
         opts.headButtons = op.headButtons;
         opts.headButtonIds = op.headButtonIds;
@@ -991,7 +991,8 @@ class KvBox {
             console.log(iobj);
             if (iobj.act === "selected") {
                 KvLib.exeFunc(_op.actionFunc, iobj);
-                MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
+                //MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
+                return;
             }
             if (iobj.act === "mouseClick") {
                 if (iobj.kvObj.opts.id === "ok") {
@@ -1044,11 +1045,12 @@ class KvBox {
         op.headButtons = ["Dec", "Hex", "ESC"];
         op.headButtonIds = ["dec", "hex", "esc"];
         op.headButtonWidthes = [100, 100, 100];
-        op.titleBaseColor = "#444";
+        op.titleBaseColor = "#004";
         op.buttonXm = 100;
         op.w = 600;
         op.h = 400;
-        op.setOpts = dsc.optsCopy.int;
+        op.setOpts={};
+        KvLib.deepCoverObject(op.setOpts, dsc.optsCopy.int);
         KvLib.deepCoverObject(op, _op);
         //=====================================
         if (op.setOpts.setType === "textArea")

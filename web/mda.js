@@ -3120,7 +3120,7 @@ class MdaSelector {
                     iobj.sender = md;
                     iobj.act = "selected";
                     iobj.selectText = iobj.kvObj.opts.innerText;
-                    iobj.selectInx = op.selectInx;
+                    iobj.selectInx = KvLib.toInt(iobj.kvObj.name.split("#")[1],-1);
                     KvLib.exeFunc(op.actionFunc, iobj);
                 }
             };
@@ -3809,6 +3809,7 @@ class MdaSetLine {
                     tmpSetOpts.iconWidth = 0;
                     tmpSetOpts.value = elem.value;
                     opts.setOpts = tmpSetOpts;
+                    opts.setOpts.readOnly_f=0;
 
                     if (sop.dataType === "color") {
                         mda.colorPadBox(opts);
@@ -4146,6 +4147,7 @@ class MdaSetLine {
             opts.innerText = "";
             opts.lpd = 0;
             opts.rpd = 0;
+            opts.password_f = 0;
             if (setOpts.password_f)
                 opts.password_f = 1;
             if (!op.disBlur_f)

@@ -1,7 +1,18 @@
 {
- "uart0_port" : "7"
+
+"version" : "1.0"    
+,"uart0_port" : "7"
 ,"uart0_boudrate" : "115200"
 ,"uart0_parity" : "None"
+
+,"paraSetPassword" : "1234"
+
+
+,"masterCtrPulseSource" : 0
+,"subCtr1PulseSource" : 0
+,"subCtr2PulseSource" : 0
+
+
 
 ,"localInputPowerMeterA" : "0,0.1,1,75,25"
 ,"remoteInputPowerMeterA" : "0,0.1,1,75,25"
