@@ -196,7 +196,7 @@ class Macro {
     {
         var op = {};
         op.ksObjss = [];
-        for (var i = 0; i < 12; i++) {
+        for (var i = 0; i < 25; i++) {
             var ksObjs = [];
             for (var j = 0; j < 1; j++) {
                 var ksObj = {};
@@ -221,9 +221,9 @@ class Macro {
         op.title = "Test mda.setLineBox";
         op.w = 800;
         op.h = 600;
-        op.eh = 50;
+        op.eh = 40;
         op.xm = 4;
-        op.ym = 8;
+        op.ym = 4;
         op.etm = 8;
         op.ebm = 8;
         op.erm = 4;
@@ -576,7 +576,98 @@ class KvSetOpts {
         }
         return setOpts;
     }
+    //=====================================
+    getOptsPara(para){
+        switch(para){
+            case "str":
+                return sopt.getOptsStr();
+            case "int":
+                return sopt.getOptsInt();
+            case "nature":
+                return sopt.getOptsNature();
+            case "intStr":
+                return sopt.getOptsIntStr();
+            case "floatStr":
+                return sopt.getOptsFloatStr();
+            case "intEnum":
+                return sopt.getOptsIntEnum();
+            case "strEnum":
+                return sopt.getOptsStrEnum();
+            default:
+                return sopt.getOptsStr();
+        }
+    }
+    
+    
+    getOptsInt(){
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "int";
+        setOpts.checkType = "int";
+        setOpts.actButtons = ["inc","dec","pad"];
+        return setOpts;
+    }
+    
+    getOptsIntEnum(){
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "int";
+        setOpts.checkType = "int";
+        setOpts.readOnly_f=1;
+        setOpts.actButtons = ["pull"];
+        return setOpts;
+    }
+    
+    getOptsStrEnum(){
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "str";
+        setOpts.checkType = "str";
+        setOpts.readOnly_f=1;
+        setOpts.actButtons = ["pull"];
+        return setOpts;
+    }
+    
+    getOptsIntStr(op){
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "str";
+        setOpts.checkType = "int";
+        setOpts.actButtons = ["inc","dec","pad"];
+        return setOpts;
+    }
 
+    getOptsFloatStr(){
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "str";
+        setOpts.checkType = "float";
+        setOpts.actButtons = ["pad"];
+        return setOpts;
+    }
+    
+    
+    
+    getOptsStr(op){
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "str";
+        setOpts.checkType = "str";
+        setOpts.actButtons = ["pad"];
+        return setOpts;
+    }
+    
+    getOptsNature(op){
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "int";
+        setOpts.checkType = "int";
+        setOpts.min=0;
+        setOpts.actButtons = ["inc","dec","pad"];
+        return setOpts;
+    }
+    //====================================
+    
     getInputSelect(op) {
         var setOpts = {};
         setOpts.setType = "inputSelect";
@@ -628,7 +719,7 @@ class KvSetOpts {
         return setOpts;
     }
 
-    getInputSimple(op) {
+    getInputSimple(sop) {
         var setOpts = {};
         setOpts.setType = "inputText";
         setOpts.dataType = "str";
@@ -638,8 +729,8 @@ class KvSetOpts {
         setOpts.title = "";
         setOpts.titleFontSize = 20;
         setOpts.actButtons = [];
-        if (op) {
-            KvLib.deepCoverObject(setOpts, op);
+        if (sop) {
+            KvLib.deepCoverObject(setOpts, sop);
         }
         return setOpts;
     }
@@ -1102,6 +1193,8 @@ class KvBox {
                     box.errorBox({kvTexts: [errStr]});
                     return;
                 }
+                MdaPopWin.popOff(2);
+                
             }
             if (iobj.act === "escape") {
                 MdaPopWin.popOff(2);
@@ -1343,7 +1436,7 @@ class KvBox {
         opts.title = "Container Table Box";
         op.ksObjWs = [150, 200, 300, 400];
         KvLib.deepCoverObject(opts, op);
-        var obj = mac.containerBoxOpts(opts)
+        var obj = mac.containerBoxOpts(opts);
         var kvObj = new Block("containerPgeBox", obj.type, obj.opts);
         return mda.popObj(opts.w, opts.h, kvObj);
     }

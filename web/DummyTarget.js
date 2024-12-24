@@ -119,6 +119,66 @@ class DummyTarget {
 
     }
 
+    paraSetPrg() {
+        var opts = {};
+        opts.title = "設定";
+        opts.xc = 1;
+        opts.yc = 10;
+        opts.kvTexts = [];
+        opts.kvTexts.push("主控雷達設定");
+        opts.kvTexts.push("測試脈波設定");
+        opts.kvTexts.push("同步參數設定");
+        opts.kvTexts.push("GPS參數設定");
+        opts.kvTexts.push("下載記錄檔");
+        opts.kvTexts.push("系統重啟");
+
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            var opts = {};
+            opts.w = 1000;
+            opts.h = 800;
+            opts.ksObjss = [];
+            var keys = Object.keys(gr.paraSet);
+            keys.sort();
+            var index = 0;
+            for (var i = 0; i < keys.length; i++) {
+                var strA = keys[i].split("~");
+                if (strA[0] === "dsc")
+                    continue;
+                var ksObjs = [];
+                for (var j = 0; j < 1; j++) {
+                    var ksObj = {};
+                    ksObj.name = "setLine#" + index + "." + j;
+                    ksObj.type = "Model~MdaSetLine~base.sys0";
+                    var kopts = ksObj.opts = {};
+                    var setOpts = kopts.setOpts = sopt.getOptsInt();
+                    var dscObj = gr.paraSet["dsc~" + keys[i]];
+                    if (dscObj) {
+                        if (dscObj.getType) {
+                            var setOpts = kopts.setOpts = sopt.getOptsPara(dscObj.getType);
+                            KvLib.deepCoverObject(setOpts, dscObj);
+                        } else {
+                            KvLib.deepCoverObject(setOpts, dscObj);
+                        }
+                    }
+                    setOpts.value = gr.paraSet[keys[i]];
+                    setOpts.titleWidth = 300;
+                    setOpts.titleFontSize = 15;
+                    setOpts.noWidth = 50;
+                    setOpts.title = keys[i];
+                    setOpts.no = index + 1;
+                    ksObjs.push(ksObj);
+                    index++;
+                }
+                opts.ksObjss.push(ksObjs);
+            }
+            box.setLineBox(opts);
+
+        };
+        box.selectBox(opts);
+
+    }
+
     build() {
         var self = this;
         var md = self.md;
@@ -176,19 +236,22 @@ class DummyTarget {
             }
 
             if (iobj.buttonId === "setting") {
+                self.paraSetPrg();
+                return;
+
                 var opts = {};
                 opts.title = "輸入密碼";
                 opts.setOpts = sopt.getIntPassword({});
                 opts.actionFunc = function (iobj) {
-                    
-                    var yes_f=0;
+
+                    var yes_f = 0;
                     if (iobj.inputText === "16020039") {
-                        yes_f=1;
+                        yes_f = 1;
                     }
                     if (iobj.inputText === gr.paraSet.paraSetPassword) {
-                        yes_f=1;
+                        yes_f = 1;
                     }
-                    yes_f=1;
+                    yes_f = 1;
                     if (!yes_f) {
                         console.log(iobj);
                         var opts = {};
@@ -197,28 +260,7 @@ class DummyTarget {
                         return;
                     }
                     MdaPopWin.popOff(2);
-                    var opts = {};
-                    opts.title = "設定";
-                    opts.xc = 1;
-                    opts.yc = 10;
-                    opts.kvTexts = [];
-                    opts.kvTexts.push("主控雷達設定");
-                    opts.kvTexts.push("測試脈波設定");
-                    opts.kvTexts.push("同步參數設定");
-                    opts.kvTexts.push("GPS參數設定");
-                    opts.kvTexts.push("下載記錄檔");
-                    opts.kvTexts.push("系統重啟");
-                    opts.actionFunc=function(iobj){
-                        console.log(iobj);
-                        if(iobj.selectInx===0)
-                            box.setLineBox({w:1000,h:800});
-                        
-                    };
-
-
-                    box.selectBox(opts);
-
-
+                    self.paraSetPrg();
                 };
                 box.intPadBox(opts);
             }
@@ -323,7 +365,7 @@ class TargetPane {
         opts.margin = 6;
         opts.xm = 2;
         opts.ym = 10;
-        opts.yArr = [45, 45, 45, 45, 45, 45, 9999];
+        opts.yArr = ["0.140rh", "0.13rh", "0.13rh", "0.13rh", "0.13rh", "0.13rh", 9999];
         opts.xyArr = [[9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], [9999]];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["mainBody"] = cname;
@@ -683,7 +725,7 @@ class LocationTarget {
         var self = this;
         var opts = {};
         Block.setBaseOpts(opts);
-        opts.baseColor="#000";
+        opts.baseColor = "#000";
         return opts;
     }
     create() {
@@ -716,7 +758,7 @@ class LocationTarget {
         //======================================    
         var cname = lyMaps["body"] + "~" + 0;
         var opts = {};
-        opts.yArr = [50,9999];
+        opts.yArr = [50, 9999];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["mainBody"] = cname;
         //==============================
@@ -1737,7 +1779,7 @@ class SyncTest {
         var cname = lyMaps["mainBody"] + "~" + 2;
         var opts = {};
         opts.xc = 2;
-        opts.xm=10;
+        opts.xm = 10;
         layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
         lyMaps["centerBody"] = cname;
         //===
@@ -1775,7 +1817,7 @@ class SyncTest {
         var targFunc = function (opts) {
             opts.setOptss = [];
             var setOptss = opts.setOptss;
-            opts.yArr = ["0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh","0.1rh"];
+            opts.yArr = ["0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh"];
             opts.ym = 10;
             opts.xm = 8;
             opts.xyArr = [

@@ -19,7 +19,7 @@ class Mda {
         this.MdaSetLine = "Class";
         this.MdaPad = "Class";
     }
-    
+
     setMargin(opts, op) {
         opts.margin = op.margin;
         opts.tm = op.tm;
@@ -77,7 +77,6 @@ class Mda {
         }
         MdaPopWin.popMaskObjA(obj);
     }
-
 
     setLineButtonActs(_op) {
         var opts = {};
@@ -147,9 +146,7 @@ class Mda {
         var kvObj = new Block("testList", "Model~MdaSetLine~base.sys0", opts);
         mda.popObj(800, 50, kvObj, 1);
     }
-    
-    
-    
+
     setLineLabelViews(_op) {
         var opts = {};
         opts.setOpts = sopt.getLabelViews();
@@ -2870,8 +2867,8 @@ class MdaBox {
         var opts = {};
         opts.fontFamily = "Impact";
         opts.innerText = op.title;
-        opts.baseColor=op.titleBaseColor;
-        opts.borderWidth=0;
+        opts.baseColor = op.titleBaseColor;
+        opts.borderWidth = 0;
         if (op.headButtons.length) {
             opts.lpd = 4;
             opts.textAlign = "left";
@@ -2964,6 +2961,16 @@ class MdaBox {
         op.ksObj.opts.actionFunc = function (iobj) {
             console.log(iobj);
             if (iobj.act === "newPage") {
+                var md = self.md;
+                if (md.opts.buttons.length !== 0) {
+                    if (iobj.totalRow <= iobj.pageRowAmt) {
+                        md.opts.buttons = [];
+                        md.reCreate();
+                        return;
+                    }
+                }
+
+
                 iobj.sender = md;
                 KvLib.exeFunc(op.actionFunc, iobj);
                 var kvObj = md.blockRefs["pageView"];
@@ -2993,7 +3000,7 @@ class MdaBox {
                 }
                 return;
             }
-            iobj.sender = md;
+            iobj.sender = self.md;
             return KvLib.exeFunc(op.actionFunc, iobj);
 
         };
@@ -3120,7 +3127,7 @@ class MdaSelector {
                     iobj.sender = md;
                     iobj.act = "selected";
                     iobj.selectText = iobj.kvObj.opts.innerText;
-                    iobj.selectInx = KvLib.toInt(iobj.kvObj.name.split("#")[1],-1);
+                    iobj.selectInx = KvLib.toInt(iobj.kvObj.name.split("#")[1], -1);
                     KvLib.exeFunc(op.actionFunc, iobj);
                 }
             };
@@ -3249,9 +3256,9 @@ class MdaSetLine {
         opts.yc = 10;
         opts.xm = 0;
         opts.ym = 0;
-        opts.titleBorderWidth=0;
-        opts.borderWidth=1;
-        opts.titleBaseColor="#ccc";
+        opts.titleBorderWidth = 0;
+        opts.borderWidth = 1;
+        opts.titleBaseColor = "#ccc";
         var setOpts = opts.setOpts = {};
         setOpts.setType = "buttonActs";
         this.subTypeOpts(opts);
@@ -3316,8 +3323,11 @@ class MdaSetLine {
                         var iv = KvLib.hexStrToInt(iValue, null);
                     if (checkType === "float")
                         var iv = KvLib.strToFloat(iValue, null);
-                    if (iv === null)
-                        return [setOpts.title, KvLib.getKvText(syst.errorOfDataFormat).text];
+
+                    if (setOpts.nullErr_f) {
+                        if (iv === null)
+                            return [setOpts.title, KvLib.getKvText(syst.errorOfDataFormat).text];
+                    }
                     if (setOpts.max !== null && setOpts.max !== undefined)
                         if (iv > setOpts.max)
                             return [setOpts.title, KvLib.getKvText(syst.dataOverTheMax).text + setOpts.max + " !!!"];
@@ -3476,7 +3486,7 @@ class MdaSetLine {
              }*
              * 
              */
-            if(iobj.act==="blur"){
+            if (iobj.act === "blur") {
                 iobj.sender = md;
                 iobj.setOpts = md.opts.setOpts;
                 KvLib.exeFunc(op.actionFunc, iobj);
@@ -3538,7 +3548,7 @@ class MdaSetLine {
         var iconWidth = KvLib.setValue(setOpts.iconWidth, 0);
         var titleWidth = KvLib.setValue(setOpts.titleWidth, 0);
         var unitWidth = KvLib.setValue(setOpts.unitWidth, 0);
-        opts.xArr = [expandWidth, checkWidth, noWidth, iconWidth, titleWidth, 9999,unitWidth];
+        opts.xArr = [expandWidth, checkWidth, noWidth, iconWidth, titleWidth, 9999, unitWidth];
         var actButtons = KvLib.setValue(setOpts.actButtons, []);
         var actButtonWidth = KvLib.setValue(setOpts.actButtonWidth, 50);
         for (var i = 0; i < actButtons.length; i++)
@@ -3598,6 +3608,10 @@ class MdaSetLine {
             var opts = {};
             opts.innerText = setOpts.no;
             opts.borderType = "gridTr";
+            opts.textAlign = "left";
+            opts.fontSize = "0.5rh";
+            opts.baseColor = "#eef";
+            opts.lpd = 4;
             md.newBlock(cname, opts, "Component~Cp_base~label.sys0", "labelNo");
         }
         if (iconWidth) {
@@ -3617,10 +3631,10 @@ class MdaSetLine {
             var opts = {};
             opts.innerText = setOpts.title;
             opts.fontSize = setOpts.titleFontSize;
-            opts.baseColor=op.titleBaseColor;
+            opts.baseColor = op.titleBaseColor;
             opts.textAlign = "left";
             opts.lpd = 4;
-            opts.borderWidth=op.titleBorderWidth;
+            opts.borderWidth = op.titleBorderWidth;
             md.newBlock(cname, opts, "Component~Cp_base~label.sys0", "labelTitle");
         }
         if (unitWidth) {
@@ -3628,10 +3642,10 @@ class MdaSetLine {
             var opts = {};
             opts.innerText = setOpts.unit;
             opts.fontSize = setOpts.titleFontSize;
-            opts.baseColor=op.titleBaseColor;
+            opts.baseColor = op.titleBaseColor;
             opts.textAlign = "left";
             opts.lpd = 4;
-            opts.borderWidth=0;
+            opts.borderWidth = 0;
             md.newBlock(cname, opts, "Component~Cp_base~label.sys0", "labelTitle");
         }
 
@@ -3731,7 +3745,7 @@ class MdaSetLine {
                     };
                     opts.menus = dbg.getMenus("menu0", setOpts.enum.length);
                     for (var i = 0; i < setOpts.enum.length; i++) {
-                        opts.menus.kvTexts[i].eng = setOpts.enum[i];
+                        opts.menus.kvTexts[i].eng = "" + setOpts.enum[i];
                     }
                     var listObj = new Block("testList", "Model~MdaList~base.sys0", opts);
                     listObj.stas.listSize = listObj.mdClass.getListSize(listObj.setOpts);
@@ -3809,30 +3823,39 @@ class MdaSetLine {
                     tmpSetOpts.iconWidth = 0;
                     tmpSetOpts.value = elem.value;
                     opts.setOpts = tmpSetOpts;
-                    opts.setOpts.readOnly_f=0;
+                    opts.setOpts.readOnly_f = 0;
 
                     if (sop.dataType === "color") {
-                        mda.colorPadBox(opts);
+                        box.colorPadBox(opts);
                         return;
                     }
 
 
                     if (sop.dataType === "float") {
-                        mda.floatPadBox(opts);
+                        box.floatPadBox(opts);
                         return;
                     }
                     if (sop.dataType === "int") {
                         if (sop.checkType === "hex") {
-                            mda.hexPadBox(opts);
+                            box.hexPadBox(opts);
                             return;
                         }
                         if (sop.checkType === "intHex") {
-                            mda.intHexPadBox(opts);
+                            box.intHexPadBox(opts);
                             return;
                         }
                         box.intPadBox(opts);
                         return;
                     }
+                    if (sop.checkType === "float") {
+                        box.floatPadBox(opts);
+                        return;
+                    }
+                    if (sop.checkType === "int") {
+                        box.intPadBox(opts);
+                        return;
+                    }
+
                     box.keyboardBox(opts);
                     return;
                 }
@@ -3908,9 +3931,9 @@ class MdaSetLine {
                 var cname = md.lyMaps["mainBody"] + "~" + i;
                 var opts = {};
                 opts.innerText = setOpts.enum[i];
-                opts.baseColor="#ccc";
-                if(setOpts.enumColors){
-                    opts.baseColor=setOpts.enumColors[i];
+                opts.baseColor = "#ccc";
+                if (setOpts.enumColors) {
+                    opts.baseColor = setOpts.enumColors[i];
                 }
                 if (setOpts.fontSize)
                     opts.fontSize = setOpts.fontSize;
@@ -3927,8 +3950,8 @@ class MdaSetLine {
             }
             return;
         }
-        
-        
+
+
         if (setOpts.setType === "buttonActs") {
             var opts = {};
             opts.xc = setOpts.enum.length;
@@ -3960,15 +3983,15 @@ class MdaSetLine {
                     iobj.buttonText = md.opts.setOpts.enum[inx];
                     KvLib.exeFunc(op.actionFunc, iobj);
                 };
-                opts.fontSize="0.7rh";
-                opts.baseColor="#ccf";
+                opts.fontSize = "0.7rh";
+                opts.baseColor = "#ccf";
                 md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "buttonMain#" + i);
             }
             return;
         }
 
-        
-        
+
+
         if (setOpts.setType === "buttonChecks") {
             var opts = {};
             opts.xc = setOpts.enum.length;
@@ -4117,10 +4140,10 @@ class MdaSetLine {
                 if (setOpts.value === i)
                     opts.checked_f = 1;
                 opts.actionFunc = buttonFunc;
-                opts.radioName=setOpts.radioName;
+                opts.radioName = setOpts.radioName;
                 if (setOpts.fontSize)
                     opts.fontSize = setOpts.fontSize;
-                opts.baseColor="#ccf";
+                opts.baseColor = "#ccf";
                 md.newBlock(cname, opts, "Component~Cp_base~radioBox.sys0", "buttonMain#" + i);
             }
             return;
@@ -4152,7 +4175,7 @@ class MdaSetLine {
                 opts.password_f = 1;
             if (!op.disBlur_f)
                 opts.blur_f = 1;
-            opts.readOnly_f=setOpts.readOnly_f;
+            opts.readOnly_f = setOpts.readOnly_f;
             md.newBlock(cname, opts, "Component~Cp_base~inputText.sys0", "inputText");
             document.onkeydown = function (evt) {
                 evt = evt || window.event;
@@ -4463,6 +4486,34 @@ class MdaPad {
         }
     }
 
+    enterPrg(iobj) {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+
+        var setLine = self.md.blockRefs["lcd"];
+
+        if (op.setOpts.setType === "inputText") {
+            var inputText = setLine.blockRefs["inputText"];
+            var inputElem = inputText.elems["inputText"];
+        } else {
+            var inputText = setLine.blockRefs["textArea"];
+            var inputElem = inputText.elems["textArea"];
+        }
+
+        var errStrs = setLine.mdClass.checkValue(1);
+        if (errStrs) {
+            box.errorBox({kvTexts: errStrs});
+            return;
+        }
+        iobj.sender = md;
+        iobj.inputText = inputElem.value;
+        iobj.buttonId = "enter";
+        iobj.act = "pressEnter";
+        KvLib.exeFunc(op.actionFunc, iobj);
+        return;
+
+    }
     buildKeyPad() {
         var self = this;
         var md = self.md;
@@ -4476,11 +4527,12 @@ class MdaPad {
 
         var actionFunc = function (iobj) {
             console.log(iobj);
-            if(iobj.act==="blur"){
+            if (iobj.act === "blur") {
                 return;
             }
             var numId = iobj.kvObj.opts.id;
             var keyInx = KvLib.toInt(iobj.kvObj.name.split("#")[1], 0);
+            
             var setLine = md.blockRefs["lcd"];
             if (op.setOpts.setType === "inputText") {
                 var inputText = setLine.blockRefs["inputText"];
@@ -4540,15 +4592,7 @@ class MdaPad {
                 return;
 
             if (numId === "enter") {
-                var errStrs = setLine.mdClass.checkValue(1);
-                if (errStrs) {
-                    box.errorBox({kvTexts: errStrs});
-                    return;
-                }
-                iobj.sender = md;
-                iobj.inputText = inputElem.value;
-                iobj.buttonId = "enter";
-                KvLib.exeFunc(op.actionFunc, iobj);
+                self.enterPrg(iobj);
                 return;
             }
 
@@ -4779,7 +4823,7 @@ class MdaPad {
         st.juingStr = "";
         self.initKeyLayout();
         op.setOpts.expandWidth = 0;
-        op.setOpts.blur_f=0;
+        op.setOpts.blur_f = 0;
 
         if (op.setOpts.setType === "textArea")
             op.setOpts.actButtons = [];
@@ -4826,7 +4870,11 @@ class MdaPad {
 
         var cname = lyMaps["main"] + "~" + 0;
         var opts = {};
-        opts.actionFunc = op.actionFunc;
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);    
+            self.enterPrg(iobj);
+            return;
+        };
         var setOpts = opts.setOpts = op.setOpts;
 
         if (setOpts.setType === "inputText" || "inputSelect")
@@ -5367,7 +5415,7 @@ class MdaSetGroup {
         opts.editIndex = -1;
         opts.editButtonIndex = 0;
         opts.ym = 2;
-        opts.xm=2;
+        opts.xm = 2;
         opts.setOptss = [];
         var setOptss = opts.setOptss;
         setOptss.push(sopt.getEditUnit({title: "緯度:", titleWidth: 60, "unit": "度", unitWidth: 50}));
@@ -5424,7 +5472,7 @@ class MdaSetGroup {
                 return;
             }
             iobj.nameId = iobj.sender.name;
-            iobj.sender=iobj.sender.fatherMd;
+            iobj.sender = iobj.sender.fatherMd;
             KvLib.exe(op.actionFunc, iobj);
             return;
         }
@@ -5538,18 +5586,18 @@ class MdaButtons {
         var opts = {};
         Block.setBaseOpts(opts);
         this.subTypeOpts(opts);
-        opts.baseColor="#222";
-        opts.buttonColor="#ccf";
-        opts.buttons=["button1","button2","button3"];
-        opts.layoutType="row";//row,collum,array
-        opts.buttonAmt=8;
-        opts.buttonIds=[];
-        opts.iw=9999;
-        opts.ih=9999;
-        opts.margin=4;
-        opts.xm=30;
-        opts.ym=10;
-        opts.fontSize="0.7rh";
+        opts.baseColor = "#222";
+        opts.buttonColor = "#ccf";
+        opts.buttons = ["button1", "button2", "button3"];
+        opts.layoutType = "row";//row,collum,array
+        opts.buttonAmt = 8;
+        opts.buttonIds = [];
+        opts.iw = 9999;
+        opts.ih = 9999;
+        opts.margin = 4;
+        opts.xm = 30;
+        opts.ym = 10;
+        opts.fontSize = "0.7rh";
         return opts;
     }
     subTypeOpts(opts) {
@@ -5584,21 +5632,21 @@ class MdaButtons {
         md.setPns(opts);
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
         //======================================    
-        
+
         if (op.buttons.length) {
             var cname = lyMaps["body"] + "~" + 0;
             var opts = {};
-            if(op.layoutType==="row")
+            if (op.layoutType === "row")
                 opts.xc = op.buttonAmt;
-            if(op.layoutType==="collum")
+            if (op.layoutType === "collum")
                 opts.yc = op.buttonAmt;
-            opts.ih=op.ih;
+            opts.ih = op.ih;
             opts.xm = op.xm;
             opts.ew = op.iw;
-            opts.ym=op.ym;
-            
+            opts.ym = op.ym;
+
             opts.wAlign = "center";
-            opts.margin=op.margin;
+            opts.margin = op.margin;
             layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
             lyMaps["buttonPanel"] = cname;
 
@@ -5606,24 +5654,24 @@ class MdaButtons {
                 var cname = lyMaps["buttonPanel"] + "~" + i;
                 var opts = {};
                 opts.innerText = op.buttons[i];
-                 opts.id = op.buttons[i];
-                if(op.buttonIds[i])
+                opts.id = op.buttons[i];
+                if (op.buttonIds[i])
                     opts.id = op.buttonIds[i];
-                opts.baseColor=op.buttonColor;
+                opts.baseColor = op.buttonColor;
                 opts.actionFunc = function (iobj) {
                     console.log(iobj);
                     iobj.sender = md;
-                    iobj.buttonInx=KvLib.toInt(iobj.kvObj.name.split("#")[1],0);
-                    iobj.buttonId=iobj.kvObj.opts.id;
-                    iobj.buttonText=iobj.kvObj.opts.innerText;
+                    iobj.buttonInx = KvLib.toInt(iobj.kvObj.name.split("#")[1], 0);
+                    iobj.buttonId = iobj.kvObj.opts.id;
+                    iobj.buttonText = iobj.kvObj.opts.innerText;
                     KvLib.exe(op.actionFunc, iobj);
                 };
-                opts.fontSize=op.fontSize;
-                blocks[cname] = {name: "button#"+i, type: "Component~Cp_base~button.sys0", opts: opts};
+                opts.fontSize = op.fontSize;
+                blocks[cname] = {name: "button#" + i, type: "Component~Cp_base~button.sys0", opts: opts};
             }
         }
-        
-        
-        
+
+
+
     }
 }
