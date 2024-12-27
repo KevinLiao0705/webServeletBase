@@ -553,6 +553,7 @@ class Block {
         var self = this.md;
         if (self.opts.actionFunc) {
             if (event.keyCode === 13) {
+                console.log("keycode");
                 var obj = {};
                 obj.act = "pressEnter";
                 if (elem.value !== self.opts.editValue)
@@ -608,7 +609,7 @@ class Block {
             if (op.mouseWheel_f)
                 elem.addEventListener("wheel", self.mouseWheelFunc);
             if (op.keyPress_f)
-                elem.addEventListener('keypress', self.keyPressFunc);
+                elem.addEventListener('keyup', self.keyPressFunc);
 
 
         }
@@ -1607,8 +1608,8 @@ class Cp_base {
         }
         if (op.blur_f)
             sonElem.addEventListener('blur', md.blurFunc);
-        if (op.keyPress_f)
-            sonElem.addEventListener('keypress', md.keyPressFunc);
+        //if (op.keyPress_f)
+        //    sonElem.addEventListener('keyup', md.keyPressFunc);
         sonElem.value = op.editValue;
         sonElem.md = md;
         sonElem.style.paddingLeft = "10px";
@@ -1643,7 +1644,7 @@ class Cp_base {
         if (op.blur_f)
             sonElem.addEventListener('blur', md.blurFunc);
         if (op.keyPress_f)
-            sonElem.addEventListener('keypress', md.keyPressFunc);
+            sonElem.addEventListener('keyup', md.keyPressFunc);
         var paddingLeft = KvLib.setValue(op.inputPadding, 4);
         sonElem.value = op.editValue;
         sonElem.md = md;

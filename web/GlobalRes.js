@@ -17,6 +17,7 @@ class GlobalRes {
         this.clearCookie_f = 0;
         //==============================
         this.kid = 0;
+        this.ser = 0;
         // this.kidMap=new Map();
         //this.webSocketAddress = "127.0.0.1";
         //this.webSocketAddress = "192.168.0.28";

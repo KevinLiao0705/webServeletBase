@@ -132,14 +132,23 @@ class DummyTarget {
         opts.kvTexts.push("下載記錄檔");
         opts.kvTexts.push("系統重啟");
 
+
+
         opts.actionFunc = function (iobj) {
             console.log(iobj);
+            var opts={};
+            opts.paraSet=gr.paraSet;
+            opts.title="Title";
+            box.paraEditBox(opts);
+            return;
+            
+            
             var opts = {};
             opts.w = 1000;
             opts.h = 800;
             opts.ksObjss = [];
             var keys = Object.keys(gr.paraSet);
-            keys.sort();
+            //keys.sort();
             var index = 0;
             for (var i = 0; i < keys.length; i++) {
                 var strA = keys[i].split("~");
@@ -163,9 +172,11 @@ class DummyTarget {
                     }
                     setOpts.value = gr.paraSet[keys[i]];
                     setOpts.titleWidth = 300;
-                    setOpts.titleFontSize = 15;
+                    setOpts.titleFontSize = 20;
                     setOpts.noWidth = 50;
-                    setOpts.title = keys[i];
+                    setOpts.id = keys[i];
+                    if(!setOpts.title)
+                        setOpts.title = keys[i];
                     setOpts.no = index + 1;
                     ksObjs.push(ksObj);
                     index++;

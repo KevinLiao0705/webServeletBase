@@ -16,6 +16,10 @@ class KvLib {
         gr.kid++;
         return "kid" + gr.kid;
     }
+    static genSer() {
+        gr.ser++;
+        return "ser" + gr.ser;
+    }
 
     static getTextFileFromServer1(url, retFunc) {
         $.ajax({
@@ -487,6 +491,16 @@ class KvLib {
         return JSON.parse(JSON.stringify(outObj));
     }
 
+    static deleteStringArray(myArray,name){
+        for(var i=0;i<myArray.length;i++){
+            if(myArray[i]===name){
+                myArray.splice(0, 1);        
+                return;
+            }
+        }
+    }
+    
+    
     static getFunc(func) {
         if (typeof func === 'function') {
             return func;

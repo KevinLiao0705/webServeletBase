@@ -575,6 +575,7 @@ public final class MainServlet extends HttpServlet {
                         return;
                     }
                     //=======================================================                    
+                    
                     JSONObject systemSetJo = new JSONObject(systemSetContent);
                     JSONObject paraSetJo = new JSONObject(paraSetContent);
                     JSONObject userSetJo = new JSONObject(userSetContent);
@@ -620,7 +621,7 @@ public final class MainServlet extends HttpServlet {
                     }
                     GB.paraSetMap = this.getParas();
                     kj.wObj(outOptsJo, "userSet", userSetJo);
-                    kj.wObj(outOptsJo, "paraSet", paraSetJo);
+                    kj.wStr(outOptsJo, "paraSet", paraSetContent);
                     kj.wObj(outOptsJo, "webIp", GB.nowIp_str);
                     kj.wObj(outJo, "opts", outOptsJo);
                     kj.wStr(outJo, "status", "ok");

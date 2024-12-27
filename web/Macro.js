@@ -118,7 +118,7 @@ class Macro {
                 }
                 if (mes.status === "ok") {
                     us.set = mes.opts.userSet;
-                    gr.paraSet = mes.opts.paraSet;
+                    gr.paraSet = JSON.parse(mes.opts.paraSet);
                     document.cookie = 'userName=' + userName + "; max-age=3600";
                     document.cookie = 'password=' + password + "; max-age=3600";
                     gr.userName = userName;
@@ -452,6 +452,48 @@ class KvSetOpts {
     constructor() {
     }
 
+    getOptsPara(para) {
+        switch (para) {
+            case "str":
+                return sopt.getOptsStr();
+            case "strA":
+                return sopt.getOptsStrA();
+            case "nature":
+                return sopt.getOptsNature();
+            case "int":
+                return sopt.getOptsInt();
+            case "float":
+                return sopt.getOptsFloat();
+            case "floatA":
+                return sopt.getOptsFloatA();
+            case "floatStr":
+                return sopt.getOptsFloatStr();
+            case "floatStrA":
+                return sopt.getOptsFloatStrA();
+
+
+
+            case "natureStr":
+                return sopt.getOptsNatureStr();
+            case "intStr":
+                return sopt.getOptsIntStr();
+
+
+            case "intEnum":
+                return sopt.getOptsIntEnum();
+            case "strEnum":
+                return sopt.getOptsStrEnum();
+
+            case "buttonRadio":
+                return sopt.getOptsButtonRadio();
+
+
+
+            default:
+                return sopt.getOptsStr();
+        }
+    }
+
     getLabelViews(op) {
         var setOpts = {};
         setOpts.setType = "labelViews";
@@ -577,97 +619,127 @@ class KvSetOpts {
         return setOpts;
     }
     //=====================================
-    getOptsPara(para){
-        switch(para){
-            case "str":
-                return sopt.getOptsStr();
-            case "int":
-                return sopt.getOptsInt();
-            case "nature":
-                return sopt.getOptsNature();
-            case "intStr":
-                return sopt.getOptsIntStr();
-            case "floatStr":
-                return sopt.getOptsFloatStr();
-            case "intEnum":
-                return sopt.getOptsIntEnum();
-            case "strEnum":
-                return sopt.getOptsStrEnum();
-            default:
-                return sopt.getOptsStr();
-        }
-    }
-    
-    
-    getOptsInt(){
-        var setOpts = {};
-        setOpts.setType = "inputText";
-        setOpts.dataType = "int";
-        setOpts.checkType = "int";
-        setOpts.actButtons = ["inc","dec","pad"];
-        return setOpts;
-    }
-    
-    getOptsIntEnum(){
-        var setOpts = {};
-        setOpts.setType = "inputText";
-        setOpts.dataType = "int";
-        setOpts.checkType = "int";
-        setOpts.readOnly_f=1;
-        setOpts.actButtons = ["pull"];
-        return setOpts;
-    }
-    
-    getOptsStrEnum(){
+
+    getOptsStr(op) {
         var setOpts = {};
         setOpts.setType = "inputText";
         setOpts.dataType = "str";
         setOpts.checkType = "str";
-        setOpts.readOnly_f=1;
-        setOpts.actButtons = ["pull"];
-        return setOpts;
-    }
-    
-    getOptsIntStr(op){
-        var setOpts = {};
-        setOpts.setType = "inputText";
-        setOpts.dataType = "str";
-        setOpts.checkType = "int";
-        setOpts.actButtons = ["inc","dec","pad"];
+        setOpts.actButtons = ["pad"];
+        setOpts.value = "";
         return setOpts;
     }
 
-    getOptsFloatStr(){
-        var setOpts = {};
-        setOpts.setType = "inputText";
-        setOpts.dataType = "str";
-        setOpts.checkType = "float";
-        setOpts.actButtons = ["pad"];
-        return setOpts;
+    getOptsStrA() {
+        var opts = sopt.getOptsStr();
+        opts.array = 1;
+        opts.setType = "textArea";
+        return opts;
     }
-    
-    
-    
-    getOptsStr(op){
-        var setOpts = {};
-        setOpts.setType = "inputText";
-        setOpts.dataType = "str";
-        setOpts.checkType = "str";
-        setOpts.actButtons = ["pad"];
-        return setOpts;
-    }
-    
-    getOptsNature(op){
+
+    getOptsNature() {
         var setOpts = {};
         setOpts.setType = "inputText";
         setOpts.dataType = "int";
         setOpts.checkType = "int";
-        setOpts.min=0;
-        setOpts.actButtons = ["inc","dec","pad"];
+        setOpts.nullErr_f = 1;
+        setOpts.min = 0;
+        setOpts.actButtons = ["inc", "dec", "pad"];
+        setOpts.value = 0;
         return setOpts;
     }
+    getOptsNatureStr() {
+        var opts = sopt.getOptsNature();
+        opts.dataType = "str";
+        opts.nullErr_f = 0;
+        opts.value = "0";
+        opts.actButtons = ["pad"];
+        return opts;
+    }
+
+    getOptsInt() {
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "int";
+        setOpts.checkType = "int";
+        setOpts.nullErr_f = 1;
+        setOpts.actButtons = ["inc", "dec", "pad"];
+        setOpts.value = 0;
+        return setOpts;
+    }
+    getOptsIntStr() {
+        var opts = sopt.getOptsInt();
+        opts.dataType = "str";
+        opts.nullErr_f = 0;
+        opts.value = "0";
+        opts.actButtons = ["pad"];
+        return opts;
+    }
+
+    getOptsFloat() {
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "float";
+        setOpts.checkType = "float";
+        setOpts.nullErr_f = 1;
+        setOpts.actButtons = ["pad"];
+        setOpts.value = 0;
+        return setOpts;
+    }
+
+    getOptsFloatA() {
+        var opts = sopt.getOptsFloat();
+        opts.array = 1;
+        opts.setType = "textArea";
+        return opts;
+    }
+
+    getOptsFloatStr() {
+        var opts = sopt.getOptsFloat();
+        opts.dataType = "str";
+        opts.nullErr_f = 0;
+        opts.value = "0";
+        return opts;
+    }
+
+    getOptsFloatStrA() {
+        var opts = sopt.getOptsFloatStr();
+        opts.array = 1;
+        opts.setType = "textArea";
+        return opts;
+    }
+
+    getOptsStrEnum() {
+        var opts = sopt.getOptsStr();
+        opts.readOnly_f = 1;
+        opts.actButtons = ["pull"];
+        opts.enum = ["string1", "string2"];
+        return opts;
+    }
+    getOptsIntEnum() {
+        var opts = sopt.getOptsInt();
+        opts.readOnly_f = 1;
+        opts.actButtons = ["pull"];
+        opts.enum = [123, 456];
+        return opts;
+    }
+
+    getOptsButtonRadio() {
+        var setOpts = {};
+        setOpts.setType = "buttonRadio";
+        setOpts.value = 0;
+        setOpts.enum = ["select1", "select2", "select3"];
+        setOpts.radioName = KvLib.genSer();
+        setOpts.xm = 4;
+        setOpts.lm = 0;
+        setOpts.fontSize = 24;
+        setOpts.titleFontSize = 25;
+        setOpts.titleWidth = 0;
+        return setOpts;
+    }
+
     //====================================
-    
+
     getInputSelect(op) {
         var setOpts = {};
         setOpts.setType = "inputSelect";
@@ -710,8 +782,6 @@ class KvSetOpts {
         setOpts.titleWidth = 0;
         setOpts.title = "";
         setOpts.titleFontSize = 20;
-        setOpts.min = -100;
-        setOpts.max = 100;
         setOpts.actButtons = ["inc", "dec", "pad"];
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
@@ -1003,7 +1073,7 @@ class KvBox {
         op.selectAble_f = 1;
         op.selectInx = 0;
         op.headButtons = ["OK", "ESC"];
-        op.headButtonIds = ["ok", "ESC"];
+        op.headButtonIds = ["ok", "esc"];
         op.buttons = [];
         op.buttonIds = [];
         KvLib.deepCoverObject(opts, op);
@@ -1019,7 +1089,7 @@ class KvBox {
     selectBox(op) {
         var opts = {};
         opts.headButtons = ["ESC"];
-        opts.headButtonIds = ["ESC"];
+        opts.headButtonIds = ["esc"];
         opts.buttons = [];
         opts.buttonIds = [];
         KvLib.deepCoverObject(opts, op);
@@ -1047,12 +1117,12 @@ class KvBox {
         op.selectEsc_f = 1;
         op.viewPage_f = 0;
         op.title = "Selector";
-        op.titleBaseColor="#004";
+        op.titleBaseColor = "#004";
         KvLib.deepCoverObject(op, _op);
         //=====================================
         var opts = {};
         opts.title = op.title;
-        opts.titleBaseColor=op.titleBaseColor;
+        opts.titleBaseColor = op.titleBaseColor;
         opts.viewPage_f = op.viewPage_f;
         opts.headButtons = op.headButtons;
         opts.headButtonIds = op.headButtonIds;
@@ -1140,7 +1210,7 @@ class KvBox {
         op.buttonXm = 100;
         op.w = 600;
         op.h = 400;
-        op.setOpts={};
+        op.setOpts = {};
         KvLib.deepCoverObject(op.setOpts, dsc.optsCopy.int);
         KvLib.deepCoverObject(op, _op);
         //=====================================
@@ -1184,7 +1254,7 @@ class KvBox {
                 }
                 return;
             }
-            if (iobj.act === "pressEnter") {
+            if (iobj.act === "padEnter") {
                 var md = iobj.sender;
                 var mdaPad = md.blockRefs["mainMd"];
                 var setLine = mdaPad.blockRefs["lcd"];
@@ -1194,7 +1264,7 @@ class KvBox {
                     return;
                 }
                 MdaPopWin.popOff(2);
-                
+
             }
             if (iobj.act === "escape") {
                 MdaPopWin.popOff(2);
@@ -1211,8 +1281,15 @@ class KvBox {
             var md = iobj.sender;
             var mdaPad = md.blockRefs["mainMd"];
             var setLine = mdaPad.blockRefs["lcd"];
-            var inputObj = setLine.blockRefs["inputText"];
-            var inputElem = inputObj.elems["inputText"];
+            if (setLine.opts.setOpts.setType === "inputText") {
+                var inputText = setLine.blockRefs["inputText"];
+                var inputElem = inputText.elems["inputText"];
+            } else {
+                var inputText = setLine.blockRefs["textArea"];
+                var inputElem = inputText.elems["textArea"];
+            }
+
+
             var valueStr = inputElem.value;
             if (id === "hexDec") {
                 if (iobj.sender.opts.ksObj.opts.setOpts.checkType !== "hex") {
@@ -1354,7 +1431,7 @@ class KvBox {
         opts.titleColor = "#000";
         opts.titleBaseColor = "#444";
         opts.headButtons = ["OK", "ESC"];
-        opts.headButtonIds = ["OK", "ESC"];
+        opts.headButtonIds = ["ok", "esc"];
         opts.headButtonWidthes = [100, 100];
         opts.buttons = [];
         mda.setMargin(opts, op);
@@ -1400,14 +1477,33 @@ class KvBox {
             if (id === "ok") {
                 var md = iobj.sender;
                 var mdaPad = md.blockRefs["mainMd"];
+                mdaPad.mdClass.enterPrg();
+                var iobj={};
+                iobj.buttonId = "enter";
+                KvLib.exeFunc(_op.actionFunc, iobj);
+                MdaPopWin.popOff(2);
+
+                
+                
+                return;
                 var setLine = mdaPad.blockRefs["lcd"];
+
+
+                if (op.setOpts.setType === "inputText") {
+                    var inputText = setLine.blockRefs["inputText"];
+                    var inputElem = inputText.elems["inputText"];
+                } else {
+                    var inputText = setLine.blockRefs["textArea"];
+                    var inputElem = inputText.elems["textArea"];
+                }
+                setLine.opts.setOpts.value=inputElem.value;
                 var errStr = setLine.mdClass.checkValue(1);
+                iobj.inputText = setLine.opts.setOpts.value;
                 if (errStr) {
                     box.errorBox({kvTexts: [errStr]});
                     return;
                 }
                 iobj.buttonId = "enter";
-                iobj.inputText = setLine.opts.setOpts.value;
                 KvLib.exeFunc(_op.actionFunc, iobj);
                 MdaPopWin.popOff(2);
                 return;
@@ -1523,6 +1619,70 @@ class KvBox {
         mda.popObj(_op.w, _op.h, kvObj);
     }
 
+    paraEditBox(_op) {
+        var op = {};
+        op.w = 1000;
+        op.h = 800;
+        op.titleWidth = 300;
+        op.titleFontSize = 20;
+        op.noWidth = 50;
+        op.paraSet = {};
+        KvLib.deepCoverObject(op, _op);
+
+
+        var opts = {};
+        opts.w = op.w;
+        opts.h = op.h;
+        opts.title = "box.paraEditBox";
+
+        opts.ksObjss = [];
+        var keys = Object.keys(op.paraSet);
+        //keys.sort();
+        var index = 0;
+        for (var i = 0; i < keys.length; i++) {
+            var strA = keys[i].split("~");
+            if (strA[0] === "dsc")
+                continue;
+            var ksObjs = [];
+            for (var j = 0; j < 1; j++) {
+                var ksObj = {};
+                ksObj.name = "setLine#" + index + "." + j;
+                ksObj.type = "Model~MdaSetLine~base.sys0";
+                var kopts = ksObj.opts = {};
+                var setOpts = kopts.setOpts = sopt.getOptsInt();
+                var dscObj = op.paraSet["dsc~" + keys[i]];
+                if (dscObj) {
+                    if (dscObj.getType) {
+                        var setOpts = kopts.setOpts = sopt.getOptsPara(dscObj.getType);
+                        KvLib.deepCoverObject(setOpts, dscObj);
+                    } else {
+                        KvLib.deepCoverObject(setOpts, dscObj);
+                    }
+                }
+                setOpts.value = op.paraSet[keys[i]];
+                if (setOpts.array === 1 && setOpts.dataType === "str") {
+                    var array = op.paraSet[keys[i]];
+                    setOpts.value = "";
+                    for (var k = 0; k < array.length; k++) {
+                        setOpts.value += array[k];
+                        setOpts.value += "\n";
+                    }
+                }
+                setOpts.titleWidth = op.titleWidth;
+                setOpts.titleFontSize = op.titleFontSize;
+                setOpts.noWidth = op.noWidth;
+                setOpts.id = keys[i];
+                if (!setOpts.title)
+                    setOpts.title = keys[i];
+                setOpts.no = index + 1;
+                ksObjs.push(ksObj);
+                index++;
+            }
+            opts.ksObjss.push(ksObjs);
+        }
+        box.setLineBox(opts);
+
+    }
 }
 var box = new KvBox();
 

@@ -3551,8 +3551,14 @@ class MdaSetLine {
         opts.xArr = [expandWidth, checkWidth, noWidth, iconWidth, titleWidth, 9999, unitWidth];
         var actButtons = KvLib.setValue(setOpts.actButtons, []);
         var actButtonWidth = KvLib.setValue(setOpts.actButtonWidth, 50);
-        for (var i = 0; i < actButtons.length; i++)
-            opts.xArr.push(actButtonWidth);
+        for (var i = 0; i < actButtons.length; i++){
+            var ww=actButtonWidth;
+            if(setOpts.readOnly_f){
+                if(actButtons[i]==="pad")
+                    ww=0;;
+            }    
+            opts.xArr.push(ww);
+        }    
         md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "main");
 
         if (expandWidth) {
@@ -3799,7 +3805,7 @@ class MdaSetLine {
                     var opts = {};
                     opts.actionFunc = function (iobj) {
                         console.log(iobj);
-                        if (iobj.buttonId === "enter") {
+                        if (iobj.act === "padEnter") {
                             var inputTextObj = md.blockRefs["inputText"];
                             if (inputTextObj) {
                                 var elem = inputTextObj.elems["inputText"];
@@ -3808,6 +3814,7 @@ class MdaSetLine {
                                 var elem = inputTextObj.elems["textArea"];
                             }
                             elem.value = iobj.inputText;
+                            return;
                         }
                         iobj.sender = md;
                         iobj.act = "pressEnter";
@@ -3823,7 +3830,6 @@ class MdaSetLine {
                     tmpSetOpts.iconWidth = 0;
                     tmpSetOpts.value = elem.value;
                     opts.setOpts = tmpSetOpts;
-                    opts.setOpts.readOnly_f = 0;
 
                     if (sop.dataType === "color") {
                         box.colorPadBox(opts);
@@ -4211,6 +4217,7 @@ class MdaSetLine {
             opts.innerText = "";
             opts.lpd = 0;
             opts.rpd = 0;
+            opts.editFontSize=20;
             md.newBlock(cname, opts, "Component~Cp_base~textArea.sys0", "textArea");
             document.onkeydown = function (evt) {
                 evt = evt || window.event;
@@ -4306,8 +4313,11 @@ class MdaPad {
         var setOpts = opts.setOpts;
         var dataType = setOpts.dataType;
         var checkType = setOpts.checkType;
+        var st=md.stas;
+        st.padType="keyboard";
 
         if (checkType === "int" || checkType === "float") {
+            st.padType="pad";
             opts.yArr = ["0.25rh", "0.25rh", "0.25rh", "0.25rh"];
             var xyArr = opts.xyArr = [];
             xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
@@ -4341,6 +4351,7 @@ class MdaPad {
             return;
         }
         if (checkType === "hex" || checkType === "color") {
+            st.padType="pad";
             opts.yArr = ["0.2rh", "0.2rh", "0.2rh", "0.2rh", "0.2rh"];
             var xyArr = opts.xyArr = [];
             xyArr.push(["0.166rw", "0.166rw", "0.166rw", "0.166rw", "0.166rw", "0.166rw"]);
@@ -4504,12 +4515,12 @@ class MdaPad {
         var errStrs = setLine.mdClass.checkValue(1);
         if (errStrs) {
             box.errorBox({kvTexts: errStrs});
-            return;
+            return errStrs;
         }
+        var iobj={};
         iobj.sender = md;
         iobj.inputText = inputElem.value;
-        iobj.buttonId = "enter";
-        iobj.act = "pressEnter";
+        iobj.act = "padEnter";
         KvLib.exeFunc(op.actionFunc, iobj);
         return;
 
@@ -4592,7 +4603,10 @@ class MdaPad {
                 return;
 
             if (numId === "enter") {
-                self.enterPrg(iobj);
+                if(st.padType==="pad")
+                    self.enterPrg(iobj);
+                else
+                    setLine.mdClass.addInputText("\n");
                 return;
             }
 
@@ -4877,7 +4891,7 @@ class MdaPad {
         };
         var setOpts = opts.setOpts = op.setOpts;
 
-        if (setOpts.setType === "inputText" || "inputSelect")
+        if (setOpts.setType === "inputText" || setOpts.setType === "inputSelect")
             setOpts.setType = "inputText";
         else
             setOpts.setType = "textArea";

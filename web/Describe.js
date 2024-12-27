@@ -58,8 +58,6 @@ class Describe {
         optsCopy.nature.image = "systemResource/icons8-add-48.png";
 
         optsCopy.int = {dataType: "int", checkType: "int", setType: "inputText", value: 0, actButtons: ["inc", "dec", "pad"], group: "copy", dsc: ""};
-        optsCopy.int.max = 100;
-        optsCopy.int.min = -100;
         optsCopy.int.image = "systemResource/number123.png";
 
         optsCopy.intA = {dataType: "int", checkType: "int", setType: "textArea", value: [1, 2, 3], actButtons: ["pad"], group: "copy", dsc: ""};
