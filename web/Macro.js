@@ -1264,6 +1264,7 @@ class KvBox {
                     return;
                 }
                 MdaPopWin.popOff(2);
+                KvLib.exeFunc(_op.actionFunc, iobj);
 
             }
             if (iobj.act === "escape") {
@@ -1331,7 +1332,6 @@ class KvBox {
             }
 
 
-            KvLib.exeFunc(_op.actionFunc, iobj);
             //MdaPopWin.popOff(2);
         };
         var kvObj = new Block("mdaBox", "Model~MdaBox~base.sys0", opts);
@@ -1464,6 +1464,12 @@ class KvBox {
                 return;
 
             }
+            
+            if (iobj.act === "padEnter") {
+                MdaPopWin.popOff(2);
+                KvLib.exeFunc(_op.actionFunc, iobj);
+                return;
+            }
             if (!iobj.kvObj)
                 return;
             var id = iobj.kvObj.opts.id;
@@ -1478,38 +1484,10 @@ class KvBox {
                 var md = iobj.sender;
                 var mdaPad = md.blockRefs["mainMd"];
                 mdaPad.mdClass.enterPrg();
-                var iobj={};
-                iobj.buttonId = "enter";
-                KvLib.exeFunc(_op.actionFunc, iobj);
-                MdaPopWin.popOff(2);
-
-                
-                
-                return;
-                var setLine = mdaPad.blockRefs["lcd"];
-
-
-                if (op.setOpts.setType === "inputText") {
-                    var inputText = setLine.blockRefs["inputText"];
-                    var inputElem = inputText.elems["inputText"];
-                } else {
-                    var inputText = setLine.blockRefs["textArea"];
-                    var inputElem = inputText.elems["textArea"];
-                }
-                setLine.opts.setOpts.value=inputElem.value;
-                var errStr = setLine.mdClass.checkValue(1);
-                iobj.inputText = setLine.opts.setOpts.value;
-                if (errStr) {
-                    box.errorBox({kvTexts: [errStr]});
-                    return;
-                }
-                iobj.buttonId = "enter";
-                KvLib.exeFunc(_op.actionFunc, iobj);
-                MdaPopWin.popOff(2);
                 return;
             }
-            KvLib.exeFunc(_op.actionFunc, iobj);
             MdaPopWin.popOff(2);
+            KvLib.exeFunc(_op.actionFunc, iobj);
         };
         var kvObj = new Block("mdaBox", "Model~MdaBox~base.sys0", opts);
         mda.popObj(op.w, op.h, kvObj);
@@ -1660,12 +1638,18 @@ class KvBox {
                     }
                 }
                 setOpts.value = op.paraSet[keys[i]];
-                if (setOpts.array === 1 && setOpts.dataType === "str") {
+                
+                if (setOpts.dataType === "str" && setOpts.array===1) {
                     var array = op.paraSet[keys[i]];
                     setOpts.value = "";
                     for (var k = 0; k < array.length; k++) {
+                        if(k!==0){
+                            setOpts.value+=",";
+                            setOpts.value+="\n";
+                        }
+                        setOpts.value+="\"";
                         setOpts.value += array[k];
-                        setOpts.value += "\n";
+                        setOpts.value+="\"";
                     }
                 }
                 setOpts.titleWidth = op.titleWidth;
