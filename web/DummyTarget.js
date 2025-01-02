@@ -136,54 +136,85 @@ class DummyTarget {
 
         opts.actionFunc = function (iobj) {
             console.log(iobj);
-            var opts={};
-            opts.paraSet=gr.paraSet;
-            opts.title="Title";
-            box.paraEditBox(opts);
-            return;
-            
-            
-            var opts = {};
-            opts.w = 1000;
-            opts.h = 800;
-            opts.ksObjss = [];
-            var keys = Object.keys(gr.paraSet);
-            //keys.sort();
-            var index = 0;
-            for (var i = 0; i < keys.length; i++) {
-                var strA = keys[i].split("~");
-                if (strA[0] === "dsc")
-                    continue;
+            if (iobj.selectInx === 0) {
+                var opts = {};
+                opts.paraSet = gr.paraSet;
+                opts.title = iobj.selectText;
+                opts.group = "all";
+                opts.actionFunc = function (iobj) {
+                    console.log(iobj);
+                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                    var fileName = "paraSet";
+                    var content = JSON.stringify(gr.paraSet);
+                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                };
+                box.paraEditBox(opts);
+                return;
+            }
+            if (iobj.selectInx === 1) {
+                var opts = {};
+                opts.actionFunc = function (iobj) {
+                    console.log(iobj);
+                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                    var fileName = "paraSet";
+                    var content = JSON.stringify(gr.paraSet);
+                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                };
+                var op = {};
+                //======
+                var opts = {};
+                opts.title = iobj.selectText;
+                var pulsePara = gr.paraSet["localPulseGenParas"];
+                opts.ksObjWs = ["0.5rw",9999];
+                opts.ksObjss = [];
+                opts.xm=20;
+                opts.eh=46;
+                opts.headTitleHeight=24;
                 var ksObjs = [];
-                for (var j = 0; j < 1; j++) {
+
+                for (var i = 0; i < pulsePara.length; i++) {
+                    var strA = pulsePara[i].split(" ");
+                    if ((i % 2) === 0) {
+                        var ksObjs = [];
+                    } 
                     var ksObj = {};
-                    ksObj.name = "setLine#" + index + "." + j;
+                    ksObj.name = "setLine#" + ((i / 2) | 0) + "." + (i % 2);
                     ksObj.type = "Model~MdaSetLine~base.sys0";
                     var kopts = ksObj.opts = {};
-                    var setOpts = kopts.setOpts = sopt.getOptsInt();
-                    var dscObj = gr.paraSet["dsc~" + keys[i]];
-                    if (dscObj) {
-                        if (dscObj.getType) {
-                            var setOpts = kopts.setOpts = sopt.getOptsPara(dscObj.getType);
-                            KvLib.deepCoverObject(setOpts, dscObj);
-                        } else {
-                            KvLib.deepCoverObject(setOpts, dscObj);
-                        }
-                    }
-                    setOpts.value = gr.paraSet[keys[i]];
-                    setOpts.titleWidth = 300;
+                    var setOpts = kopts.setOpts = sopt.getButtonActs();
+                    if(strA[0]==="1")
+                        setOpts.checked_f=1;
+                    setOpts.enum = [strA[1], strA[2], strA[3],strA[4]];
+                    setOpts.value = 0;
+                    setOpts.id = "" + i;
+                    setOpts.titleWidth = 200;
                     setOpts.titleFontSize = 20;
-                    setOpts.noWidth = 50;
-                    setOpts.id = keys[i];
-                    if(!setOpts.title)
-                        setOpts.title = keys[i];
-                    setOpts.no = index + 1;
+                    setOpts.checkWidth=40;
+                    setOpts.title = "脈波 " + (i + 1);
                     ksObjs.push(ksObj);
-                    index++;
+                    if(i%2)
+                        opts.ksObjss.push(ksObjs);
                 }
-                opts.ksObjss.push(ksObjs);
+
+
+                opts.actionFunc = function (iobj) {
+                    if (iobj.act === "mouseClick" && iobj.buttonId === "ok") {
+                        console.log(iobj);
+                        return;
+                        var paraSet = {};
+                        for (var i = 0; i < iobj.ksObjss.length; i++) {
+                            var obj = iobj.ksObjss[i][0];
+                            var setOpts = obj.opts.setOpts;
+                            paraSet[setOpts.id] = setOpts.value;
+                        }
+                        var obj = {};
+                        obj.act = "paraSetOk";
+                        obj.paraSet = paraSet;
+                    }
+                };
+                box.setLineBox(opts);
+                return;
             }
-            box.setLineBox(opts);
 
         };
         box.selectBox(opts);

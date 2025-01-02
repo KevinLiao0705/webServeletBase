@@ -430,6 +430,7 @@ public final class MainServlet extends HttpServlet {
         String appName;
         String userName;
         String password;
+        String content;
         String typeStr;
         String initDir;
         String[] strA;
@@ -442,92 +443,6 @@ public final class MainServlet extends HttpServlet {
             kj.wStr(outJo, "act", action);
             //====================================================================
             switch (action) {
-                case "writeImageFile":
-                    loadOutJoResponseError(inOptsJo, outJo, "writeImageFile Error !!!");
-                    if (!geJoToRetStr(inOptsJo, "path")) {
-                        break;
-                    }
-                    String path = GB.webRootPath + this.retData.retStr;
-                    if (!geJoToRetStr(inOptsJo, "value")) {
-                        break;
-                    }
-                    JSONObject imageJso = new JSONObject(this.retData.retStr);
-                    if (!geJoToRetStr(imageJso, "fileName")) {
-                        break;
-                    }
-                    strA = this.retData.retStr.split("\\.");
-                    String fullImageName = path + "/" + strA[0] + ".png";
-                    if (!geJoToRetStr(imageJso, "width")) {
-                        break;
-                    }
-                    int imageWidth = this.retData.reti;
-                    if (!geJoToRetStr(imageJso, "height")) {
-                        break;
-                    }
-                    int imageHeight = this.retData.reti;
-                    Object obj = imageJso.get("data");
-                    Class cls = obj.getClass();
-                    String type = cls.getSimpleName();
-                    JSONObject imageData = (JSONObject) obj;
-                    int[] rgbaA = new int[imageWidth * imageHeight];
-                    int imageDataLen = imageWidth * imageHeight;
-                    for (int i = 0; i < imageDataLen; i++) {
-                        int btr = (int) (imageData.get("" + (i * 4 + 0)));
-                        int btg = (int) (imageData.get("" + (i * 4 + 1)));
-                        int btb = (int) (imageData.get("" + (i * 4 + 2)));
-                        int bta = (int) (imageData.get("" + (i * 4 + 3)));
-                        rgbaA[i] = (bta) << 24;
-                        rgbaA[i] += (btr) << 16;
-                        rgbaA[i] += (btg) << 8;
-                        rgbaA[i] += (btb);
-                    }
-                    if (!ImageHandle.createBmpFile(rgbaA, imageWidth, imageHeight, fullImageName)) {
-                        break;
-                    }
-
-                    putJoO(outJo, "responseMessage", "Write OK");
-                    putJoJo(outJo, "opts", outOptsJo);
-                    break;
-
-                case "sonprg":
-                    loadOutJoResponseError(inOptsJo, outJo, "sonprg Error !!!");
-                    if (!geJoToRetStr(inOptsJo, "value")) {
-                        break;
-                    }
-                    JSONObject sonprgJso = new JSONObject(this.retData.retStr);
-                    if (!geJoToRetStr(sonprgJso, "sonprgName")) {
-                        break;
-                    }
-                    if (this.retData.retStr.equals("Ics")) {
-                        /*
-                        ics.handleCommand(sonprgJso);
-                        if (ics.errCnt > 0) {
-                            loadOutJsoResponseError(inOptsJo, outJo, ics.errStr);
-                            break;
-                        }
-                        putJoO(outOptsJo, "value", "{\"status\":\"OK\",\"message\":\"" + ics.okStr + "\"}");
-                        putJoO(outJo, "responseMessage", "Son Command OK");
-                        putJoJo(outJo, "opts", outOptsJo);
-                         */
-                    }
-                    break;
-
-                case "zipDir":
-                    loadOutJoResponseError(inOptsJo, outJo, "zip file Error !!!");
-                    if (!geJoToRetStr(inOptsJo, "dirName")) {
-                        break;
-                    }
-                    String dirName = GB.webRootPath + this.retData.retStr;
-                    if (!geJoToRetStr(inOptsJo, "zipName")) {
-                        break;
-                    }
-                    String zipName = GB.webRootPath + this.retData.retStr;
-                    Lib.zipDir(dirName, zipName);
-                    putJoO(outOptsJo, "value", "{'status':'zip ok'}");
-                    putJoO(outJo, "responseMessage", "Zip Dir OK");
-                    putJoJo(outJo, "opts", outOptsJo);
-                    break;
-
                 case "login":
                     kj.wStr(outJo, "message", "login Error !!!");
                     kj.jobj = inOptsJo;
@@ -629,6 +544,135 @@ public final class MainServlet extends HttpServlet {
 
                     break;
 //=============================================================================================================================                    
+                case "saveStringToFile":
+                    kj.wStr(outJo, "message", "Command Format Error !!!");
+                    kj.jobj = inOptsJo;
+                    if (kj.rStr("appName")) {
+                        return;
+                    }
+                    appName = kj.valueStr;
+                    if (kj.rStr("fileName")) {
+                        return;
+                    }
+                    fileName = kj.valueStr;
+                    if("paraSet".equals(fileName))
+                        fileName=GB.paraSetPath+"/"+"paraSet.json";
+                    if (kj.rStr("content")) {
+                        return;
+                    }
+                    content = kj.valueStr;
+                    
+                    
+                    System.out.println("Write String To File: " + fileName);
+
+                    BufferedWriter outf = new BufferedWriter(new OutputStreamWriter(
+                            new FileOutputStream(fileName), "UTF-8"));
+                    try {
+                        outf.write(content);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    } finally {
+                        outf.close();
+                    }
+                    kj.wObj(outJo, "opts", outOptsJo);
+                    kj.wStr(outJo, "status", "ok");
+                    kj.wStr(outJo, "message", "Write File OK.");
+                    strA = fileName.split("/");
+                    if (strA[strA.length - 1].equals("paraSet.json")) {
+                        GB.paraSetMap = this.getParas();
+                    }
+                    break;
+                    
+                    
+                    
+                
+                //****************************************************************************************************
+                case "writeImageFile":
+                    loadOutJoResponseError(inOptsJo, outJo, "writeImageFile Error !!!");
+                    if (!geJoToRetStr(inOptsJo, "path")) {
+                        break;
+                    }
+                    String path = GB.webRootPath + this.retData.retStr;
+                    if (!geJoToRetStr(inOptsJo, "value")) {
+                        break;
+                    }
+                    JSONObject imageJso = new JSONObject(this.retData.retStr);
+                    if (!geJoToRetStr(imageJso, "fileName")) {
+                        break;
+                    }
+                    strA = this.retData.retStr.split("\\.");
+                    String fullImageName = path + "/" + strA[0] + ".png";
+                    if (!geJoToRetStr(imageJso, "width")) {
+                        break;
+                    }
+                    int imageWidth = this.retData.reti;
+                    if (!geJoToRetStr(imageJso, "height")) {
+                        break;
+                    }
+                    int imageHeight = this.retData.reti;
+                    Object obj = imageJso.get("data");
+                    Class cls = obj.getClass();
+                    String type = cls.getSimpleName();
+                    JSONObject imageData = (JSONObject) obj;
+                    int[] rgbaA = new int[imageWidth * imageHeight];
+                    int imageDataLen = imageWidth * imageHeight;
+                    for (int i = 0; i < imageDataLen; i++) {
+                        int btr = (int) (imageData.get("" + (i * 4 + 0)));
+                        int btg = (int) (imageData.get("" + (i * 4 + 1)));
+                        int btb = (int) (imageData.get("" + (i * 4 + 2)));
+                        int bta = (int) (imageData.get("" + (i * 4 + 3)));
+                        rgbaA[i] = (bta) << 24;
+                        rgbaA[i] += (btr) << 16;
+                        rgbaA[i] += (btg) << 8;
+                        rgbaA[i] += (btb);
+                    }
+                    if (!ImageHandle.createBmpFile(rgbaA, imageWidth, imageHeight, fullImageName)) {
+                        break;
+                    }
+
+                    putJoO(outJo, "responseMessage", "Write OK");
+                    putJoJo(outJo, "opts", outOptsJo);
+                    break;
+
+                case "sonprg":
+                    loadOutJoResponseError(inOptsJo, outJo, "sonprg Error !!!");
+                    if (!geJoToRetStr(inOptsJo, "value")) {
+                        break;
+                    }
+                    JSONObject sonprgJso = new JSONObject(this.retData.retStr);
+                    if (!geJoToRetStr(sonprgJso, "sonprgName")) {
+                        break;
+                    }
+                    if (this.retData.retStr.equals("Ics")) {
+                        /*
+                        ics.handleCommand(sonprgJso);
+                        if (ics.errCnt > 0) {
+                            loadOutJsoResponseError(inOptsJo, outJo, ics.errStr);
+                            break;
+                        }
+                        putJoO(outOptsJo, "value", "{\"status\":\"OK\",\"message\":\"" + ics.okStr + "\"}");
+                        putJoO(outJo, "responseMessage", "Son Command OK");
+                        putJoJo(outJo, "opts", outOptsJo);
+                         */
+                    }
+                    break;
+
+                case "zipDir":
+                    loadOutJoResponseError(inOptsJo, outJo, "zip file Error !!!");
+                    if (!geJoToRetStr(inOptsJo, "dirName")) {
+                        break;
+                    }
+                    String dirName = GB.webRootPath + this.retData.retStr;
+                    if (!geJoToRetStr(inOptsJo, "zipName")) {
+                        break;
+                    }
+                    String zipName = GB.webRootPath + this.retData.retStr;
+                    Lib.zipDir(dirName, zipName);
+                    putJoO(outOptsJo, "value", "{'status':'zip ok'}");
+                    putJoO(outJo, "responseMessage", "Zip Dir OK");
+                    putJoJo(outJo, "opts", outOptsJo);
+                    break;
+
 
 //=============================================================================================================================                    
                 case "copyFile":
@@ -693,7 +737,7 @@ public final class MainServlet extends HttpServlet {
                     putJoJo(outJo, "opts", outOptsJo);
                     break;
 
-                case "saveStringToFile":
+                case "saveStringToFilexxx":
                     putJoO(outJo, "responseMessage", "Save To File Error!");
                     if (!geJoToRetStr(inOptsJo, "fileName")) {
                         break;
@@ -704,7 +748,7 @@ public final class MainServlet extends HttpServlet {
                     }
                     System.out.println("fileName= " + fileName);
 
-                    BufferedWriter outf = new BufferedWriter(new OutputStreamWriter(
+                    outf = new BufferedWriter(new OutputStreamWriter(
                             new FileOutputStream(fileName), "UTF-8"));
                     try {
                         outf.write(this.retData.retStr);
@@ -777,6 +821,7 @@ public final class MainServlet extends HttpServlet {
             }
 
         } catch (Exception ex) {
+            kj.wStr(outJo, "message", ex.toString().split("Exception:")[1]);
             Logger.getLogger(MainServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
 

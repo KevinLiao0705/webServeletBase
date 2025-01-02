@@ -6,19 +6,19 @@
         "readOnly_f": 1,
         "getType": "floatStr"
     },
-    "paraSetPassword": "1234",
+    "paraSetPassword": "69",
     "dsc~paraSetPassword": {
         "title": "參數設定密碼",
         "getType": "natureStr"
     },
-    "uart0Port": 7,
+    "uart0Port": 10,
     "dsc~uart0Port": {
         "title": "串列通道1位址",
         "getType": "nature",
         "min": 1,
         "max": 99
     },
-    "uart0Boudrate": 115200,
+    "uart0Boudrate": 460800,
     "dsc~uart0Boudrate": {
         "title": "串列通道1速率",
         "getType": "intEnum",
@@ -31,7 +31,7 @@
             9600
         ]
     },
-    "mastPulseSource": 0,
+    "mastPulseSource": 1,
     "dsc~mastPulseSource": {
         "getType": "buttonRadio",
         "title": "主控脈波來源",
@@ -40,7 +40,7 @@
             "本機模擬"
         ]
     },
-    "mastToSub1CommType": 0,
+    "mastToSub1CommType": 2,
     "dsc~mastToSub1CommType": {
         "getType": "buttonRadio",
         "title": "主控與副控1通信方式",
@@ -50,7 +50,7 @@
             "自動"
         ]
     },
-    "mastToSub2CommType": 0,
+    "mastToSub2CommType": 2,
     "dsc~mastToSub2CommType": {
         "getType": "buttonRadio",
         "title": "主控與副控2通信方式",
@@ -60,7 +60,7 @@
             "自動"
         ]
     },
-    "mastToSub1SpeechEnable": 0,
+    "mastToSub1SpeechEnable": 1,
     "dsc~mastToSub1SpeechEnable": {
         "getType": "buttonRadio",
         "title": "主控與副控1語音通道",
@@ -69,7 +69,7 @@
             "關閉"
         ]
     },
-    "mastToSub2SpeechEnable": 0,
+    "mastToSub2SpeechEnable": 1,
     "dsc~mastToSub2SpeechEnable": {
         "getType": "buttonRadio",
         "title": "主控與副控2語音通道",
@@ -79,42 +79,44 @@
         ]
     },
     "localPulseGenParas": [
-        "10,6,3.1,1",
-        "10,6,3.1,1",
-        "10,6,3.1,1",
-        "10,6,3.1,1",
-        "10,6,3.1,1"
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1",
+        "1 10.0 6.0 3.1 1"
     ],
     "dsc~localPulseGenParas": {
-        "getType": "strA",
-        "memo": "pulseWidth,duty,freq,times",
+        "getType": "floatAStrA",
+        "memo": "enable pulseWidth duty freq  times",
         "title": "本地脈波參數"
     },
-    "localPulseGenPulseWidth": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10
-    ],
-    "dsc~localPulseGenPulseWidth": {
-        "getType": "floatA",
-        "title": "本地測試脈波寬度"
-    },
-    "localPulseGenPulseDuty": [
-        6,
-        12,
-        20,
-        25
-    ],
-    "dsc~localPulseGenPulseDuty": {
-        "getType": "floatA",
-        "title": "本地測試脈波工作比"
-    },
+
     "dsc~end": 0
 }

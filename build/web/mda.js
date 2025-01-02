@@ -921,6 +921,8 @@ class MdaContainer {
         opts.layoutType = "page";//page,table,free
         opts.ksObjWs = [];
         opts.ksObjss = [];
+        opts.headTitleHeight = 0;
+        
         for (var i = 0; i < 1000; i++) {
             var ksObjs = [];
             for (var j = 0; j < 10; j++) {
@@ -997,7 +999,7 @@ class MdaContainer {
 
         if (!op.disHScroll_f) {
             if (st.wWinRate < 1) {
-                var cname = md.lyMaps["listBody"] + "~" + 1;
+                var cname = md.lyMaps["listBody"] + "~" + 2;
                 var opts = {};
                 opts.winRate = st.wWinRate;
                 opts.posRate = op.xPosRate;
@@ -1078,7 +1080,7 @@ class MdaContainer {
         };
 
         if (op.layoutType === "page") {
-            var cname = md.lyMaps["listBody"] + "~" + 0;
+            var cname = md.lyMaps["listBody"] + "~" + 1;
             md.clearOptsAll(cname);
             var posObj = md.getRectObj(cname, md.layouts);
             var winH = posObj.h;
@@ -1145,7 +1147,7 @@ class MdaContainer {
 
 
         if (op.layoutType === "table") {
-            var cname = md.lyMaps["listBody"] + "~" + 0;
+            var cname = md.lyMaps["listBody"] + "~" + 1;
             md.clear(cname);
             var opts = {};
             var allH = st.allH - st.winH;
@@ -1201,7 +1203,7 @@ class MdaContainer {
                     var ksObj = op.ksObjss[i][j];
                     if (!ksObj)
                         break;
-                    var cname = md.lyMaps["listBody"] + "~" + 0;
+                    var cname = md.lyMaps["listBody"] + "~" + 1;
                     var opts = ksObj.opts;
                     opts.tm = yy;
                     opts.ih = op.eh;
@@ -1237,7 +1239,7 @@ class MdaContainer {
 
 
         if (op.layoutType === "free") {
-            var cname = md.lyMaps["listBody"] + "~" + 0;
+            var cname = md.lyMaps["listBody"] + "~" + 1;
             md.clear(cname);
             var opts = {};
             var allH = st.allH - st.winH;
@@ -1375,8 +1377,17 @@ class MdaContainer {
         st.allLine = op.ksObjss.length;
         var cname = md.lyMaps["body"] + "~" + 0;
         md.clearOptsAll(cname);
+        
+        var cname = md.lyMaps["body"];
+        md.clear(cname);
+        var cname = md.lyMaps["body"] + "~" + 0;
+        var opts = {};
+        opts.yArr = [0,9999];
+        md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "mainBody");
+        
+        var cname = md.lyMaps["mainBody"] + "~" + 1;
         var posObj = md.getRectObj(cname, md.layouts);
-        var listBodyH = posObj.h;
+        var listBodyH = posObj.h-op.headTitleHeight;
         var listBodyW = posObj.w;
         var vScrollWidth = op.scrollWidth;
         var hScrollWidth = op.scrollWidth;
@@ -1435,6 +1446,7 @@ class MdaContainer {
             st.allH = listBodyH;
             var row = (listBodyH + op.ym - op.etm - op.ebm) / (op.eh + op.ym);
             var rowCnt = Math.round(row);
+            op.eh= (listBodyH + op.ym - op.etm - op.ebm)/rowCnt-op.ym;
             if (op.ksObjss.length <= rowCnt)
                 vScrollWidth = 0;
             else {
@@ -1492,16 +1504,16 @@ class MdaContainer {
         if (!st.scrollH_f)
             hScrollWidth = 0;
 
-        var cname = md.lyMaps["body"];
+        var cname = md.lyMaps["mainBody"] + "~" + 1;;
         md.clear(cname);
-        var cname = md.lyMaps["body"] + "~" + 0;
+        var cname = md.lyMaps["mainBody"] + "~" + 1;
         var opts = {};
         opts.xArr = [9999, vScrollWidth];
         md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "main");
 
         var cname = md.lyMaps["main"] + "~" + 0;
         var opts = {};
-        opts.yArr = [9999, hScrollWidth];
+        opts.yArr = [op.headTitleHeight,9999, hScrollWidth];
         var lyObj = md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "listBody");
 
         var cname = md.lyMaps["listBody"] + "~" + 0;
@@ -3300,6 +3312,7 @@ class MdaSetLine {
                     setOpts.value = inValue;
                 return;
             }
+            //============================
             var number_f = 0;
             if (setOpts.checkType === "int")
                 number_f = 1;
@@ -3307,15 +3320,21 @@ class MdaSetLine {
                 number_f = 1;
             if (setOpts.checkType === "hex")
                 number_f = 1;
-
             var chkValueA = [];
             if (!setOpts.array)
                 var chkValueA = [inValue];
             else
                 var chkValueA = inValue.split(",");
+            //============================
             var ivA = [];
             for (var i = 0; i < chkValueA.length; i++) {
                 var iValue = chkValueA[i];
+                if (checkType === "floatAStr" || checkType === "intAStr" || checkType === "objStr") {
+                    ivA.push(iValue.trim().slice(1, iValue.length - 2));
+                    continue;
+                }
+
+
                 if (number_f) {
                     if (checkType === "int")
                         var iv = KvLib.strToInt(iValue, null);
@@ -3323,7 +3342,6 @@ class MdaSetLine {
                         var iv = KvLib.hexStrToInt(iValue, null);
                     if (checkType === "float")
                         var iv = KvLib.strToFloat(iValue, null);
-
                     if (setOpts.nullErr_f) {
                         if (iv === null)
                             return [setOpts.title, KvLib.getKvText(syst.errorOfDataFormat).text];
@@ -3334,7 +3352,11 @@ class MdaSetLine {
                     if (setOpts.min !== null && setOpts.min !== undefined)
                         if (iv < setOpts.min)
                             return [setOpts.title, KvLib.getKvText(syst.dataLessTheMin).text + setOpts.min + " !!!"];
-                    ivA.push(iv);
+                    if (setOpts.dataType === "str")
+                        ivA.push(iValue);
+                    else
+                        ivA.push(iv);
+
                 }
                 if (checkType === "color") {
                     var color = KvLib.transColor(iValue, null);
@@ -3493,7 +3515,6 @@ class MdaSetLine {
                 return;
             }
             if (iobj.act === "pressEnter") {
-                console.log(iobj);
                 var errStrs = md.mdClass.checkValue(1);
                 if (errStrs) {
                     box.errorBox({kvTexts: errStrs});
@@ -3551,14 +3572,15 @@ class MdaSetLine {
         opts.xArr = [expandWidth, checkWidth, noWidth, iconWidth, titleWidth, 9999, unitWidth];
         var actButtons = KvLib.setValue(setOpts.actButtons, []);
         var actButtonWidth = KvLib.setValue(setOpts.actButtonWidth, 50);
-        for (var i = 0; i < actButtons.length; i++){
-            var ww=actButtonWidth;
-            if(setOpts.readOnly_f){
-                if(actButtons[i]==="pad")
-                    ww=0;;
-            }    
+        for (var i = 0; i < actButtons.length; i++) {
+            var ww = actButtonWidth;
+            if (setOpts.readOnly_f) {
+                if (actButtons[i] === "pad")
+                    ww = 0;
+                ;
+            }
             opts.xArr.push(ww);
-        }    
+        }
         md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "main");
 
         if (expandWidth) {
@@ -3604,6 +3626,7 @@ class MdaSetLine {
             };
             opts.innerText = "";
             opts.innerTextColor = "#080";
+            opts.baseColor="#eef";
             if (setOpts.checked_f) {
                 opts.innerText = '<i class="gf">&#xe5ca</i>';
             }
@@ -3835,8 +3858,6 @@ class MdaSetLine {
                         box.colorPadBox(opts);
                         return;
                     }
-
-
                     if (sop.dataType === "float") {
                         box.floatPadBox(opts);
                         return;
@@ -3859,6 +3880,10 @@ class MdaSetLine {
                     }
                     if (sop.checkType === "int") {
                         box.intPadBox(opts);
+                        return;
+                    }
+                    if (sop.checkType === "floatAStr") {
+                        box.floatAStrABox(opts);
                         return;
                     }
 
@@ -4213,11 +4238,15 @@ class MdaSetLine {
                         }
                     }
                 }
+
+
+
+
             }
             opts.innerText = "";
             opts.lpd = 0;
             opts.rpd = 0;
-            opts.editFontSize=20;
+            opts.editFontSize = 20;
             md.newBlock(cname, opts, "Component~Cp_base~textArea.sys0", "textArea");
             document.onkeydown = function (evt) {
                 evt = evt || window.event;
@@ -4313,45 +4342,60 @@ class MdaPad {
         var setOpts = opts.setOpts;
         var dataType = setOpts.dataType;
         var checkType = setOpts.checkType;
-        var st=md.stas;
-        st.padType="keyboard";
+        var st = md.stas;
+        st.padType = "keyboard";
 
-        if (checkType === "int" || checkType === "float") {
-            st.padType="pad";
+        var numberStyle = 0;
+        if (checkType === "int" || checkType === "intStr")
+            numberStyle = 1;
+        if (checkType === "float" || checkType === "floatStr")
+            numberStyle = 1;
+        if (checkType === "floatAStr")
+            numberStyle = 1;
+        if (numberStyle) {
+            st.padType = "pad";
             opts.yArr = ["0.25rh", "0.25rh", "0.25rh", "0.25rh"];
             var xyArr = opts.xyArr = [];
-            xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
-            xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
-            xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
-            xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
+            xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
+            xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
+            xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
+            xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
             opts.numTbl = [
-                "7", "8", "9", '<i class="gf">&#xe317;</i>', "Del",
-                "4", "5", "6", "Home", "End",
-                "1", "2", "3", "◀", "▶",
-                "+-", "0", "", "Clr", '<i class="gf">&#xe31b;</i>'
+                "7", "8", "9", "", '<i class="gf">&#xe317;</i>', "Del",
+                "4", "5", "6", "", "Home", "End",
+                "1", "2", "3", "", "◀", "▶",
+                "+-", "0", "", "", "Clr", '<i class="gf">&#xe31b;</i>'
             ];
             opts.numIds = [
-                "7", "8", "9", 'back', "del",
-                "4", "5", "6", "home", "end",
-                "1", "2", "3", "left", "right",
-                "+-", "0", "null", "clr", 'enter'
+                "7", "8", "9", "null", 'back', "del",
+                "4", "5", "6", "null", "home", "end",
+                "1", "2", "3", "null", "left", "right",
+                "+-", "0", "null", "null", "clr", 'enter'
             ];
             if (setOpts.min >= 0) {
-                opts.numTbl[15] = "";
-                opts.numIds[15] = "null";
+                opts.numTbl[18] = "";
+                opts.numIds[18] = "null";
             }
             if (checkType === "float") {
-                opts.numTbl[17] = ".";
-                opts.numIds[17] = ".";
+                opts.numTbl[20] = ".";
+                opts.numIds[20] = ".";
             }
             if (setOpts.array) {
-                opts.numTbl[18] = ",";
-                opts.numIds[18] = ",";
+                opts.numTbl[3] = ",";
+                opts.numIds[3] = ",";
+                opts.numTbl[21] = "NL";
+                opts.numIds[21] = "nextLine";
+                if (setOpts.dataType === "str") {
+                    opts.numTbl[9] = "\"";
+                    opts.numIds[9] = "\"";
+                    opts.numTbl[15] = "[ ]";
+                    opts.numIds[15] = " ";
+                }
             }
             return;
         }
         if (checkType === "hex" || checkType === "color") {
-            st.padType="pad";
+            st.padType = "pad";
             opts.yArr = ["0.2rh", "0.2rh", "0.2rh", "0.2rh", "0.2rh"];
             var xyArr = opts.xyArr = [];
             xyArr.push(["0.166rw", "0.166rw", "0.166rw", "0.166rw", "0.166rw", "0.166rw"]);
@@ -4517,7 +4561,7 @@ class MdaPad {
             box.errorBox({kvTexts: errStrs});
             return errStrs;
         }
-        var iobj={};
+        var iobj = {};
         iobj.sender = md;
         iobj.inputText = inputElem.value;
         iobj.act = "padEnter";
@@ -4543,7 +4587,7 @@ class MdaPad {
             }
             var numId = iobj.kvObj.opts.id;
             var keyInx = KvLib.toInt(iobj.kvObj.name.split("#")[1], 0);
-            
+
             var setLine = md.blockRefs["lcd"];
             if (op.setOpts.setType === "inputText") {
                 var inputText = setLine.blockRefs["inputText"];
@@ -4601,12 +4645,12 @@ class MdaPad {
                 return;
             if (numId === "ins")
                 return;
-
+            if (numId === "nextLine") {
+                setLine.mdClass.addInputText("\n");
+                return;
+            }
             if (numId === "enter") {
-                if(st.padType==="pad")
-                    self.enterPrg(iobj);
-                else
-                    setLine.mdClass.addInputText("\n");
+                self.enterPrg(iobj);
                 return;
             }
 
@@ -4885,7 +4929,7 @@ class MdaPad {
         var cname = lyMaps["main"] + "~" + 0;
         var opts = {};
         opts.actionFunc = function (iobj) {
-            console.log(iobj);    
+            console.log(iobj);
             self.enterPrg(iobj);
             return;
         };
