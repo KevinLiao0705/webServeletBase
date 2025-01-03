@@ -3493,7 +3493,6 @@ class MdaSetLine {
                 return;
             }
             if (iobj.act === "pressEnter") {
-                console.log(iobj);
                 var errStrs = md.mdClass.checkValue(1);
                 if (errStrs) {
                     box.errorBox({kvTexts: errStrs});
@@ -4213,6 +4212,10 @@ class MdaSetLine {
                         }
                     }
                 }
+                
+
+                
+                
             }
             opts.innerText = "";
             opts.lpd = 0;
@@ -4316,37 +4319,42 @@ class MdaPad {
         var st=md.stas;
         st.padType="keyboard";
 
-        if (checkType === "int" || checkType === "float") {
+        if (checkType === "int" || checkType === "float" ) {
             st.padType="pad";
             opts.yArr = ["0.25rh", "0.25rh", "0.25rh", "0.25rh"];
             var xyArr = opts.xyArr = [];
-            xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
-            xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
-            xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
-            xyArr.push(["0.2rw", "0.2rw", "0.2rw", "0.2rw", "0.2rw"]);
+            xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
+            xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
+            xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
+            xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
             opts.numTbl = [
-                "7", "8", "9", '<i class="gf">&#xe317;</i>', "Del",
-                "4", "5", "6", "Home", "End",
-                "1", "2", "3", "◀", "▶",
-                "+-", "0", "", "Clr", '<i class="gf">&#xe31b;</i>'
+                "7", "8", "9", "", '<i class="gf">&#xe317;</i>', "Del",
+                "4", "5", "6", "", "Home", "End",
+                "1", "2", "3", "", "◀", "▶",
+                "+-", "0", "", "", "Clr", '<i class="gf">&#xe31b;</i>'
             ];
             opts.numIds = [
-                "7", "8", "9", 'back', "del",
-                "4", "5", "6", "home", "end",
-                "1", "2", "3", "left", "right",
-                "+-", "0", "null", "clr", 'enter'
+                "7", "8", "9","null", 'back', "del",
+                "4", "5", "6","null", "home", "end",
+                "1", "2", "3","null", "left", "right",
+                "+-", "0", "null","null", "clr", 'enter'
             ];
             if (setOpts.min >= 0) {
-                opts.numTbl[15] = "";
-                opts.numIds[15] = "null";
+                opts.numTbl[18] = "";
+                opts.numIds[18] = "null";
             }
             if (checkType === "float") {
-                opts.numTbl[17] = ".";
-                opts.numIds[17] = ".";
+                opts.numTbl[20] = ".";
+                opts.numIds[20] = ".";
             }
             if (setOpts.array) {
-                opts.numTbl[18] = ",";
-                opts.numIds[18] = ",";
+                opts.numTbl[3] = ",";
+                opts.numIds[3] = ",";
+                if(setOpts.dataType==="str"){
+                    
+                }
+                
+                
             }
             return;
         }
