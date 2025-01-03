@@ -241,17 +241,6 @@ class Block {
     }
     setTimer(name, tCount, repeatCount, func) {
         Block.setTimer(this.opts, name, tCount, repeatCount, func);
-        return;
-
-        if (!opts.timerObj)
-            opts.timerObj = {};
-        var tobj = {};
-        tobj.tCount = tCount;
-        tobj.cnt = 0;
-        tobj.func = func;
-        tobj.repeatCount = repeatCount;
-        tobj.repeatCnt = 0;
-        opts.timerObj[name] = tobj;
     }
 
     setMargin(opts) {

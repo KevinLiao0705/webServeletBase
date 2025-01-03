@@ -236,7 +236,7 @@ class Macro {
         var opts = {};
         opts.title = op.title;
         opts.titleBaseColor = "#004";
-        opts.headButtons = ["OK", "ESC"];
+        opts.headButtons = ["SAVE", "ESC"];
         opts.headButtonIds = ["ok", "esc"];
         opts.buttons = op.buttons;
         opts.margin = 4;
@@ -261,6 +261,8 @@ class Macro {
                         } else {
                             var ksObj = mainMd.opts.ksObjss[iInx][jInx];
                             ksObj.opts.setOpts.value = setLine.opts.setOpts.value;
+                            ksObj.opts.setOpts.enum = setLine.opts.setOpts.enum;
+                            ksObj.opts.setOpts.checked_f = setLine.opts.setOpts.checked_f;
                         }
                     }
                 }
@@ -290,6 +292,10 @@ class Macro {
                 }
                 iobj.setOptsObj = setOptsObj;
                 iobj.rowStart = mdaBox.opts.ksObj.opts.rowStart;
+                KvLib.exeFunc(_op.actionFunc, iobj);
+                return;
+            }
+            if (iobj.act === "actButtonClick") {
                 KvLib.exeFunc(_op.actionFunc, iobj);
                 return;
             }
@@ -334,6 +340,8 @@ class Macro {
         kopts.borderWidth = op.eBorderWidth;
         kopts.baseColor = op.eBaseColor;
         kopts.headTitleHeight = op.headTitleHeight;
+        kopts.headTitles = op.headTitles;
+        kopts.headTitleXArr = op.headTitleXArr;
         kopts.ksObjss = op.ksObjss;
         kopts.ksObjWs = op.ksObjWs;
         //=================
@@ -347,8 +355,8 @@ class Macro {
         opts.title = op.title;
         opts.baseColor = op.baseColor;
         opts.ym = op.ym;
-        opts.headButtons = ["ESC"]
-        opts.headButtonIds = ["esc"]
+        opts.headButtons = ["ESC"];
+        opts.headButtonIds = ["esc"];
         opts.margin = 4;
         //=================
         var ksObj = opts.ksObj = {};
@@ -1000,6 +1008,7 @@ class KvBox {
         opts.titleBaseColor = op.titleBaseColor;
         opts.buttons = op.buttons;
         opts.buttonIds = op.buttonIds;
+        opts.buttonsOn_f=1;
         mda.setMargin(opts, op);
         opts.ym = op.ym;
         opts.eh = op.kvTexts.length * 40;

@@ -165,51 +165,110 @@ class DummyTarget {
                 var opts = {};
                 opts.title = iobj.selectText;
                 var pulsePara = gr.paraSet["localPulseGenParas"];
-                opts.ksObjWs = ["0.5rw",9999];
+                opts.ksObjWs = ["0.5rw", 9999];
                 opts.ksObjss = [];
-                opts.xm=20;
-                opts.eh=46;
-                opts.headTitleHeight=24;
+                opts.xm = 20;
+                opts.eh = 50;
+                opts.etm = 0;
+                opts.headTitles = ["名稱", "波寬(us)", "工作比", "頻率(G)", "次數"];
+                opts.headTitleXArr = [240, 9999, 106, 80, 64];
+                opts.headTitleHeight = 24;
                 var ksObjs = [];
 
                 for (var i = 0; i < pulsePara.length; i++) {
                     var strA = pulsePara[i].split(" ");
                     if ((i % 2) === 0) {
                         var ksObjs = [];
-                    } 
+                    }
                     var ksObj = {};
                     ksObj.name = "setLine#" + ((i / 2) | 0) + "." + (i % 2);
                     ksObj.type = "Model~MdaSetLine~base.sys0";
                     var kopts = ksObj.opts = {};
                     var setOpts = kopts.setOpts = sopt.getButtonActs();
-                    if(strA[0]==="1")
-                        setOpts.checked_f=1;
-                    setOpts.enum = [strA[1], strA[2], strA[3],strA[4]];
+                    if (strA[0] === "1")
+                        setOpts.checked_f = 1;
+                    setOpts.enum = [strA[1], strA[2], strA[3], strA[4]];
                     setOpts.value = 0;
                     setOpts.id = "" + i;
                     setOpts.titleWidth = 200;
                     setOpts.titleFontSize = 20;
-                    setOpts.checkWidth=40;
+                    setOpts.checkWidth = 40;
                     setOpts.title = "脈波 " + (i + 1);
+                    setOpts.xArr = [9999, 100, 80, 60];
+                    setOpts.fontSize = 24;
                     ksObjs.push(ksObj);
-                    if(i%2)
+                    if (i % 2)
                         opts.ksObjss.push(ksObjs);
                 }
 
 
                 opts.actionFunc = function (iobj) {
+                    console.log(iobj);
+                    if (iobj.act === "actButtonClick") {
+                        var setLineObj = iobj.kvObj;
+                        if (iobj.buttonInx === 0) {
+                            var setOpts = sopt.getOptsFloat();
+                            setOpts.min = gr.paraSet.pulseWidthMin;
+                            setOpts.max = gr.paraSet.pulseWidthMax;
+                        }
+                        if (iobj.buttonInx === 1) {
+                            var setOpts = sopt.getOptsFloat();
+                            setOpts.min = gr.paraSet.pulseDutyMin;
+                            setOpts.max = gr.paraSet.pulseDutyMax;
+                        }
+                        if (iobj.buttonInx === 2) {
+                            var setOpts = sopt.getOptsFloat();
+                            setOpts.min = gr.paraSet.pulseFreqMin;
+                            setOpts.max = gr.paraSet.pulseFreqMax;
+                        }
+                        if (iobj.buttonInx === 3) {
+                            var setOpts = sopt.getOptsNature();
+                            setOpts.min = 1;
+                            setOpts.max = 99;
+                        }
+                        var butInx = iobj.buttonInx;
+                        setOpts.value = KvLib.toNumber(setLineObj.opts.setOpts.enum[iobj.buttonInx], 0);
+                        var opts = {};
+                        opts.setOpts = setOpts;
+                        opts.actionFunc = function (iobj) {
+                            console.log(iobj);
+                            if (iobj.act === "padEnter") {
+                                setLineObj.opts.setOpts.enum[butInx] = iobj.inputText;
+                                setLineObj.reCreate();
+                            }
+                        };
+                        box.intPadBox(opts);
+                        return;
+                    }
+
+
                     if (iobj.act === "mouseClick" && iobj.buttonId === "ok") {
                         console.log(iobj);
-                        return;
-                        var paraSet = {};
-                        for (var i = 0; i < iobj.ksObjss.length; i++) {
-                            var obj = iobj.ksObjss[i][0];
-                            var setOpts = obj.opts.setOpts;
-                            paraSet[setOpts.id] = setOpts.value;
+                        var mdaBox = iobj.sender;
+                        var container = mdaBox.blockRefs["mainMd"];
+                        var ksObjss = container.opts.ksObjss;
+                        var inx = 0;
+                        var strA = [];
+                        for (var i = 0; i < ksObjss.length; i++) {
+                            var ksObjs = ksObjss[i];
+                            for (var j = 0; j < ksObjs.length; j++) {
+                                var setOpts = ksObjs[j].opts.setOpts;
+                                var str = "";
+                                if (setOpts.checked_f)
+                                    str += "1";
+                                else
+                                    str += "0";
+                                for (var k = 0; k < setOpts.enum.length; k++) {
+                                    str += " ";
+                                    str += setOpts.enum[k];
+                                }
+                                strA.push(str);
+                            }
                         }
-                        var obj = {};
-                        obj.act = "paraSetOk";
-                        obj.paraSet = paraSet;
+                        gr.paraSet["localPulseGenParas"] = strA;
+                        var fileName = "paraSet";
+                        var content = JSON.stringify(gr.paraSet);
+                        sv.saveStringToFile("responseDialogError", "null", fileName, content);
                     }
                 };
                 box.setLineBox(opts);
@@ -879,7 +938,7 @@ class LocationTarget {
             //
             setOptss.push(sopt.getEditUnit({title: " 高度:", titleWidth: 70, "unit": "公尺", unitWidth: 60, value: 123}));
             setOptss.push(sopt.getEditUnit({title: " 方位:", titleWidth: 70, "unit": "度", unitWidth: 40, value: 48, max: 360}));
-            setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', '<i class="gf">&#xe161</i>']}));
+            setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', '<i class="gf">&#xe161</i>'],fontSize:30}));
             //
             setOptss.push(sopt.getLabelViews({title: " 狀態:", titleWidth: 70, enum: ["view string"]}));
         };
@@ -956,8 +1015,8 @@ class LocationTarget {
         setOptss.push(sopt.getEditUnit({title: "雷達輻射起始角度:", titleWidth: 200, "unit": "度", unitWidth: 40, value: "23"}));
         setOptss.push(sopt.getEditUnit({title: "雷達輻射終止角度:", titleWidth: 200, "unit": "度", unitWidth: 40, value: "151"}));
         setOptss.push(sopt.getEditUnit({title: "RPM:", titleWidth: 200, "unit": "轉", unitWidth: 40, value: "6.8"}));
-        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', "地圖"]}));
-        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['放大', '縮小', "啟動", "停止"]}));
+        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', "地圖"],fontSize:25}));
+        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['放大', '縮小', "啟動", "停止"],fontSize:25}));
         opts.editIndex = 3;
         opts.actionFunc = function (iobj) {
             console.log(iobj);

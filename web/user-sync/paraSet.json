@@ -79,6 +79,7 @@
         ]
     },
     "localPulseGenParas": [
+        "0 30 2.3 3.2 3",
         "1 10.0 6.0 3.1 1",
         "1 10.0 6.0 3.1 1",
         "1 10.0 6.0 3.1 1",
@@ -109,14 +110,42 @@
         "1 10.0 6.0 3.1 1",
         "1 10.0 6.0 3.1 1",
         "1 10.0 6.0 3.1 1",
-        "1 10.0 6.0 3.1 1",
-        "1 10.0 6.0 3.1 1"
+        "0 36 6.0 3.1 2"
     ],
     "dsc~localPulseGenParas": {
         "getType": "floatAStrA",
         "memo": "enable pulseWidth duty freq  times",
         "title": "本地脈波參數"
     },
-
+    "pulseWidthMin": 10,
+    "dsc~pulseWidthMin": {
+        "getType": "float",
+        "title": "脈波寬度最小值"
+    },
+    "pulseWidthMax": 2000,
+    "dsc~pulseWidthMax": {
+        "getType": "float",
+        "title": "脈波寬度最大值"
+    },
+    "pulseDutyMin": 1,
+    "dsc~pulseDutyMin": {
+        "getType": "float",
+        "title": "脈波工作比最小值"
+    },
+    "pulseDutyMax": 20,
+    "dsc~pulseDutyMax": {
+        "getType": "float",
+        "title": "脈波工作比最大值"
+    },
+    "pulseFreqMin": 2.9,
+    "dsc~pulseFreqMin": {
+        "getType": "float",
+        "title": "脈波頻率最小值"
+    },
+    "pulseFreqMax": 3.5,
+    "dsc~pulseFreqMax": {
+        "getType": "float",
+        "title": "脈波頻率最大值"
+    },
     "dsc~end": 0
 }
