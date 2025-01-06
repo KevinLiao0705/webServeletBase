@@ -241,17 +241,6 @@ class Block {
     }
     setTimer(name, tCount, repeatCount, func) {
         Block.setTimer(this.opts, name, tCount, repeatCount, func);
-        return;
-
-        if (!opts.timerObj)
-            opts.timerObj = {};
-        var tobj = {};
-        tobj.tCount = tCount;
-        tobj.cnt = 0;
-        tobj.func = func;
-        tobj.repeatCount = repeatCount;
-        tobj.repeatCnt = 0;
-        opts.timerObj[name] = tobj;
     }
 
     setMargin(opts) {
@@ -957,7 +946,7 @@ class Block {
                 continue;
             ipObj.cnt = 0;
             if (ipObj.type === "directName") {
-                if (ipObj.inputName === "self.fatherMd.opts.hecButColor") {
+                if (ipObj.inputName === "self.stas.location.gpsDatas[0][0]") {
                     var obj = self.fatherMd.opts.hecButColor;
                     var uu = 0;
                 }
@@ -1378,13 +1367,20 @@ class Block {
             md.clear();
             var newMd = eval("new " + className + "(name,type,{});");
             newMd.opts = nopts;
-            newMd.build();
+            //newMd.build();
             newMd.fatherMd = fatherMd;
             newMd.cname = cname;
             newMd.rname = rname;
-            fatherMd.blocks[cname] = newMd;
-            fatherMd.blockRefs[name] = newMd;
-            newMd.create(posObj.fhid, posObj.x, posObj.y, posObj.w, posObj.h);
+            if (fatherMd) {
+                fatherMd.blocks[cname] = newMd;
+                fatherMd.blockRefs[name] = newMd;
+                newMd.create(posObj.fhid, posObj.x, posObj.y, posObj.w, posObj.h);
+            }
+            else{
+                newMd.create(posObj.fhid, posObj.x, posObj.y, posObj.w, posObj.h);
+                if(posObj.fhid==="rootBody")
+                    gr.mdMain=newMd;
+            }
             return newMd;
         }
     }
@@ -1595,6 +1591,8 @@ class Cp_base {
         sonElem.style.height = (st.ch - 6) + "px";
         sonElem.style.fontSize = KvLib.transUnit(op.editFontSize, 20, st.cw, st.ch) + "px";
         sonElem.autocomplete = "none";
+        if (op.editBaseColor)
+            sonElem.style.backgroundColor = op.editBaseColor;
         sonElem.name = md.kid + Math.floor(Date.now() / 1000);//disable auto fill
         if (op.password_f) {
             sonElem.type = "text";
@@ -1604,7 +1602,10 @@ class Cp_base {
             sonElem.style.fontFamily = op.editFontFamily;
         if (op.readOnly_f) {
             sonElem.readOnly = true;
-            sonElem.style.backgroundColor = "#eee";
+            if (op.editBaseColor)
+                sonElem.style.backgroundColor = op.editBaseColor;
+            else
+                sonElem.style.backgroundColor = "#eee";
         }
         if (op.blur_f)
             sonElem.addEventListener('blur', md.blurFunc);

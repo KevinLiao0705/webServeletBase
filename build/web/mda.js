@@ -921,6 +921,8 @@ class MdaContainer {
         opts.layoutType = "page";//page,table,free
         opts.ksObjWs = [];
         opts.ksObjss = [];
+        opts.headTitleHeight = 0;
+
         for (var i = 0; i < 1000; i++) {
             var ksObjs = [];
             for (var j = 0; j < 10; j++) {
@@ -997,7 +999,7 @@ class MdaContainer {
 
         if (!op.disHScroll_f) {
             if (st.wWinRate < 1) {
-                var cname = md.lyMaps["listBody"] + "~" + 1;
+                var cname = md.lyMaps["listBody"] + "~" + 2;
                 var opts = {};
                 opts.winRate = st.wWinRate;
                 opts.posRate = op.xPosRate;
@@ -1078,7 +1080,7 @@ class MdaContainer {
         };
 
         if (op.layoutType === "page") {
-            var cname = md.lyMaps["listBody"] + "~" + 0;
+            var cname = md.lyMaps["listBody"] + "~" + 1;
             md.clearOptsAll(cname);
             var posObj = md.getRectObj(cname, md.layouts);
             var winH = posObj.h;
@@ -1145,7 +1147,7 @@ class MdaContainer {
 
 
         if (op.layoutType === "table") {
-            var cname = md.lyMaps["listBody"] + "~" + 0;
+            var cname = md.lyMaps["listBody"] + "~" + 1;
             md.clear(cname);
             var opts = {};
             var allH = st.allH - st.winH;
@@ -1201,7 +1203,7 @@ class MdaContainer {
                     var ksObj = op.ksObjss[i][j];
                     if (!ksObj)
                         break;
-                    var cname = md.lyMaps["listBody"] + "~" + 0;
+                    var cname = md.lyMaps["listBody"] + "~" + 1;
                     var opts = ksObj.opts;
                     opts.tm = yy;
                     opts.ih = op.eh;
@@ -1237,7 +1239,7 @@ class MdaContainer {
 
 
         if (op.layoutType === "free") {
-            var cname = md.lyMaps["listBody"] + "~" + 0;
+            var cname = md.lyMaps["listBody"] + "~" + 1;
             md.clear(cname);
             var opts = {};
             var allH = st.allH - st.winH;
@@ -1362,6 +1364,7 @@ class MdaContainer {
         obj.pageRowAmt = st.yc;
         obj.pageAll = Math.floor((op.ksObjss.length - 0.001) / st.yc) + 1;
         obj.pageIndex = Math.floor((st.rowStart - 0.001) / st.yc) + 1;
+        st.pageAll = obj.pageAll;
         KvLib.exeFunc(op.actionFunc, obj);
 
 
@@ -1375,8 +1378,17 @@ class MdaContainer {
         st.allLine = op.ksObjss.length;
         var cname = md.lyMaps["body"] + "~" + 0;
         md.clearOptsAll(cname);
+
+        var cname = md.lyMaps["body"];
+        md.clear(cname);
+        var cname = md.lyMaps["body"] + "~" + 0;
+        var opts = {};
+        opts.yArr = [0, 9999];
+        md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "mainBody");
+
+        var cname = md.lyMaps["mainBody"] + "~" + 1;
         var posObj = md.getRectObj(cname, md.layouts);
-        var listBodyH = posObj.h;
+        var listBodyH = posObj.h - op.headTitleHeight;
         var listBodyW = posObj.w;
         var vScrollWidth = op.scrollWidth;
         var hScrollWidth = op.scrollWidth;
@@ -1435,6 +1447,7 @@ class MdaContainer {
             st.allH = listBodyH;
             var row = (listBodyH + op.ym - op.etm - op.ebm) / (op.eh + op.ym);
             var rowCnt = Math.round(row);
+            op.eh = (listBodyH + op.ym - op.etm - op.ebm) / rowCnt - op.ym;
             if (op.ksObjss.length <= rowCnt)
                 vScrollWidth = 0;
             else {
@@ -1492,26 +1505,50 @@ class MdaContainer {
         if (!st.scrollH_f)
             hScrollWidth = 0;
 
-        var cname = md.lyMaps["body"];
+        var cname = md.lyMaps["mainBody"] + "~" + 1;
+
         md.clear(cname);
-        var cname = md.lyMaps["body"] + "~" + 0;
+        var cname = md.lyMaps["mainBody"] + "~" + 1;
         var opts = {};
         opts.xArr = [9999, vScrollWidth];
         md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "main");
 
         var cname = md.lyMaps["main"] + "~" + 0;
         var opts = {};
-        opts.yArr = [9999, hScrollWidth];
+        opts.yArr = [op.headTitleHeight, 9999, hScrollWidth];
         var lyObj = md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "listBody");
 
         var cname = md.lyMaps["listBody"] + "~" + 0;
         var opts = {};
-        opts.setPanel_f = 1;
-        var plateObj = md.newBlock(cname, opts, "Component~Cp_base~plate.none", "listPanel");
-        lyObj.stas.rects[0].elemId = plateObj.elemId;
+        opts.xc = op.ksObjss[0].length;
+        opts.lm = op.elm;
+        opts.rm = op.erm;
+        opts.xm = op.xm;
+        var lyObj = md.newLayout(cname, opts, "Layout~Ly_base~array.sys0", "headTitleBody");
 
-        this.newPage();
-        this.newScroll();
+
+        for (var i = 0; i < op.ksObjss[0].length; i++) {
+            var cname = md.lyMaps["headTitleBody"] + "~" + i;
+            var opts = {};
+            opts.xArr = op.headTitleXArr;
+            opts.headTitles = op.headTitles;
+            md.newBlock(cname, opts, "Model~MdaHeadTitle~base.sys0", "headTitle#" + i);
+        }
+        //lyObj.stas.rects[0].elemId = plateObj.elemId;
+
+        /*
+         var cname = md.lyMaps["listBody"] + "~" + 0;
+         var opts = {};
+         opts.setPanel_f = 1;
+         var plateObj = md.newBlock(cname, opts, "Component~Cp_base~plate.none", "listPanel");
+         lyObj.stas.rects[0].elemId = plateObj.elemId;
+         */
+
+
+
+
+        md.mdClass.newPage();
+        md.mdClass.newScroll();
         return;
 
     }
@@ -2791,6 +2828,8 @@ class MdaBox {
         opts.titleColor = "#000";
         opts.buttons = ['<i class="gf">&#xeacf;</i>', '<i class="gf">&#xead0;</i>'];
         opts.buttonIds = ["prevButton", "nextButton"];
+        opts.autoPage_f = 1;
+        opts.buttonsOn_f = 0;
         opts.buttonWidth = 150;
         opts.buttonXm = 20;
         opts.headButtons = [];
@@ -2811,6 +2850,34 @@ class MdaBox {
     subTypeOpts(opts) {
     }
     afterCreate() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var mainMd = md.blockRefs["mainMd"];
+        if (op.buttonsOn_f === 0) {
+            if (mainMd.stas.pageAll >= 2) {
+                if (op.autoPage_f) {
+                    op.buttonsOn_f = 1;
+                    md.reCreate();
+                    return;
+                }
+            }
+        }
+
+        /*
+         if (!op.buttonsOn_f) {
+         if (iobj.totalRow > iobj.pageRowAmt) {
+         if (op.autoPage_f) {
+         op.buttonsOn_f=1;
+         md.clear();
+         md.reCreate();
+         return;
+         }
+         }
+         }
+         
+         */
+
         var obj = {};
         obj.act = "afterCreate";
         obj.sender = this.md;
@@ -2843,7 +2910,7 @@ class MdaBox {
         if (op.title)
             titleHeight = op.titleHeight;
         var buttonHeight = 0;
-        if (op.buttons.length)
+        if (op.buttonsOn_f)
             buttonHeight = op.buttonHeight;
         opts.yArr = [titleHeight, 9999, buttonHeight];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
@@ -2889,68 +2956,71 @@ class MdaBox {
             blocks[cname] = {name: "headButton#" + i, type: "Component~Cp_base~button.sys0", opts: opts};
         }
 
-        if (op.buttons.length) {
-            var cname = lyMaps["main"] + "~" + 2;
+
+
+        //=======================================    
+        var cname = lyMaps["main"] + "~" + 2;
+        var opts = {};
+        opts.xc = op.buttons.length;
+        opts.xm = op.buttonXm;
+        opts.ew = op.buttonWidth;
+        opts.wAlign = "center";
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["footBody"] = cname;
+
+        if (op.viewPage_f) {
             var opts = {};
-            opts.xc = op.buttons.length;
-            opts.xm = op.buttonXm;
-            opts.ew = op.buttonWidth;
-            opts.wAlign = "center";
-            layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
-            lyMaps["footBody"] = cname;
-
-            if (op.viewPage_f) {
-                var opts = {};
-                opts.iw = 200;
-                opts.wAlign = "left";
-                opts.innerText = "";
-                opts.fontSize = 16;
-                opts.textAlign = "left";
-                blocks[cname] = {name: "pageView", type: "Component~Cp_base~plate.none", opts: opts};
-            }
-
-            for (var i = 0; i < op.buttons.length; i++) {
-                var cname = lyMaps["footBody"] + "~" + i;
-                var opts = {};
-                opts.innerText = op.buttons[i];
-                opts.id = op.buttonIds[i];
-                if (opts.id === "nextButton" || opts.id === "prevButton") {
-                    opts.mousePushCon_f = 1;
-                    opts.mouseClick_f = 0;
-                }
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    if (iobj.act === "mousePush") {
-                        var obj = {};
-                        obj.act = "checkPreChange";
-                        obj.kvObj = md;
-                        obj.sender = md;
-                        var errStrs = KvLib.exeFunc(op.actionFunc, obj);
-                        if (errStrs) {
-                            iobj.kvObj.stas.mousePushAct_f = 0;
-                            return;
-                        }
-
-                        if (iobj.kvObj.opts.id === "nextButton") {
-                            var kvObj = md.blockRefs["mainMd"];
-                            if (kvObj.mdClass.nextPage)
-                                kvObj.mdClass.nextPage();
-                            return;
-                        }
-                        if (iobj.kvObj.opts.id === "prevButton") {
-                            var kvObj = md.blockRefs["mainMd"];
-                            if (kvObj.mdClass.prevPage)
-                                kvObj.mdClass.prevPage();
-                            return;
-                        }
-                    }
-                    iobj.sender = md;
-                    KvLib.exe(op.actionFunc, iobj);
-                };
-                blocks[cname] = {name: op.buttonIds[i], type: "Component~Cp_base~button.sys0", opts: opts};
-            }
+            opts.iw = 200;
+            opts.wAlign = "left";
+            opts.innerText = "";
+            opts.fontSize = 16;
+            opts.textAlign = "left";
+            blocks[cname] = {name: "pageView", type: "Component~Cp_base~plate.none", opts: opts};
         }
 
+        for (var i = 0; i < op.buttons.length; i++) {
+            var cname = lyMaps["footBody"] + "~" + i;
+            var opts = {};
+            opts.innerText = op.buttons[i];
+            opts.id = op.buttonIds[i];
+            if (opts.id === "nextButton" || opts.id === "prevButton") {
+                opts.mousePushCon_f = 1;
+                opts.mouseClick_f = 0;
+            }
+            opts.actionFunc = function (iobj) {
+                console.log(iobj);
+                if (iobj.act === "mousePush") {
+                    var obj = {};
+                    obj.act = "checkPreChange";
+                    obj.kvObj = md;
+                    obj.sender = md;
+                    var errStrs = KvLib.exeFunc(op.actionFunc, obj);
+                    if (errStrs) {
+                        iobj.kvObj.stas.mousePushAct_f = 0;
+                        return;
+                    }
+
+                    if (iobj.kvObj.opts.id === "nextButton") {
+                        var kvObj = md.blockRefs["mainMd"];
+                        if (kvObj.mdClass.nextPage)
+                            kvObj.mdClass.nextPage();
+                        return;
+                    }
+                    if (iobj.kvObj.opts.id === "prevButton") {
+                        var kvObj = md.blockRefs["mainMd"];
+                        if (kvObj.mdClass.prevPage)
+                            kvObj.mdClass.prevPage();
+                        return;
+                    }
+                }
+                iobj.sender = md;
+                KvLib.exe(op.actionFunc, iobj);
+            };
+            blocks[cname] = {name: op.buttonIds[i], type: "Component~Cp_base~button.sys0", opts: opts};
+        }
+
+
+        //=======================================    
         var cname = lyMaps["main"] + "~" + 1;
         var opts = {};
         opts.ih = op.eh;
@@ -2962,15 +3032,6 @@ class MdaBox {
             console.log(iobj);
             if (iobj.act === "newPage") {
                 var md = self.md;
-                if (md.opts.buttons.length !== 0) {
-                    if (iobj.totalRow <= iobj.pageRowAmt) {
-                        md.opts.buttons = [];
-                        md.reCreate();
-                        return;
-                    }
-                }
-
-
                 iobj.sender = md;
                 KvLib.exeFunc(op.actionFunc, iobj);
                 var kvObj = md.blockRefs["pageView"];
@@ -3300,6 +3361,7 @@ class MdaSetLine {
                     setOpts.value = inValue;
                 return;
             }
+            //============================
             var number_f = 0;
             if (setOpts.checkType === "int")
                 number_f = 1;
@@ -3307,15 +3369,21 @@ class MdaSetLine {
                 number_f = 1;
             if (setOpts.checkType === "hex")
                 number_f = 1;
-
             var chkValueA = [];
             if (!setOpts.array)
                 var chkValueA = [inValue];
             else
                 var chkValueA = inValue.split(",");
+            //============================
             var ivA = [];
             for (var i = 0; i < chkValueA.length; i++) {
                 var iValue = chkValueA[i];
+                if (checkType === "floatAStr" || checkType === "intAStr" || checkType === "objStr") {
+                    ivA.push(iValue.trim().slice(1, iValue.length - 2));
+                    continue;
+                }
+
+
                 if (number_f) {
                     if (checkType === "int")
                         var iv = KvLib.strToInt(iValue, null);
@@ -3323,7 +3391,6 @@ class MdaSetLine {
                         var iv = KvLib.hexStrToInt(iValue, null);
                     if (checkType === "float")
                         var iv = KvLib.strToFloat(iValue, null);
-
                     if (setOpts.nullErr_f) {
                         if (iv === null)
                             return [setOpts.title, KvLib.getKvText(syst.errorOfDataFormat).text];
@@ -3334,7 +3401,11 @@ class MdaSetLine {
                     if (setOpts.min !== null && setOpts.min !== undefined)
                         if (iv < setOpts.min)
                             return [setOpts.title, KvLib.getKvText(syst.dataLessTheMin).text + setOpts.min + " !!!"];
-                    ivA.push(iv);
+                    if (setOpts.dataType === "str")
+                        ivA.push(iValue);
+                    else
+                        ivA.push(iv);
+
                 }
                 if (checkType === "color") {
                     var color = KvLib.transColor(iValue, null);
@@ -3550,14 +3621,14 @@ class MdaSetLine {
         opts.xArr = [expandWidth, checkWidth, noWidth, iconWidth, titleWidth, 9999, unitWidth];
         var actButtons = KvLib.setValue(setOpts.actButtons, []);
         var actButtonWidth = KvLib.setValue(setOpts.actButtonWidth, 50);
-        for (var i = 0; i < actButtons.length; i++){
-            var ww=actButtonWidth;
-            if(setOpts.readOnly_f){
-                if(actButtons[i]==="pad")
-                    ww=0;;
-            }    
+        for (var i = 0; i < actButtons.length; i++) {
+            var ww = actButtonWidth;
+            if (setOpts.readOnly_f) {
+                if (actButtons[i] === "pad")
+                    ww = 0;
+            }
             opts.xArr.push(ww);
-        }    
+        }
         md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "main");
 
         if (expandWidth) {
@@ -3603,6 +3674,7 @@ class MdaSetLine {
             };
             opts.innerText = "";
             opts.innerTextColor = "#080";
+            opts.baseColor = "#eef";
             if (setOpts.checked_f) {
                 opts.innerText = '<i class="gf">&#xe5ca</i>';
             }
@@ -3834,8 +3906,6 @@ class MdaSetLine {
                         box.colorPadBox(opts);
                         return;
                     }
-
-
                     if (sop.dataType === "float") {
                         box.floatPadBox(opts);
                         return;
@@ -3858,6 +3928,10 @@ class MdaSetLine {
                     }
                     if (sop.checkType === "int") {
                         box.intPadBox(opts);
+                        return;
+                    }
+                    if (sop.checkType === "floatAStr") {
+                        box.floatAStrABox(opts);
                         return;
                     }
 
@@ -3959,13 +4033,18 @@ class MdaSetLine {
 
         if (setOpts.setType === "buttonActs") {
             var opts = {};
-            opts.xc = setOpts.enum.length;
             opts.xm = setOpts.xm;
             if (setOpts.lm)
                 opts.lm = setOpts.lm;
             if (setOpts.rm)
                 opts.rm = setOpts.rm;
-            md.newLayout(cname, opts, "Layout~Ly_base~array.sys0", "mainBody");
+            if (setOpts.xArr) {
+                opts.xArr = setOpts.xArr;
+                md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "mainBody");
+            } else {
+                opts.xc = setOpts.enum.length;
+                md.newLayout(cname, opts, "Layout~Ly_base~array.sys0", "mainBody");
+            }
             var buttonFunc = function (iobj) {
                 console.log(iobj);
                 var strA = iobj.kvObj.name.split("#");
@@ -3977,6 +4056,7 @@ class MdaSetLine {
                 var cname = md.lyMaps["mainBody"] + "~" + i;
                 var opts = {};
                 opts.innerText = setOpts.enum[i];
+                opts.fontSize = "0.7rh";
                 if (setOpts.fontSize)
                     opts.fontSize = setOpts.fontSize;
                 opts.actionFunc = function (iobj) {
@@ -3986,9 +4066,12 @@ class MdaSetLine {
                     var inx = KvLib.toInt(strA[1]);
                     iobj.buttonInx = inx;
                     iobj.buttonText = md.opts.setOpts.enum[inx];
+                    if(md.opts.setOpts.enumId)
+                        iobj.buttonId=md.opts.setOpts.enumId[inx];
+                    iobj.act="actButtonClick";
+                    iobj.kvObj=md;
                     KvLib.exeFunc(op.actionFunc, iobj);
                 };
-                opts.fontSize = "0.7rh";
                 opts.baseColor = "#ccf";
                 md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "buttonMain#" + i);
             }
@@ -4136,6 +4219,8 @@ class MdaSetLine {
                 var strA = iobj.kvObj.name.split("#");
                 var inx = KvLib.toInt(strA[1], -1);
                 op.setOpts.value = inx;
+                iobj.sender=md;
+                KvLib.exe(op.actionFunc,iobj);
             };
             for (var i = 0; i < setOpts.enum.length; i++) {
                 var cname = md.lyMaps["mainBody"] + "~" + i;
@@ -4181,6 +4266,13 @@ class MdaSetLine {
             if (!op.disBlur_f)
                 opts.blur_f = 1;
             opts.readOnly_f = setOpts.readOnly_f;
+            opts.editBaseColor=setOpts.editBaseColor;
+            if(setOpts.watchDatas){
+                for(var i=0;i<setOpts.watchDatas.length;i++){
+                    var items=setOpts.watchDatas[i];
+                    md.setInputWatch(opts, items[0], items[1], items[2], items[3]);
+                }    
+            }
             md.newBlock(cname, opts, "Component~Cp_base~inputText.sys0", "inputText");
             document.onkeydown = function (evt) {
                 evt = evt || window.event;
@@ -4212,15 +4304,15 @@ class MdaSetLine {
                         }
                     }
                 }
-                
 
-                
-                
+
+
+
             }
             opts.innerText = "";
             opts.lpd = 0;
             opts.rpd = 0;
-            opts.editFontSize=20;
+            opts.editFontSize = 20;
             md.newBlock(cname, opts, "Component~Cp_base~textArea.sys0", "textArea");
             document.onkeydown = function (evt) {
                 evt = evt || window.event;
@@ -4316,11 +4408,18 @@ class MdaPad {
         var setOpts = opts.setOpts;
         var dataType = setOpts.dataType;
         var checkType = setOpts.checkType;
-        var st=md.stas;
-        st.padType="keyboard";
+        var st = md.stas;
+        st.padType = "keyboard";
 
-        if (checkType === "int" || checkType === "float" ) {
-            st.padType="pad";
+        var numberStyle = 0;
+        if (checkType === "int" || checkType === "intStr")
+            numberStyle = 1;
+        if (checkType === "float" || checkType === "floatStr")
+            numberStyle = 1;
+        if (checkType === "floatAStr")
+            numberStyle = 1;
+        if (numberStyle) {
+            st.padType = "pad";
             opts.yArr = ["0.25rh", "0.25rh", "0.25rh", "0.25rh"];
             var xyArr = opts.xyArr = [];
             xyArr.push(["0.16rw", "0.16rw", "0.16rw", "0.16rw", "0.16rw", 9999]);
@@ -4334,10 +4433,10 @@ class MdaPad {
                 "+-", "0", "", "", "Clr", '<i class="gf">&#xe31b;</i>'
             ];
             opts.numIds = [
-                "7", "8", "9","null", 'back', "del",
-                "4", "5", "6","null", "home", "end",
-                "1", "2", "3","null", "left", "right",
-                "+-", "0", "null","null", "clr", 'enter'
+                "7", "8", "9", "null", 'back', "del",
+                "4", "5", "6", "null", "home", "end",
+                "1", "2", "3", "null", "left", "right",
+                "+-", "0", "null", "null", "clr", 'enter'
             ];
             if (setOpts.min >= 0) {
                 opts.numTbl[18] = "";
@@ -4350,16 +4449,19 @@ class MdaPad {
             if (setOpts.array) {
                 opts.numTbl[3] = ",";
                 opts.numIds[3] = ",";
-                if(setOpts.dataType==="str"){
-                    
+                opts.numTbl[21] = "NL";
+                opts.numIds[21] = "nextLine";
+                if (setOpts.dataType === "str") {
+                    opts.numTbl[9] = "\"";
+                    opts.numIds[9] = "\"";
+                    opts.numTbl[15] = "[ ]";
+                    opts.numIds[15] = " ";
                 }
-                
-                
             }
             return;
         }
         if (checkType === "hex" || checkType === "color") {
-            st.padType="pad";
+            st.padType = "pad";
             opts.yArr = ["0.2rh", "0.2rh", "0.2rh", "0.2rh", "0.2rh"];
             var xyArr = opts.xyArr = [];
             xyArr.push(["0.166rw", "0.166rw", "0.166rw", "0.166rw", "0.166rw", "0.166rw"]);
@@ -4525,7 +4627,7 @@ class MdaPad {
             box.errorBox({kvTexts: errStrs});
             return errStrs;
         }
-        var iobj={};
+        var iobj = {};
         iobj.sender = md;
         iobj.inputText = inputElem.value;
         iobj.act = "padEnter";
@@ -4551,7 +4653,7 @@ class MdaPad {
             }
             var numId = iobj.kvObj.opts.id;
             var keyInx = KvLib.toInt(iobj.kvObj.name.split("#")[1], 0);
-            
+
             var setLine = md.blockRefs["lcd"];
             if (op.setOpts.setType === "inputText") {
                 var inputText = setLine.blockRefs["inputText"];
@@ -4609,12 +4711,12 @@ class MdaPad {
                 return;
             if (numId === "ins")
                 return;
-
+            if (numId === "nextLine") {
+                setLine.mdClass.addInputText("\n");
+                return;
+            }
             if (numId === "enter") {
-                if(st.padType==="pad")
-                    self.enterPrg(iobj);
-                else
-                    setLine.mdClass.addInputText("\n");
+                self.enterPrg(iobj);
                 return;
             }
 
@@ -4893,7 +4995,7 @@ class MdaPad {
         var cname = lyMaps["main"] + "~" + 0;
         var opts = {};
         opts.actionFunc = function (iobj) {
-            console.log(iobj);    
+            console.log(iobj);
             self.enterPrg(iobj);
             return;
         };
@@ -5475,7 +5577,17 @@ class MdaSetGroup {
         var md = iobj.sender.fatherMd;
         var st = md.stas;
         var op = md.opts;
-        if (iobj.act === "mouseClick") {
+        if (iobj.act === "blur") {
+            var sender = iobj.sender;
+            st.blurTime = 0;
+            st.blurObjName = sender.name;
+            return;
+        }
+        iobj.sender=md;
+        KvLib.exe(op.actionFunc, iobj);
+        return;
+        
+        if (iobj.act === "actButtonClick") {
             if (iobj.sender.name === ("mdaSetLine#" + op.editIndex)) {
                 if (iobj.buttonInx === op.editButtonIndex) {
                     if (st.blurObjName) {
@@ -5695,5 +5807,65 @@ class MdaButtons {
 
 
 
+    }
+}
+
+
+class MdaHeadTitle {
+    constructor() {
+    }
+    initOpts(md) {
+        var self = this;
+        var opts = {};
+        Block.setBaseOpts(opts);
+        opts.xArr = [9999, 100, 100];
+        opts.headTitles = ["123", "456", "789"];
+        this.subTypeOpts(opts);
+        return opts;
+    }
+    subTypeOpts(opts) {
+        if (this.md.subType === "base.sys0") {
+        }
+    }
+    afterCreate() {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var iobj = {};
+        iobj.act = "afterCreate";
+        iobj.sender = md;
+        KvLib.exe(op.actionFunc, iobj);
+    }
+    build() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        var lyMaps = md.lyMaps;
+        var blocks = op.blocks;
+        var layouts = op.layouts;
+        //======================================    
+        var cname = "c";
+        var opts = {};
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["body"] = cname;
+        //======================================    
+        var opts = {};
+        md.setPns(opts);
+        opts.mouseClick_f = 1;
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
+        //======================================    
+        opts.xArr = op.xArr;
+        opts.xm = 0;
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["main"] = cname;
+
+
+        for (var i = 0; i < op.xArr.length; i++) {
+            var cname = lyMaps["main"] + "~" + i;
+            var opts = {};
+            opts.innerText = op.headTitles[i];
+            blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.sys0", opts: opts};
+        }
     }
 }

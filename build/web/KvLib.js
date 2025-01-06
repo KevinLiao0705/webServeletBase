@@ -2012,6 +2012,18 @@ class KvLib {
         return outObj;
     }
 
+    static setStrA(orgStr,inx,value){
+        var strA=orgStr.split(/[ ,]+/);
+        strA[inx]=value;
+        var retStr="";
+        for(var i=0;i<strA.length;i++){
+            if(i>=1)
+                retStr+=" ";
+            retStr+=strA[i];
+        }
+        return retStr;
+    }
+
     static valueToMemo(_dataType, _inputValue, _inType) {
         var inputValue = _inputValue;
         var inType = _inType;

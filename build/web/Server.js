@@ -48,6 +48,42 @@ class Server {
         this.callServer(JSON.stringify(obj));
     }
 
+    serverLogin(responseType, responseAction, userName, password) {
+        var opts;
+        var obj = {};
+        obj["act"] = "login";
+        obj["type"] = "command";
+        //=============================
+        var retOpts = obj["retOpts"] = {};
+        retOpts["cmdInx"] = sv.cmdInx;
+        retOpts["responseType"] = responseType;
+        retOpts["responseAction"] = responseAction;
+        //=============================
+        var opts = obj["opts"] = {};
+        opts["appName"] = gr.appName;
+        opts["userName"] = userName;
+        opts["password"] = password;
+        this.callServer(JSON.stringify(obj));
+    }
+
+    saveStringToFile(responseType, responseAction, fileName, content) {
+        var opts;
+        var obj = {};
+        obj["act"] = "saveStringToFile";
+        obj["type"] = "command";
+        //=============================
+        var retOpts = obj["retOpts"] = {};
+        retOpts["cmdInx"] = sv.cmdInx;
+        retOpts["responseType"] = responseType;
+        retOpts["responseAction"] = responseAction;
+        //=============================
+        var opts = obj["opts"] = {};
+        opts["appName"] = gr.appName;
+        opts["fileName"] = fileName;
+        opts["content"] = content;
+        this.callServer(JSON.stringify(obj));
+    }
+
     callServer(dataJson, url) {
         var self = this;
         self.serverCallBackMes = null;
@@ -72,6 +108,7 @@ class Server {
         self.cmdInx++;
     }
 
+    //=================================================================
     uploadFiles(files, dir, act, url) {
         let form = new FormData();
         var formFiled = "saveFileToDir~" + dir;
@@ -127,51 +164,51 @@ class Server {
         if (!mes.retOpts)
             return;
         if (mes.retOpts.responseAction === "exeCallBackFunc") {
-            if(!KvLib.exe(gr.serverCallBack, mes))
+            if (!KvLib.exe(gr.serverCallBack, mes))
                 return;
         }
-        
-        
-        
+
+
+
         switch (mes.retOpts.responseType)
         {
             case "responseNone":
                 return;
             case "responseDialogOk":
-                if(mes.status==="ok")
+                if (mes.status === "ok")
                     box.errorBox({kvTexts: [mes.message]});
-                if(mes.status==="error")
+                if (mes.status === "error")
                     box.okBox({kvTexts: [mes.message]});
                 return;
             case "responseDialogError":
-                if(mes.status==="error")
+                if (mes.status === "error")
                     box.errorBox({kvTexts: [mes.message]});
                 return;
             case "responseDialogErrorMessageOk":
-                if(mes.status==="error"){
+                if (mes.status === "error") {
                     box.okBox({kvTexts: [mes.message]});
                     return;
                 }
                 return;
             case "messageOk":
                 gr.message = mes.message;
-                if(mes.retOpts.messageTime)
-                    gr.messageTime=mes.retOpts.messageTime;
+                if (mes.retOpts.messageTime)
+                    gr.messageTime = mes.retOpts.messageTime;
                 return;
             case "messageError":
-                if(mes.status==="error"){
+                if (mes.status === "error") {
                     gr.message = mes.message;
-                    if(mes.retOpts.messageTime)
-                        gr.messageTime=mes.retOpts.messageTime;
-                }    
+                    if (mes.retOpts.messageTime)
+                        gr.messageTime = mes.retOpts.messageTime;
+                }
                 return;
-                
-                
-        }        
+
+
+        }
         return;
-        
-        
-        
+
+
+
         switch (mes.retOpts.responseType)
         {
             case "responseNone":

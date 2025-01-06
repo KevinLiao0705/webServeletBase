@@ -5,9 +5,15 @@ class DummyTarget {
         var self = this;
         var opts = {};
         Block.setBaseOpts(opts);
+        if (!gr.appFirstEntry_f) {
+            gr.appFirstEntry_f = 1;
+            var syncData = gr.syncData = {};
+            var location = syncData.location = {};
+            location.mastGpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+            location.sub1GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+            location.sub2GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+        }
         return opts;
-    }
-    create() {
     }
     actionFunc(iobj) {
         console.log(iobj);
@@ -136,54 +142,144 @@ class DummyTarget {
 
         opts.actionFunc = function (iobj) {
             console.log(iobj);
-            var opts={};
-            opts.paraSet=gr.paraSet;
-            opts.title="Title";
-            box.paraEditBox(opts);
-            return;
-            
-            
-            var opts = {};
-            opts.w = 1000;
-            opts.h = 800;
-            opts.ksObjss = [];
-            var keys = Object.keys(gr.paraSet);
-            //keys.sort();
-            var index = 0;
-            for (var i = 0; i < keys.length; i++) {
-                var strA = keys[i].split("~");
-                if (strA[0] === "dsc")
-                    continue;
+            if (iobj.selectInx === 0) {
+                var opts = {};
+                opts.paraSet = gr.paraSet;
+                opts.title = iobj.selectText;
+                opts.group = "all";
+                opts.actionFunc = function (iobj) {
+                    console.log(iobj);
+                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                    var fileName = "paraSet";
+                    var content = JSON.stringify(gr.paraSet);
+                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                };
+                box.paraEditBox(opts);
+                return;
+            }
+            if (iobj.selectInx === 1) {
+                var opts = {};
+                opts.actionFunc = function (iobj) {
+                    console.log(iobj);
+                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                    var fileName = "paraSet";
+                    var content = JSON.stringify(gr.paraSet);
+                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                };
+                var op = {};
+                //======
+                var opts = {};
+                opts.title = iobj.selectText;
+                var pulsePara = gr.paraSet["localPulseGenParas"];
+                opts.ksObjWs = ["0.5rw", 9999];
+                opts.ksObjss = [];
+                opts.xm = 20;
+                opts.eh = 50;
+                opts.etm = 0;
+                opts.headTitles = ["名稱", "波寬(us)", "工作比(%)", "頻率(G)", "次數"];
+                opts.headTitleXArr = [240, 9999, 106, 80, 64];
+                opts.headTitleHeight = 24;
                 var ksObjs = [];
-                for (var j = 0; j < 1; j++) {
+
+                for (var i = 0; i < pulsePara.length; i++) {
+                    var strA = pulsePara[i].split(" ");
+                    if ((i % 2) === 0) {
+                        var ksObjs = [];
+                    }
                     var ksObj = {};
-                    ksObj.name = "setLine#" + index + "." + j;
+                    ksObj.name = "setLine#" + ((i / 2) | 0) + "." + (i % 2);
                     ksObj.type = "Model~MdaSetLine~base.sys0";
                     var kopts = ksObj.opts = {};
-                    var setOpts = kopts.setOpts = sopt.getOptsInt();
-                    var dscObj = gr.paraSet["dsc~" + keys[i]];
-                    if (dscObj) {
-                        if (dscObj.getType) {
-                            var setOpts = kopts.setOpts = sopt.getOptsPara(dscObj.getType);
-                            KvLib.deepCoverObject(setOpts, dscObj);
-                        } else {
-                            KvLib.deepCoverObject(setOpts, dscObj);
-                        }
-                    }
-                    setOpts.value = gr.paraSet[keys[i]];
-                    setOpts.titleWidth = 300;
+                    var setOpts = kopts.setOpts = sopt.getButtonActs();
+                    if (strA[0] === "1")
+                        setOpts.checked_f = 1;
+                    setOpts.enum = [strA[1], strA[2], strA[3], strA[4]];
+                    setOpts.value = 0;
+                    setOpts.id = "" + i;
+                    setOpts.titleWidth = 200;
                     setOpts.titleFontSize = 20;
-                    setOpts.noWidth = 50;
-                    setOpts.id = keys[i];
-                    if(!setOpts.title)
-                        setOpts.title = keys[i];
-                    setOpts.no = index + 1;
+                    setOpts.checkWidth = 40;
+                    setOpts.title = "脈波 " + (i + 1);
+                    setOpts.xArr = [9999, 100, 80, 60];
+                    setOpts.fontSize = 24;
                     ksObjs.push(ksObj);
-                    index++;
+                    if (i % 2)
+                        opts.ksObjss.push(ksObjs);
                 }
-                opts.ksObjss.push(ksObjs);
+
+
+                opts.actionFunc = function (iobj) {
+                    console.log(iobj);
+                    if (iobj.act === "actButtonClick") {
+                        var setLineObj = iobj.kvObj;
+                        if (iobj.buttonInx === 0) {
+                            var setOpts = sopt.getOptsFloat();
+                            setOpts.min = gr.paraSet.pulseWidthMin;
+                            setOpts.max = gr.paraSet.pulseWidthMax;
+                        }
+                        if (iobj.buttonInx === 1) {
+                            var setOpts = sopt.getOptsFloat();
+                            setOpts.min = gr.paraSet.pulseDutyMin;
+                            setOpts.max = gr.paraSet.pulseDutyMax;
+                        }
+                        if (iobj.buttonInx === 2) {
+                            var setOpts = sopt.getOptsFloat();
+                            setOpts.min = gr.paraSet.pulseFreqMin;
+                            setOpts.max = gr.paraSet.pulseFreqMax;
+                        }
+                        if (iobj.buttonInx === 3) {
+                            var setOpts = sopt.getOptsNature();
+                            setOpts.min = 1;
+                            setOpts.max = 99;
+                        }
+                        var butInx = iobj.buttonInx;
+                        setOpts.value = KvLib.toNumber(setLineObj.opts.setOpts.enum[iobj.buttonInx], 0);
+                        var opts = {};
+                        opts.setOpts = setOpts;
+                        opts.actionFunc = function (iobj) {
+                            console.log(iobj);
+                            if (iobj.act === "padEnter") {
+                                setLineObj.opts.setOpts.enum[butInx] = iobj.inputText;
+                                setLineObj.reCreate();
+                            }
+                        };
+                        box.intPadBox(opts);
+                        return;
+                    }
+
+
+                    if (iobj.act === "mouseClick" && iobj.buttonId === "ok") {
+                        console.log(iobj);
+                        var mdaBox = iobj.sender;
+                        var container = mdaBox.blockRefs["mainMd"];
+                        var ksObjss = container.opts.ksObjss;
+                        var inx = 0;
+                        var strA = [];
+                        for (var i = 0; i < ksObjss.length; i++) {
+                            var ksObjs = ksObjss[i];
+                            for (var j = 0; j < ksObjs.length; j++) {
+                                var setOpts = ksObjs[j].opts.setOpts;
+                                var str = "";
+                                if (setOpts.checked_f)
+                                    str += "1";
+                                else
+                                    str += "0";
+                                for (var k = 0; k < setOpts.enum.length; k++) {
+                                    str += " ";
+                                    str += setOpts.enum[k];
+                                }
+                                strA.push(str);
+                            }
+                        }
+                        gr.paraSet["localPulseGenParas"] = strA;
+                        var fileName = "paraSet";
+                        var content = JSON.stringify(gr.paraSet);
+                        sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                    }
+                };
+                box.setLineBox(opts);
+                return;
             }
-            box.setLineBox(opts);
 
         };
         box.selectBox(opts);
@@ -750,6 +846,43 @@ class LocationTarget {
 
     }
 
+    chkWatch() {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var location = st.location = {};
+        var gpsDatas = location.gpsDatas = [];
+        if (!gr.paraSet.locationFromSource) {
+            var latitudeA = gr.paraSet.mastLatitude.split(/[ ,]+/);
+            var longitudeA = gr.paraSet.mastLongitude.split(/[ ,]+/);
+            var attitudeA = gr.paraSet.mastAttitude.split(/[ ,]+/);
+            gpsDatas.push([
+                latitudeA[0], latitudeA[1], latitudeA[2], latitudeA[3],
+                longitudeA[0], longitudeA[1], longitudeA[2], longitudeA[3],
+                attitudeA[0], attitudeA[1], "---"
+            ]);
+            var latitudeA = gr.paraSet.sub1Latitude.split(/[ ,]+/);
+            var longitudeA = gr.paraSet.sub1Longitude.split(/[ ,]+/);
+            var attitudeA = gr.paraSet.sub1Attitude.split(/[ ,]+/);
+            gpsDatas.push([
+                latitudeA[0], latitudeA[1], latitudeA[2], latitudeA[3],
+                longitudeA[0], longitudeA[1], longitudeA[2], longitudeA[3],
+                attitudeA[0], attitudeA[1], "---"
+            ]);
+            var latitudeA = gr.paraSet.sub2Latitude.split(/[ ,]+/);
+            var longitudeA = gr.paraSet.sub2Longitude.split(/[ ,]+/);
+            var attitudeA = gr.paraSet.sub2Attitude.split(/[ ,]+/);
+            gpsDatas.push([
+                latitudeA[0], latitudeA[1], latitudeA[2], latitudeA[3],
+                longitudeA[0], longitudeA[1], longitudeA[2], longitudeA[3],
+                attitudeA[0], attitudeA[1], "---"
+            ]);
+        } else {
+            gpsDatas.push(gr.syncData.location.mastGpsData);
+            gpsDatas.push(gr.syncData.location.sub1GpsData);
+            gpsDatas.push(gr.syncData.location.sub2GpsData);
+        }
+    }
     build() {
         var self = this;
         var md = self.md;
@@ -818,39 +951,229 @@ class LocationTarget {
         opts.xyArr = [
             [9999]
         ];
-        setOptss.push(sopt.getButtonRadio({enum: ["GPS天線", "手動輸入"]}));
+        var sop = sopt.getButtonRadio({enum: ["手動輸入", "GPS天線"]});
+        sop.value = gr.paraSet.locationFromSource;
+        setOptss.push(sop);
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            if (iobj.act === "checkChanged") {
+                var setLine = iobj.sender.blockRefs["mdaSetLine#0"];
+                var value = setLine.opts.setOpts.value;
+                gr.paraSet.locationFromSource = value;
+                var fileName = "paraSet";
+                var content = JSON.stringify(gr.paraSet);
+                gr.serverCallBack = function (iobj) {
+                    console.log(iobj);
+                    md.reCreate();
+                };
+                sv.saveStringToFile("responseDialogError", "exeCallBackFunc", fileName, content);
+
+            }
+
+        };
         blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         //===============================================
 
 
 
         var optsGroupFunc = function (opts) {
-            opts.editIndex = 10;
+            opts.fromGps_f = gr.paraSet.locationFromSource;
+            var gpsDatas = "self.fatherMd.fatherMd.fatherMd.stas.location.gpsDatas[" + opts.deviceInx + "]";
+            opts.values = [
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0,
+                ""
+            ];
             opts.setOptss = [];
             var setOptss = opts.setOptss;
             opts.yArr = [40, 40, 40, 40, 9999];
             opts.xyArr = [
                 [180, 90, 90, 9999],
                 [180, 90, 90, 9999],
-                ["0.40rw", "0.32rw", 9999],
+                ["0.40rw", "0.40rw", 9999],
                 [9999],
                 [9999]
             ];
-            setOptss.push(sopt.getEditUnit({title: " 緯度:", titleWidth: 70, "unit": "度", unitWidth: 40, value: 22, max: 99}));
-            setOptss.push(sopt.getEditUnit({title: " 緯度:分", "unit": "分", unitWidth: 40, value: 59, max: 59}));
-            setOptss.push(sopt.getEditUnit({title: " 緯度:秒", "unit": "秒", unitWidth: 40, value: 59, max: 59}));
-            setOptss.push(sopt.getEditUnit({title: " 緯度:百分秒", "unit": "百分秒", unitWidth: 80, value: 99, max: 99}));
+            var readOnly = 0;
+            var editColor = "#fff";
+            if (opts.fromGps_f) {
+                readOnly = 1;
+                editColor = "#cfc";
+            }
+            var values = opts.values;
             //
-            setOptss.push(sopt.getEditUnit({title: " 經度:", titleWidth: 70, "unit": "度", unitWidth: 40, value: "122", max: 179}));
-            setOptss.push(sopt.getEditUnit({title: " 經度:分", "unit": "分", unitWidth: 40, value: 59, max: 59}));
-            setOptss.push(sopt.getEditUnit({title: " 經度:秒", "unit": "秒", unitWidth: 40, value: 59, max: 59}));
-            setOptss.push(sopt.getEditUnit({title: " 經度:百分秒", "unit": "百分秒", unitWidth: 80, value: 99, max: 99}));
+            var setOpts = {title: " 緯度:", titleWidth: 70, "unit": "度", value: values[0], max: 90, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[0]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
             //
-            setOptss.push(sopt.getEditUnit({title: " 高度:", titleWidth: 70, "unit": "公尺", unitWidth: 60, value: 123}));
-            setOptss.push(sopt.getEditUnit({title: " 方位:", titleWidth: 70, "unit": "度", unitWidth: 40, value: 48, max: 360}));
-            setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', '<i class="gf">&#xe161</i>']}));
+            var setOpts = {title: " 緯度:分", "unit": "分", value: values[1], max: 59, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[1]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
             //
-            setOptss.push(sopt.getLabelViews({title: " 狀態:", titleWidth: 70, enum: ["view string"]}));
+            var setOpts = {title: " 緯度:秒", "unit": "秒", value: values[2], max: 59, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[2]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
+            //
+            var setOpts = {title: " 緯度:百分秒", "unit": "百分秒", unitWidth: 80, value: values[3], max: 99, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[3]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
+            //
+            var setOpts = {title: " 經度:", titleWidth: 70, "unit": "度", value: values[4], max: 179, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[4]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
+            //
+            var setOpts = {title: " 經度:分", "unit": "分", value: values[5], max: 59, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[5]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
+            //
+            var setOpts = {title: " 經度:秒", "unit": "秒", value: values[6], max: 59, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[6]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
+            //
+            var setOpts = {title: " 經度:百分秒", "unit": "百分秒", unitWidth: 80, value: values[7], max: 99, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[7]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
+            //
+            var setOpts = {title: " 高度:", titleWidth: 70, "unit": "公尺", unitWidth: 60, value: values[8], readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[8]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
+            //
+            var setOpts = {title: " 方位:", titleWidth: 70, "unit": "度", value: values[9], max: 360, readOnly_f: readOnly, editBaseColor: editColor};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[9]", "editValue", 1]);
+            setOptss.push(sopt.getEditUnit(setOpts));
+            //
+            if (opts.fromGps_f)
+                setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xe161</i>'], enumId: ["save"], fontSize: 30}));
+            else
+                setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>'], enumId: ["pad"], fontSize: 30}));
+
+            //
+            var setOpts = {title: " 狀態:", titleWidth: 70, value: values[10]};
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gpsDatas + "[10]", "editValue", 1]);
+            setOptss.push(sopt.getView(setOpts));
+            //
+        };
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+            var sender = iobj.sender;
+            if (iobj.act === "actButtonClick") {
+                if (iobj.buttonId === "pad") {
+                    var st = iobj.sender.stas;
+                    if (st.blurObjName) {
+                        console.log(st.blurObjName);
+                        var setLine = iobj.sender.blockRefs[st.blurObjName];
+                        if (setLine.opts.setOpts.readOnly_f)
+                            return;
+                        var setInx = KvLib.toInt(st.blurObjName.split("#")[1], null);
+                        if (setInx === null)
+                            return;
+                        var opts = {};
+                        opts.setOpts = {};
+                        KvLib.deepCoverObject(opts.setOpts, setLine.opts.setOpts);
+                        var inputTextObj = setLine.blockRefs["inputText"];
+                        opts.setOpts.value = inputTextObj.elems["inputText"].value;
+                        opts.setOpts.titleWidth = 0;
+                        opts.setOpts.unitWidth = 0;
+                        opts.title = opts.setOpts.title;
+                        opts.actionFunc = function (iobj) {
+                            console.log(iobj);
+                            if (iobj.act !== "padEnter")
+                                return;
+                            if (sender.name === "ladarLaunchPanel"){
+                                if(setInx===0)
+                                    var name0 = "radarStartAngle";
+                                if(setInx===1)
+                                    var name0 = "radarEndAngle";
+                                if(setInx===2)
+                                    var name0 = "radarScanRpm";
+                                gr.paraSet[name0] =iobj.inputText;
+                            }
+                            else {
+                                if (sender.name === "ladarGpsPanel")
+                                    var name0 = "mast";
+                                if (sender.name === "targetGpsPanel1")
+                                    var name0 = "sub1";
+                                if (sender.name === "targetGpsPanel2")
+                                    var name0 = "sub2";
+                                if (setInx <= 3) {
+                                    name0 += "Latitude";
+                                    var index = setInx;
+                                } else if (setInx >= 8) {
+                                    name0 += "Attitude";
+                                    var index = setInx - 8;
+                                } else {
+                                    name0 += "Longitude";
+                                    var index = setInx - 4;
+                                }
+                                gr.paraSet[name0] = KvLib.setStrA(gr.paraSet[name0], index, iobj.inputText);
+                            }
+                            var fileName = "paraSet";
+                            var content = JSON.stringify(gr.paraSet);
+                            sv.saveStringToFile("responseDialogError", "null", fileName, content);
+
+
+                        };
+                        box.intPadBox(opts);
+                    }
+                    return;
+
+                }
+                if (iobj.buttonId === "save") {
+                    var opts = {};
+                    opts.kvTexts = ["儲存設定值 ?"];
+                    opts.actionFunc = function (iobj) {
+                        console.log(iobj);
+                        var values = [];
+                        if (iobj.kvObj.name === "ok") {
+                            for (var i = 0; i < 10; i++) {
+                                var key = "mdaSetLine#" + i;
+                                var setLineObj = sender.blockRefs[key];
+                                var inputText = setLineObj.blockRefs["inputText"];
+                                var value = inputText.elems["inputText"].value;
+                                values.push(value);
+                            }
+                            var latitude = values[0] + " " + values[1] + " " + values[2] + " " + values[3];
+                            var longitude = values[4] + " " + values[5] + " " + values[6] + " " + values[7];
+                            var attitude = values[8] + " " + values[9];
+                            if (sender.name === "ladarGpsPanel") {
+                                gr.paraSet.mastLatitude = latitude;
+                                gr.paraSet.mastLongitude = longitude;
+                                gr.paraSet.mastAttitude = attitude;
+                            }
+                            if (sender.name === "targetGpsPanel1") {
+                                gr.paraSet.sub1Latitude = latitude;
+                                gr.paraSet.sub1Longitude = longitude;
+                                gr.paraSet.sub1Attitude = attitude;
+                            }
+                            if (sender.name === "targetGpsPanel2") {
+                                gr.paraSet.sub2Latitude = latitude;
+                                gr.paraSet.sub2Longitude = longitude;
+                                gr.paraSet.sub2Attitude = attitude;
+                            }
+
+                            var fileName = "paraSet";
+                            var content = JSON.stringify(gr.paraSet);
+                            sv.saveStringToFile("responseDialogError", "null", fileName, content);
+
+
+                        }
+                    };
+                    box.checkBox(opts);
+
+                }
+            }
         };
 
 
@@ -859,6 +1182,8 @@ class LocationTarget {
         opts.title = "主控雷達";
         opts.titleIconColor = "#f00";
         opts.titleIcon = "➤";
+        opts.deviceInx = 0;
+        opts.actionFunc = actionPrg;
         optsGroupFunc(opts);
         blocks[cname] = {name: "ladarGpsPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         //=========================
@@ -867,6 +1192,8 @@ class LocationTarget {
         opts.title = "誘標雷達1";
         opts.titleIconColor = "#0f0";
         opts.titleIcon = "➤";
+        opts.deviceInx = 1;
+        opts.actionFunc = actionPrg;
         optsGroupFunc(opts);
         blocks[cname] = {name: "targetGpsPanel1", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         //=========================
@@ -875,6 +1202,8 @@ class LocationTarget {
         opts.title = "誘標雷達2";
         opts.titleIconColor = "#00f";
         opts.titleIcon = "➤";
+        opts.deviceInx = 2;
+        opts.actionFunc = actionPrg;
         optsGroupFunc(opts);
         blocks[cname] = {name: "targetGpsPanel2", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         //=========================
@@ -925,22 +1254,42 @@ class LocationTarget {
         setOptss.push(sopt.getEditUnit({title: "雷達輻射起始角度:", titleWidth: 200, "unit": "度", unitWidth: 40, value: "23"}));
         setOptss.push(sopt.getEditUnit({title: "雷達輻射終止角度:", titleWidth: 200, "unit": "度", unitWidth: 40, value: "151"}));
         setOptss.push(sopt.getEditUnit({title: "RPM:", titleWidth: 200, "unit": "轉", unitWidth: 40, value: "6.8"}));
-        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', "地圖"]}));
-        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['放大', '縮小', "啟動", "停止"]}));
+        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', "地圖"], enumId: ["pad", "map"], fontSize: 25}));
+        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['放大', '縮小', "啟動", "停止"], enumId: ["roomIn", "roomOut", "radarStart", "radarStop"], fontSize: 25}));
         opts.editIndex = 3;
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-            if (iobj.nameId === "mdaSetLine#4") {
-                if (iobj.buttonInx === 2) {//start
-                    md.blockRefs["radarScreen"].opts.run_f = 1;
-                    return;
-                }
-                if (iobj.buttonInx === 3) {//stop
-                    md.blockRefs["radarScreen"].opts.run_f = 0;
-                    return;
-                }
-            }
-        };
+        /*
+         opts.actionFunc = function (iobj) {
+         console.log(iobj);
+         if(iobj.act=== "actButtonClick"){
+         var inxStr=iobj.kvObj.name.split('#')[1];
+         if(inxStr==="3"){
+         if(iobj.buttonInx===0){
+         
+         
+         }
+         
+         
+         }
+         if(inxStr==="4"){
+         
+         }
+         
+         }
+         if (iobj.nameId === "mdaSetLine#4") {
+         if (iobj.buttonInx === 2) {//start
+         md.blockRefs["radarScreen"].opts.run_f = 1;
+         return;
+         }
+         if (iobj.buttonInx === 3) {//stop
+         md.blockRefs["radarScreen"].opts.run_f = 0;
+         return;
+         }
+         }
+         };
+         * 
+         */
+        opts.actionFunc = actionPrg;
+
         blocks[cname] = {name: "ladarLaunchPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         //=========================
 
@@ -1017,7 +1366,7 @@ class SetGroup {
                         opts.setOpts.titleWidth = 0;
                         opts.setOpts.unitWidth = 0;
                         opts.title = opts.setOpts.title;
-                        mda.intPadBox(opts);
+                        box.intPadBox(opts);
                     }
                     return;
                 }
@@ -1318,11 +1667,6 @@ class MyRadar {
         self.clearRadar();
     }
 
-    drawSymble() {
-
-
-
-    }
     drawSymble() {
         var op = this.md.opts;
         var st = this.md.stas;
