@@ -3377,9 +3377,9 @@ class MdaSetLine {
             //============================
             var ivA = [];
             for (var i = 0; i < chkValueA.length; i++) {
-                var iValue = chkValueA[i];
+                var iValue = chkValueA[i].trim();
                 if (checkType === "floatAStr" || checkType === "intAStr" || checkType === "objStr") {
-                    ivA.push(iValue.trim().slice(1, iValue.length - 2));
+                    ivA.push(iValue.trim().slice(1, iValue.length - 1));
                     continue;
                 }
 
@@ -3422,7 +3422,11 @@ class MdaSetLine {
             }
             if (save_f) {
                 if (setOpts.array)
-                    setOpts.value = ivA;
+                    if (checkType === "floatAStr" || checkType === "intAStr" || checkType === "objStr") {
+                        setOpts.value = inValue;
+                    }
+                    else
+                        setOpts.value = ivA;
                 else
                     setOpts.value = ivA[0];
             }

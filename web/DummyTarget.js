@@ -69,7 +69,6 @@ class DummyTarget {
             }
             if (iobj.keyId === "targetPane2SetButton") {
                 setF = 1;
-
             }
             if (setF) {
                 var op = {};
@@ -137,9 +136,6 @@ class DummyTarget {
         opts.kvTexts.push("GPS參數設定");
         opts.kvTexts.push("下載記錄檔");
         opts.kvTexts.push("系統重啟");
-
-
-
         opts.actionFunc = function (iobj) {
             console.log(iobj);
             if (iobj.selectInx === 0) {
@@ -180,7 +176,6 @@ class DummyTarget {
                 opts.headTitleXArr = [240, 9999, 106, 80, 64];
                 opts.headTitleHeight = 24;
                 var ksObjs = [];
-
                 for (var i = 0; i < pulsePara.length; i++) {
                     var strA = pulsePara[i].split(" ");
                     if ((i % 2) === 0) {
@@ -283,7 +278,6 @@ class DummyTarget {
 
         };
         box.selectBox(opts);
-
     }
 
     build() {
@@ -298,7 +292,6 @@ class DummyTarget {
         var opts = {};
         layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
         lyMaps["body"] = cname;
-
         var opts = {};
         md.setPns(opts);
         opts.mouseClick_f = 1;
@@ -308,7 +301,6 @@ class DummyTarget {
             //console.log(iobj);
         };
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.none", opts: opts};
-
         //======================================    
         var cname = lyMaps["body"] + "~" + 0;
         var opts = {};
@@ -345,7 +337,6 @@ class DummyTarget {
             if (iobj.buttonId === "setting") {
                 self.paraSetPrg();
                 return;
-
                 var opts = {};
                 opts.title = "輸入密碼";
                 opts.setOpts = sopt.getIntPassword({});
@@ -374,12 +365,6 @@ class DummyTarget {
         };
         opts.buttonAmt = 5;
         blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
-
-
-
-
-
-
         //==============================
         var cname = lyMaps["mainBody"] + "~" + 2;
         var opts = {};
@@ -476,8 +461,6 @@ class TargetPane {
         opts.xyArr = [[9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], [9999]];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["mainBody"] = cname;
-
-
         var cname = lyMaps["mainBody"] + "~" + 0;
         var opts = {};
         opts.innerText = op.title;
@@ -549,7 +532,6 @@ class TargetPane {
             KvLib.exe(op.actionFunc, iobj);
         };
         blocks[cname] = {name: "commandButton", type: "Component~Cp_base~button.sys0", opts: opts};
-
         //==============================
     }
 }
@@ -566,7 +548,7 @@ class RadarPane {
         opts.title = "title";
         opts.buttonColor = "#ccf";
         opts.buttons = ["button1", "button2", "button3"];
-        opts.layoutType = "row";//row,collum,array
+        opts.layoutType = "row"; //row,collum,array
         opts.buttonIds = [];
         opts.iw = 9999;
         opts.ih = 9999;
@@ -646,7 +628,7 @@ class RadarPane {
         lyInx++;
         var cname = lyMaps["mainBody"] + "~" + lyInx;
         var opts = {};
-        opts.innerText = "備便";//停止|備便
+        opts.innerText = "備便"; //停止|備便
         opts.baseColor = "#cfc";
         blocks[cname] = {name: "spSignalStatus", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
@@ -659,7 +641,7 @@ class RadarPane {
         lyInx++;
         var cname = lyMaps["mainBody"] + "~" + lyInx;
         var opts = {};
-        opts.innerText = "SP同步";//SP同步:|本機模擬
+        opts.innerText = "SP同步"; //SP同步:|本機模擬
         opts.baseColor = "#cfc";
         blocks[cname] = {name: "pulseSourceStatus", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
@@ -672,14 +654,14 @@ class RadarPane {
         lyInx++;
         var cname = lyMaps["mainBody"] + "~" + lyInx;
         var opts = {};
-        opts.innerText = "光纖";//"無線"|光纖;
+        opts.innerText = "光纖"; //"無線"|光纖;
         opts.baseColor = "#cfc";
         blocks[cname] = {name: "target1CommType", type: "Component~Cp_base~label.led", opts: opts};
         //==
         lyInx++;
         var cname = lyMaps["mainBody"] + "~" + lyInx;
         var opts = {};
-        opts.innerText = "未連線";//"未連線"|已連線;
+        opts.innerText = "未連線"; //"未連線"|已連線;
         opts.baseColor = "#cfc";
         blocks[cname] = {name: "target1CommStatus", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
@@ -692,14 +674,14 @@ class RadarPane {
         lyInx++;
         var cname = lyMaps["mainBody"] + "~" + lyInx;
         var opts = {};
-        opts.innerText = "無線";//"無線"|光纖;
+        opts.innerText = "無線"; //"無線"|光纖;
         opts.baseColor = "#cfc";
         blocks[cname] = {name: "target2CommType", type: "Component~Cp_base~label.led", opts: opts};
         //==
         lyInx++;
         var cname = lyMaps["mainBody"] + "~" + lyInx;
         var opts = {};
-        opts.innerText = "未連線";//"未連線"|已連線;
+        opts.innerText = "未連線"; //"未連線"|已連線;
         opts.baseColor = "#cfc";
         blocks[cname] = {name: "targetCommStatus", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
@@ -780,14 +762,12 @@ class RadarPane {
         //===================================
         var cname = lyMaps["barBody"] + "~" + 0;
         var opts = {};
-        opts.innerText = "13:45:59";//"無線"|光纖;
+        opts.innerText = "13:45:59"; //"無線"|光纖;
         opts.baseColor = "#ccc";
         opts.textAlign = "left";
         opts.fontSize = 12;
         opts.lpd = 4;
         blocks[cname] = {name: "target2CommType", type: "Component~Cp_base~label.sys0", opts: opts};
-
-
         var cname = lyMaps["barBody"] + "~" + 1;
         var opts = {};
         opts.innerText = '<i class="gf">&#xe316;</i>';
@@ -847,31 +827,51 @@ class LocationTarget {
     }
 
     chkWatch() {
+        var self = this;
         var md = this.md;
         var op = md.opts;
         var st = md.stas;
         var location = st.location = {};
         var gpsDatas = location.gpsDatas = [];
+
+        var duTrans = function (iobj) {
+            var pos = [];
+            var vv = iobj[0];
+            vv += iobj[1] / 60;
+            vv += iobj[2] / 3600;
+            vv += iobj[3] / 360000;
+            pos.push(vv);
+            var vv = iobj[4];
+            vv += iobj[5] / 60;
+            vv += iobj[6] / 3600;
+            vv += iobj[7] / 360000;
+            pos.push(vv);
+            pos.push(iobj[8]);
+            return pos;
+        };
+
+
+
         if (!gr.paraSet.locationFromSource) {
-            var latitudeA = gr.paraSet.mastLatitude.split(/[ ,]+/);
-            var longitudeA = gr.paraSet.mastLongitude.split(/[ ,]+/);
-            var attitudeA = gr.paraSet.mastAttitude.split(/[ ,]+/);
+            var latitudeA = gr.paraSet.mastLatitude;
+            var longitudeA = gr.paraSet.mastLongitude;
+            var attitudeA = gr.paraSet.mastAttitude;
             gpsDatas.push([
                 latitudeA[0], latitudeA[1], latitudeA[2], latitudeA[3],
                 longitudeA[0], longitudeA[1], longitudeA[2], longitudeA[3],
                 attitudeA[0], attitudeA[1], "---"
             ]);
-            var latitudeA = gr.paraSet.sub1Latitude.split(/[ ,]+/);
-            var longitudeA = gr.paraSet.sub1Longitude.split(/[ ,]+/);
-            var attitudeA = gr.paraSet.sub1Attitude.split(/[ ,]+/);
+            var latitudeA = gr.paraSet.sub1Latitude;
+            var longitudeA = gr.paraSet.sub1Longitude;
+            var attitudeA = gr.paraSet.sub1Attitude;
             gpsDatas.push([
                 latitudeA[0], latitudeA[1], latitudeA[2], latitudeA[3],
                 longitudeA[0], longitudeA[1], longitudeA[2], longitudeA[3],
                 attitudeA[0], attitudeA[1], "---"
             ]);
-            var latitudeA = gr.paraSet.sub2Latitude.split(/[ ,]+/);
-            var longitudeA = gr.paraSet.sub2Longitude.split(/[ ,]+/);
-            var attitudeA = gr.paraSet.sub2Attitude.split(/[ ,]+/);
+            var latitudeA = gr.paraSet.sub2Latitude;
+            var longitudeA = gr.paraSet.sub2Longitude;
+            var attitudeA = gr.paraSet.sub2Attitude;
             gpsDatas.push([
                 latitudeA[0], latitudeA[1], latitudeA[2], latitudeA[3],
                 longitudeA[0], longitudeA[1], longitudeA[2], longitudeA[3],
@@ -882,7 +882,65 @@ class LocationTarget {
             gpsDatas.push(gr.syncData.location.sub1GpsData);
             gpsDatas.push(gr.syncData.location.sub2GpsData);
         }
+        st.mistRadarPos = duTrans(gpsDatas[0]);
+        st.sub1RadarPos = duTrans(gpsDatas[1]);
+        st.sub2RadarPos = duTrans(gpsDatas[2]);
+        var radarScanDatas = location.radarScanDatas = [];
+        radarScanDatas.push(gr.paraSet.radarStartAngle);
+        radarScanDatas.push(gr.paraSet.radarEndAngle);
+        radarScanDatas.push(gr.paraSet.radarScanRpm);
+
+        var radarDirections = location.radarDirections = [];
+        var posOut = self.calPos(st.mistRadarPos, st.sub1RadarPos);
+        st.posOutA=posOut;
+        var dir=(Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
+        radarDirections.push(dir);
+        var posOut = self.calPos(st.mistRadarPos, st.sub2RadarPos);
+        st.posOutB=posOut;
+        var dir=(Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
+        radarDirections.push(dir);
+        var posOut = self.calPos(st.sub1RadarPos, st.sub2RadarPos);
+        var dir=(Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
+        radarDirections.push(dir);
+        
+        var radarPositions = location.radarPositions = [];
+        
+        var pos0=st.posOutA[0]|0;
+        var pos1=st.posOutA[1]|0;
+        var pos0=st.posOutA[2]|0;
+        var pos1=st.posOutA[3]|0;
+        
+        
+        
+        
+        
+        
+
+
+
     }
+
+    calPos(gps0, gps1)
+    {
+        //////////////////////////////////////////////////////////
+        //var gps0 = [24.0613733, 121.4508244, 0];
+        //var gps1 = [25.0613733, 121.4508244, 0];
+        var pos0 = [gps0[0] * Math.PI / 180, gps0[1] * Math.PI / 180, gps0[2]];
+        var pos1 = [gps1[0] * Math.PI / 180, gps1[1] * Math.PI / 180, gps1[2]];
+        var mid_lat = (pos0[0] + pos1[0]) / 2.0;
+        var mid_h = (pos0[2] + pos1[2]) / 2.0;
+        var a = 6378137.0;
+        var b = 6356752.3142;
+        var e2 = 1.0 - Math.pow((b / a), 2.0);
+        var Rm = a * (1.0 - e2) / Math.pow((1.0 - e2 * Math.pow(Math.sin(mid_lat), 2.0)), 1.5);
+        var Rn = a / Math.sqrt(1.0 - e2 * Math.pow(Math.sin(mid_lat), 2.0));
+        var posOut = [];
+        posOut.push(((pos0[0] - pos1[0]) * (Rm + mid_h)).toFixed(0));
+        posOut.push(((pos0[1] - pos1[1]) * (Rn + mid_h) * Math.cos(mid_lat)).toFixed(0));
+        posOut.push((-1 * (pos0[2] - pos1[2]).toFixed(0)));
+        return posOut;
+    }
+
     build() {
         var self = this;
         var md = self.md;
@@ -917,7 +975,6 @@ class LocationTarget {
         opts.innerText = "雷達位置圖";
         opts.textAlign = "left";
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
-
         var cname = lyMaps["titleBody"] + "~" + 1;
         var opts = {};
         opts.innerText = "離開";
@@ -967,7 +1024,6 @@ class LocationTarget {
                     md.reCreate();
                 };
                 sv.saveStringToFile("responseDialogError", "exeCallBackFunc", fileName, content);
-
             }
 
         };
@@ -1003,7 +1059,7 @@ class LocationTarget {
             }
             var values = opts.values;
             //
-            var setOpts = {title: " 緯度:", titleWidth: 70, "unit": "度", value: values[0], max: 90, readOnly_f: readOnly, editBaseColor: editColor};
+            var setOpts = {title: " 緯度:", titleWidth: 70, "unit": "度", value: values[0], max: 27, min: 21, readOnly_f: readOnly, editBaseColor: editColor};
             var watchDatas = setOpts.watchDatas = [];
             watchDatas.push(["directName", gpsDatas + "[0]", "editValue", 1]);
             setOptss.push(sopt.getEditUnit(setOpts));
@@ -1023,7 +1079,7 @@ class LocationTarget {
             watchDatas.push(["directName", gpsDatas + "[3]", "editValue", 1]);
             setOptss.push(sopt.getEditUnit(setOpts));
             //
-            var setOpts = {title: " 經度:", titleWidth: 70, "unit": "度", value: values[4], max: 179, readOnly_f: readOnly, editBaseColor: editColor};
+            var setOpts = {title: " 經度:", titleWidth: 70, "unit": "度", value: values[4], max: 123, min: 118, readOnly_f: readOnly, editBaseColor: editColor};
             var watchDatas = setOpts.watchDatas = [];
             watchDatas.push(["directName", gpsDatas + "[4]", "editValue", 1]);
             setOptss.push(sopt.getEditUnit(setOpts));
@@ -1057,7 +1113,6 @@ class LocationTarget {
                 setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xe161</i>'], enumId: ["save"], fontSize: 30}));
             else
                 setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>'], enumId: ["pad"], fontSize: 30}));
-
             //
             var setOpts = {title: " 狀態:", titleWidth: 70, value: values[10]};
             var watchDatas = setOpts.watchDatas = [];
@@ -1091,16 +1146,15 @@ class LocationTarget {
                             console.log(iobj);
                             if (iobj.act !== "padEnter")
                                 return;
-                            if (sender.name === "ladarLaunchPanel"){
-                                if(setInx===0)
+                            if (sender.name === "ladarLaunchPanel") {
+                                if (setInx === 0)
                                     var name0 = "radarStartAngle";
-                                if(setInx===1)
+                                if (setInx === 1)
                                     var name0 = "radarEndAngle";
-                                if(setInx===2)
+                                if (setInx === 2)
                                     var name0 = "radarScanRpm";
-                                gr.paraSet[name0] =iobj.inputText;
-                            }
-                            else {
+                                gr.paraSet[name0] = iobj.inputText;
+                            } else {
                                 if (sender.name === "ladarGpsPanel")
                                     var name0 = "mast";
                                 if (sender.name === "targetGpsPanel1")
@@ -1117,18 +1171,15 @@ class LocationTarget {
                                     name0 += "Longitude";
                                     var index = setInx - 4;
                                 }
-                                gr.paraSet[name0] = KvLib.setStrA(gr.paraSet[name0], index, iobj.inputText);
+                                gr.paraSet[name0][index] = KvLib.toInt(iobj.inputText, 0);
                             }
                             var fileName = "paraSet";
                             var content = JSON.stringify(gr.paraSet);
                             sv.saveStringToFile("responseDialogError", "null", fileName, content);
-
-
                         };
                         box.intPadBox(opts);
                     }
                     return;
-
                 }
                 if (iobj.buttonId === "save") {
                     var opts = {};
@@ -1166,17 +1217,46 @@ class LocationTarget {
                             var fileName = "paraSet";
                             var content = JSON.stringify(gr.paraSet);
                             sv.saveStringToFile("responseDialogError", "null", fileName, content);
-
-
                         }
                     };
                     box.checkBox(opts);
+                }
+                if (iobj.buttonId === "map") {
 
+                }
+                if (iobj.buttonId === "roomIn") {
+                    var locationTarget = iobj.sender.fatherMd;
+                    var radarScreen = locationTarget.blockRefs["radarScreen"];
+                    if (radarScreen.opts.roomInInx > 0)
+                        radarScreen.opts.roomInInx--;
+                    radarScreen.opts.messages.rangeText.text = "Range: " + radarScreen.opts.roomInTbl[radarScreen.opts.roomInInx];
+                    radarScreen.opts.symbleEdit_f = 1;
+                    return;
+                }
+                if (iobj.buttonId === "roomOut") {
+                    var locationTarget = iobj.sender.fatherMd;
+                    var radarScreen = locationTarget.blockRefs["radarScreen"];
+                    if (radarScreen.opts.roomInInx < (radarScreen.opts.roomInTbl.length - 1))
+                        radarScreen.opts.roomInInx++;
+                    radarScreen.opts.messages.rangeText.text = "Range: " + radarScreen.opts.roomInTbl[radarScreen.opts.roomInInx];
+                    radarScreen.opts.symbleEdit_f = 1;
+                    return;
+                }
+                if (iobj.buttonId === "radarStart") {
+                    var locationTarget = iobj.sender.fatherMd;
+                    var radarScreen = locationTarget.blockRefs["radarScreen"];
+                    radarScreen.opts.run_f = 1;
+                    radarScreen.stas.scanAngle = 0;
+                    return;
+                }
+                if (iobj.buttonId === "radarStop") {
+                    var locationTarget = iobj.sender.fatherMd;
+                    var radarScreen = locationTarget.blockRefs["radarScreen"];
+                    radarScreen.opts.run_f = 0;
+                    return;
                 }
             }
         };
-
-
         var cname = lyMaps["leftBody"] + "~" + 1;
         var opts = {};
         opts.title = "主控雷達";
@@ -1219,10 +1299,25 @@ class LocationTarget {
             [9999],
             [9999]
         ];
-        setOptss.push(sopt.getLabelViews({title: "雷達距誘標1:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
-        setOptss.push(sopt.getLabelViews({title: "雷達距誘標2:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
-        setOptss.push(sopt.getLabelViews({title: "誘標1距誘標2:", titleWidth: 200, enum: ["view string"], unit: "公尺", unitWidth: 100}));
-        setOptss.push(null);
+
+        var radarDirections = "self.fatherMd.fatherMd.fatherMd.stas.location.radarDirections";
+        var setOpts = {title: "雷達距誘標1:", titleWidth: 200, unit: "公尺", unitWidth: 100};
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", radarDirections + "[0]", "editValue", 1]);
+        setOptss.push(sopt.getView(setOpts));
+
+        var setOpts = {title: "雷達距誘標2:", titleWidth: 200, unit: "公尺", unitWidth: 100};
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", radarDirections + "[1]", "editValue", 1]);
+        setOptss.push(sopt.getView(setOpts));
+
+        var setOpts = {title: "誘標1距誘標2:", titleWidth: 200, unit: "公尺", unitWidth: 100};
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", radarDirections + "[2]", "editValue", 1]);
+        setOptss.push(sopt.getView(setOpts));
+
+
+
         blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         //=========================
         var cname = lyMaps["centerBody"] + "~" + 1;
@@ -1238,7 +1333,6 @@ class LocationTarget {
         var cname = lyMaps["rightBody"] + "~" + 0;
         var opts = {};
         blocks[cname] = {name: "radarScreen", type: "Model~MyRadar~base.sys0", opts: opts};
-
         var cname = lyMaps["rightBody"] + "~" + 1;
         var opts = {};
         opts.title = "雷達模擬";
@@ -1251,9 +1345,23 @@ class LocationTarget {
             [9999],
             [9999]
         ];
-        setOptss.push(sopt.getEditUnit({title: "雷達輻射起始角度:", titleWidth: 200, "unit": "度", unitWidth: 40, value: "23"}));
-        setOptss.push(sopt.getEditUnit({title: "雷達輻射終止角度:", titleWidth: 200, "unit": "度", unitWidth: 40, value: "151"}));
-        setOptss.push(sopt.getEditUnit({title: "RPM:", titleWidth: 200, "unit": "轉", unitWidth: 40, value: "6.8"}));
+        var radarScanDatas = "self.fatherMd.fatherMd.fatherMd.stas.location.radarScanDatas";
+        //
+        var setOpts = sopt.getEditUnit({paraSetName: "radarStartAngle", titleWidth: 200, unitWidth: 40});
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", radarScanDatas + "[0]", "editValue", 1]);
+        setOptss.push(setOpts);
+        //
+        var setOpts = sopt.getEditUnit({paraSetName: "radarEndAngle", titleWidth: 200, unitWidth: 40});
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", radarScanDatas + "[1]", "editValue", 1]);
+        setOptss.push(setOpts);
+        //
+        var setOpts = sopt.getEditUnit({paraSetName: "radarScanRpm", titleWidth: 200, unitWidth: 40});
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", radarScanDatas + "[2]", "editValue", 1]);
+        setOptss.push(setOpts);
+        //
         setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', "地圖"], enumId: ["pad", "map"], fontSize: 25}));
         setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['放大', '縮小', "啟動", "停止"], enumId: ["roomIn", "roomOut", "radarStart", "radarStop"], fontSize: 25}));
         opts.editIndex = 3;
@@ -1289,13 +1397,14 @@ class LocationTarget {
          * 
          */
         opts.actionFunc = actionPrg;
-
         blocks[cname] = {name: "ladarLaunchPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         //=========================
 
 
     }
 }
+
+
 
 
 
@@ -1329,7 +1438,6 @@ class SetGroup {
             [100, 100, 100, 9999],
             [9999]
         ];
-
         return opts;
     }
     create() {
@@ -1429,14 +1537,14 @@ class SetGroup {
             opts.baseColor = op.baseColor;
             blocks[cname + "#1"] = {name: "titleIcon", type: "Component~Cp_base~plate.none", opts: opts};
         }
-        //======================================
+//======================================
         var opts = {};
         opts.innerText = op.title;
         opts.fontSize = 20;
         opts.fontWeight = "normal";
         opts.fontFamily = "nomospace";
         var wobj = KvLib.measureText(op.title, opts.fontSize, opts.fontWeight, opts.fontFamily);
-        opts.iw = wobj.w + 10;//op.titleWidth;
+        opts.iw = wobj.w + 10; //op.titleWidth;
         opts.ih = 26;
         opts.wAlign = "left";
         opts.hAlign = "top";
@@ -1449,8 +1557,6 @@ class SetGroup {
         opts.textAlign = "left";
         opts.baseColor = op.baseColor;
         blocks[cname + "#2"] = {name: "title", type: "Component~Cp_base~plate.none", opts: opts};
-
-
         //=====================================
 
         var cname = lyMaps["mainBody"] + "~" + 0;
@@ -1502,25 +1608,22 @@ class MyRadar {
         opts.angleTextFontSize = 12;
         opts.angleTextPeriod = 10;
         opts.symbleEdit_f = 1;
-        opts.speedAmt = 10;
+        opts.speedAmt = 1;
         opts.speedAngleDiv = 3600;
         opts.radarColor = 0x3000ff00;
-
-
-
-
-
+        opts.roomInInx = 0;
+        opts.roomInTbl = [500, 1000, 2000, 5000, 10000, 20000];
         //===============
-        opts.messages = [];
+        opts.messages = {};
         var mesObj = {};
         mesObj.xr = 0.01;
         mesObj.yr = 0.01;
-        mesObj.text = "Range: 1000M";
+        mesObj.text = "Range: " + opts.roomInTbl[opts.roomInInx];
         mesObj.color = "#0f0";
         mesObj.offY = 10;
         mesObj.fontSize = 12;
         mesObj.fontFamily = "monospace";
-        opts.messages.push(mesObj);
+        opts.messages.rangeText = mesObj;
         //===============
         var mesObj = {};
         mesObj.xr = 0.5;
@@ -1531,7 +1634,7 @@ class MyRadar {
         mesObj.angle = 270;
         mesObj.fontSize = 32;
         mesObj.fontFamily = "monospace";
-        opts.messages.push(mesObj);
+        opts.messages.mastRadar = mesObj;
         //===============
         var mesObj = {};
         mesObj.xr = 0.65;
@@ -1542,7 +1645,7 @@ class MyRadar {
         mesObj.angle = 160;
         mesObj.fontSize = 32;
         mesObj.fontFamily = "monospace";
-        opts.messages.push(mesObj);
+        opts.messages.sub1Radar = mesObj;
         //===============
         var mesObj = {};
         mesObj.xr = 0.7;
@@ -1553,7 +1656,7 @@ class MyRadar {
         mesObj.angle = 45;
         mesObj.fontSize = 32;
         mesObj.fontFamily = "monospace";
-        opts.messages.push(mesObj);
+        opts.messages.sub2Radar = mesObj;
         //===============
 
 
@@ -1628,7 +1731,6 @@ class MyRadar {
         st.ctxBase = st.canvasLy0.getContext('2d');
         st.ctxSymble = st.canvasLy1.getContext('2d');
         st.ctxRadar = st.canvasLy2.getContext('2d');
-
         this.createScope();
         //=========================================
         var iobj = {};
@@ -1657,8 +1759,6 @@ class MyRadar {
         if (!op.run_f)
             return;
         self.drawScan();
-
-
     }
 
     createScope(editObj) {
@@ -1719,10 +1819,29 @@ class MyRadar {
         var gg = (op.radarColor >> 8) & 255;
         var rr = (op.radarColor >> 16) & 255;
         var aa = (op.radarColor >> 24) & 255;
-        for (var i = 0; i < op.speedAmt; i++) {
+        var speed = gr.paraSet.radarScanRpm * op.speedAngleDiv / 3600;
+        var speedAmt = speed | 0;
+        if (!st.scrap)
+            st.scrap = 0;
+        st.scrap += speed - speedAmt;
+        if (st.scrap >= 1) {
+            st.scrap -= 1;
+            speedAmt += 1;
+        }
+        for (var i = 0; i < speedAmt; i++) {
             st.scanAngle += 1;
-            var sin = Math.sin(Math.PI * 2 * st.scanAngle / (op.speedAngleDiv));
-            var cos = Math.cos(Math.PI * 2 * st.scanAngle / (op.speedAngleDiv));
+            if (st.scanAngle >= op.speedAngleDiv) {
+                st.scanAngle = 0;
+            }
+            var angle = (Math.PI * 2 * st.scanAngle / (op.speedAngleDiv)) - (Math.PI / 2);
+            var startAngle = (Math.PI * 2 * gr.paraSet.radarStartAngle / 360) - (Math.PI / 2);
+            var endAngle = (Math.PI * 2 * gr.paraSet.radarEndAngle / 360) - (Math.PI / 2);
+            if (angle < startAngle)
+                continue;
+            if (angle > endAngle)
+                continue;
+            var sin = Math.sin(angle);
+            var cos = Math.cos(angle);
             for (var j = 0; j < st.sRadius; j++) {
                 var xx = ((j * cos) | 0) + st.sRadius;
                 var yy = ((j * sin) | 0) + st.sRadius;
@@ -1733,15 +1852,28 @@ class MyRadar {
                 st.ctxRadarData.data[index + 3] = aa;
             }
         }
+
+
         st.ctxRadar.putImageData(st.ctxRadarData, st.scanOffX, st.scanOffY);
+        var centerX = (st.containerWidth / 2) | 0;
+        var centerY = (st.containerHeight / 2) | 0;
+        var ctx = st.ctxRadar;
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 1;
+        if ((Math.PI * 1.5) === angle)
+            return;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, st.sRadius - 1, angle - 0.02, angle);
+        ctx.stroke();
     }
 
     drawMessages() {
         var st = this.md.stas;
         var op = this.md.opts;
         var ctx = st.ctxSymble;
-        for (var i = 0; i < op.messages.length; i++) {
-            var mesObj = op.messages[i];
+        var keys = Object.keys(op.messages);
+        for (var i = 0; i < keys.length; i++) {
+            var mesObj = op.messages[keys[i]];
             ctx.save();
             ctx.fillStyle = mesObj.color;
             ctx.font = mesObj.fontSize + "px " + mesObj.fontFamily;
@@ -1757,7 +1889,6 @@ class MyRadar {
                 ctx.fillText(text, xx, yy + mesObj.offY);
             }
             ctx.restore();
-
         }
     }
 
@@ -1792,7 +1923,6 @@ class MyRadar {
         //======================
         ctx.strokeStyle = "#0f0";
         ctx.lineWidth = op.axeWidth;
-
         ctx.beginPath();
         ctx.arc(centerX, centerY, sRadius * 0.25, 0, 2 * Math.PI);
         ctx.stroke();
@@ -1882,17 +2012,12 @@ class MyRadar {
         opts.xArr = [9999, op.setPanelWidth];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["mainBody"] = cname;
-
         var cname = lyMaps["mainBody"] + "~" + 0;
         var opts = {};
         opts.baseColor = "#000";
         opts.whr = 1;
         blocks[cname] = {name: "container", type: "Component~Cp_base~container.sys0", opts: opts};
-
-
         return;
-
-
     }
 }
 
@@ -1918,8 +2043,6 @@ class SelfTest {
             "slotNames#roipCtrMdA# ",
             "slotNames#recorderCtrMdA# "
         ];
-
-
         return opts;
     }
     create() {
@@ -2002,8 +2125,6 @@ class SelfTest {
             opts.textShadow = "1px 1px 1px #aaa";
             opts.zIndex = "0";
             blocks[cname + "#0"] = {name: "slotPanel#" + i, type: "Component~Cp_base~images.sys0", opts: opts};
-
-
             var opts = {};
             opts.backgroundInx = 1;
             opts.zIndex = "1";
@@ -2012,8 +2133,6 @@ class SelfTest {
             opts.hAlign = "bottom";
             opts.bm = 20;
             blocks[cname + "#1"] = {name: "startLed", type: "Component~Cp_base~icons.led", opts: opts};
-
-
         }
 
 
@@ -2023,14 +2142,9 @@ class SelfTest {
         opts.xArr = [9999, 150];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["footBody"] = cname;
-
-
         var cname = lyMaps["footBody"] + "~" + 0;
         var opts = {};
         blocks[cname] = {name: "editor", type: "Component~Cp_base~editor.sys0", opts: opts};
-
-
-
         var cname = lyMaps["footBody"] + "~" + 1;
         var opts = {};
         opts.buttons = ["測試開始", "測試停止", "清除"];
@@ -2051,7 +2165,6 @@ class SelfTest {
             }
         };
         blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
-
         //===
 
 
@@ -2068,7 +2181,6 @@ class SyncTest {
         var opts = {};
         Block.setBaseOpts(opts);
         opts.baseColor = "#222";
-
         return opts;
     }
     create() {
@@ -2143,8 +2255,6 @@ class SyncTest {
         opts.xArr = [9999, 150];
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["footBody"] = cname;
-
-
         var cname = lyMaps["mainBody"] + "~" + 1;
         var opts = {};
         opts.title = "系統";
@@ -2165,10 +2275,6 @@ class SyncTest {
         setOptss.push(sopt.getEditView({title: "時間修正偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
         setOptss.push(sopt.getEditView({title: "VG時間誤差:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
         blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-
-
-
-
         var targFunc = function (opts) {
             opts.setOptss = [];
             var setOptss = opts.setOptss;
@@ -2186,7 +2292,6 @@ class SyncTest {
                 ["0.5rw", 9999],
                 ["0.5rw", 9999],
                 ["0.5rw", 9999],
-
                 [9999],
                 [9999],
                 [9999],
@@ -2203,36 +2308,25 @@ class SyncTest {
             setOptss.push(sopt.getLabelViews({title: "1588修正:", titleWidth: 140, enum: ["123"], dataType: "int"}));
             setOptss.push(sopt.getEditView({title: "延時運算偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
             setOptss.push(sopt.getEditView({title: "無線頻道:", titleWidth: 140, value: 123, dataType: "int"}));
-
             setOptss.push(sopt.getLabelViews({title: "同時偏移:", titleWidth: 180, enum: ["123"], dataType: "int"}));
             setOptss.push(sopt.getLabelViews({title: "回傳封包遺失數:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-
             setOptss.push(sopt.getLabelViews({title: "封包發送數 x256:", titleWidth: 180, enum: ["123"], dataType: "int"}));
             setOptss.push(sopt.getLabelViews({title: "封包接收數 x256:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-
             setOptss.push(sopt.getLabelViews({title: "正確率/1000:", titleWidth: 180, enum: ["123"], dataType: "int"}));
             setOptss.push(sopt.getLabelViews({title: "副控封包遺失數:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-
             setOptss.push(sopt.getLabelViews({title: "主雷達RF接收能量:", titleWidth: 180, enum: ["123"], dataType: "int"}));
             setOptss.push(sopt.getLabelViews({title: "誘標RF接收能量:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-
-
         };
-
         var cname = lyMaps["centerBody"] + "~" + 0;
         var opts = {};
         opts.title = "誘標1";
         targFunc(opts);
         blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-
         var cname = lyMaps["centerBody"] + "~" + 1;
         var opts = {};
         opts.title = "誘標2";
         targFunc(opts);
         blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-
-
-
         var cname = lyMaps["mainBody"] + "~" + 3;
         var opts = {};
         opts.buttons = ["傳輸開始", "傳輸停止", "邏輯分析", "波形顯示"];
@@ -2256,6 +2350,5 @@ class SyncTest {
         };
         opts.buttonAmt = 4;
         blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
-
     }
 }

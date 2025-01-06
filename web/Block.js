@@ -1365,8 +1365,8 @@ class Block {
             var nopts = {};
             KvLib.deepCoverObject(nopts, md.opts);
             md.clear();
-            var newMd = eval("new " + className + "(name,type,{});");
-            newMd.opts = nopts;
+            var newMd = eval("new " + className + "(name,type,nopts);");
+            //newMd.opts = nopts;
             //newMd.build();
             newMd.fatherMd = fatherMd;
             newMd.cname = cname;
@@ -1374,7 +1374,11 @@ class Block {
             if (fatherMd) {
                 fatherMd.blocks[cname] = newMd;
                 fatherMd.blockRefs[name] = newMd;
-                newMd.create(posObj.fhid, posObj.x, posObj.y, posObj.w, posObj.h);
+                if(posObj)
+                    newMd.create(posObj.fhid, posObj.x, posObj.y, posObj.w, posObj.h);
+                else{
+                    var ii=0;
+                }
             }
             else{
                 newMd.create(posObj.fhid, posObj.x, posObj.y, posObj.w, posObj.h);

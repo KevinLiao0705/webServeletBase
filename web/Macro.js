@@ -472,55 +472,56 @@ class KvSetOpts {
             case "float":
                 return sopt.getOptsFloat();
             case "strA":
-                var opts=sopt.getOptsStr();
-                opts.setType="textArea";
-                opts.array=1;
+                var opts = sopt.getOptsStr();
+                opts.setType = "textArea";
+                opts.array = 1;
                 return opts;
             case "natureA":
-                var opts=sopt.getOptsNature();
-                opts.setType="textArea";
-                opts.array=1;
+                var opts = sopt.getOptsNature();
+                opts.setType = "textArea";
+                opts.array = 1;
+                opts.actButtons = ["pad"];
                 return opts;
             case "intA":
-                var opts=sopt.getOptsInt();
-                opts.setType="textArea";
-                opts.array=1;
+                var opts = sopt.getOptsInt();
+                opts.setType = "textArea";
+                opts.array = 1;
                 return opts;
             case "floatA":
-                var opts=sopt.getOptsFloat();
-                opts.array=1;
-                opts.setType="textArea";
+                var opts = sopt.getOptsFloat();
+                opts.array = 1;
+                opts.setType = "textArea";
                 return opts;
-                
+
             case "natureStr":
                 var opts = sopt.getOptsNature();
                 opts.dataType = "str";
                 opts.nullErr_f = 0;
                 opts.value = "0";
                 return opts;
-                
+
             case "intStr":
                 var opts = sopt.getOptsInt();
                 opts.dataType = "str";
                 opts.nullErr_f = 0;
                 opts.value = "0";
                 return opts;
-                
+
             case "floatStr":
                 var opts = sopt.getOptsFloat();
                 opts.dataType = "str";
                 opts.nullErr_f = 0;
                 opts.value = "0";
                 return opts;
-                
-                
-                
-                
+
+
+
+
             case "floatStrA":
                 return sopt.getOptsFloatStrA();
-                
-                
-                
+
+
+
             case "floatAStrA":
                 var opts = sopt.getOptsFloat();
                 opts.dataType = "str";
@@ -529,11 +530,11 @@ class KvSetOpts {
                 opts.actButtons = ["pad"];
                 opts.array = 1;
                 opts.value = "0";
-                
-                
-                
-                
-                
+
+
+
+
+
                 return sopt.getOptsFloatAStrA();
 
             case "intEnum":
@@ -683,7 +684,6 @@ class KvSetOpts {
         return setOpts;
     }
 
-
     getOptsNature() {
         var setOpts = {};
         setOpts.setType = "inputText";
@@ -706,7 +706,6 @@ class KvSetOpts {
         setOpts.value = 0;
         return setOpts;
     }
-    
 
     getOptsFloat() {
         var setOpts = {};
@@ -718,8 +717,6 @@ class KvSetOpts {
         setOpts.value = 0;
         return setOpts;
     }
-
-
 
     getOptsFloatStrA() {
         var opts = sopt.getOptsFloatStr();
@@ -876,6 +873,19 @@ class KvSetOpts {
     }
 
     getEditUnit(op) {
+        var kopts = {};
+        if (op.paraSetName) {
+            var dscObj = gr.paraSet["dsc~" + op.paraSetName];
+            if (dscObj) {
+                if (dscObj.getType) {
+                    kopts = sopt.getOptsPara(dscObj.getType);
+                    KvLib.deepCoverObject(kopts, dscObj);
+                    kopts.value=gr.paraSet[op.paraSetName];
+                    kopts.actButtons = [];
+                }
+            }
+        }
+        KvLib.deepCoverObject(kopts, op);
         var setOpts = {};
         setOpts.setType = "inputText";
         setOpts.dataType = "int";
@@ -886,9 +896,7 @@ class KvSetOpts {
         setOpts.actButtons = [];
         setOpts.unitWidth = 40;
         setOpts.unit = "unit";
-        if (op) {
-            KvLib.deepCoverObject(setOpts, op);
-        }
+        KvLib.deepCoverObject(setOpts, kopts);
         return setOpts;
     }
     getView(op) {
@@ -900,8 +908,8 @@ class KvSetOpts {
         setOpts.min = 0;
         setOpts.titleFontSize = 20;
         setOpts.actButtons = [];
-        setOpts.readOnly_f=1;
-        setOpts.editBaseColor="#cfc";
+        setOpts.readOnly_f = 1;
+        setOpts.editBaseColor = "#cfc";
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
@@ -1024,7 +1032,7 @@ class KvBox {
         opts.titleBaseColor = op.titleBaseColor;
         opts.buttons = op.buttons;
         opts.buttonIds = op.buttonIds;
-        opts.buttonsOn_f=1;
+        opts.buttonsOn_f = 1;
         mda.setMargin(opts, op);
         opts.ym = op.ym;
         opts.eh = op.kvTexts.length * 40;
@@ -1660,7 +1668,7 @@ class KvBox {
         op.titleWidth = 300;
         op.titleFontSize = 20;
         op.noWidth = 50;
-        op.title= "box.paraEditBox";
+        op.title = "box.paraEditBox";
         op.paraSet = {};
         KvLib.deepCoverObject(op, _op);
 
@@ -1668,7 +1676,7 @@ class KvBox {
         var opts = {};
         opts.w = op.w;
         opts.h = op.h;
-        opts.title=op.title;
+        opts.title = op.title;
 
         opts.ksObjss = [];
         var keys = Object.keys(op.paraSet);
@@ -1729,12 +1737,24 @@ class KvBox {
                 for (var i = 0; i < iobj.ksObjss.length; i++) {
                     var obj = iobj.ksObjss[i][0];
                     var setOpts = obj.opts.setOpts;
-                    paraSet[setOpts.id]=setOpts.value;
+                    var checkType=setOpts.checkType;
+                    if (checkType === "floatAStr" || checkType === "intAStr" || checkType === "objStr") {
+                        var strA=setOpts.value.split(",");
+                        var strB=[];
+                        for(var j=0;j<strA.length;j++){
+                            var str=strA[j].trim();
+                            var str=str.slice(1,str.length-1);
+                            strB.push(str);
+                        }
+                        paraSet[setOpts.id] = strB;
+                    }
+                    else
+                        paraSet[setOpts.id] = setOpts.value;
                 }
-                var obj={};
-                obj.act="paraSetOk";
-                obj.paraSet=paraSet;
-                KvLib.exe(_op.actionFunc,obj);
+                var obj = {};
+                obj.act = "paraSetOk";
+                obj.paraSet = paraSet;
+                KvLib.exe(_op.actionFunc, obj);
             }
 
         };
