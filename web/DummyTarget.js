@@ -15,7 +15,7 @@ class DummyTarget {
             
             var radarStatus = syncData.radarStatus = {};
             /*
-            雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中     
+            雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中, 0.5:異常          
             環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
             SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
             SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
@@ -28,7 +28,7 @@ class DummyTarget {
             通信方式    10.0: 未連線, 10.1: 光纖, 10.2:無線, 10.3:自動 
             0.1
              */
-            radarStatus.mastStatus = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+            radarStatus.mastStatus = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
             radarStatus.sub1Status = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
             radarStatus.sub2Status = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
             
@@ -446,6 +446,189 @@ class TargetPane {
         if (this.md.subType === "base.sys0") {
         }
     }
+    chkWatch(){
+        /*
+            雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中, 0.5:異常發生               
+            環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
+            SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
+            SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
+            SSPA功率    4.0: 未連線, 3.1:良好, 4.2: 異常 
+            戰備狀態    5.0: 未連線, 5.1:關閉, 5.2: 開啟 
+            遠端遙控    6.0: 未連線, 6.1:關閉, 6.2: 開啟 
+            脈波來源    7.0: 未連線, 7.1: 主雷同步, 7.2: 本機脈波
+            輸出裝置    8.0: 未連線, 8.1: 天線, 8.2:假負載 
+            連線方式    9.0: 未連線, 9.1: 光纖, 9.2:無線, 9.3:自動 
+        */
+        
+            //radarStatus.mastStatus = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+            //radarStatus.sub1Status = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+            //radarStatus.sub2Status = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        var self = this;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        st.radarStatusText = [];
+        st.radarStatusColor = [];
+       
+        st.radarStatusText.push("雷達狀態: 未連線");
+        st.radarStatusText.push("環控");
+        st.radarStatusText.push("放大器電源");
+        st.radarStatusText.push("固態放大器");
+        st.radarStatusText.push("輻射功率");
+        st.radarStatusText.push("戰備狀態");
+        st.radarStatusText.push("遠端遙控");
+        st.radarStatusText.push("脈波來源");
+        st.radarStatusText.push("輸出裝置");
+        st.radarStatusText.push("連線方式");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        st.radarStatusColor.push("#888");
+        var radarStatus = gr.syncData.radarStatus.mastStatus;
+        if(radarStatus[0]!==0){
+            if(radarStatus[0]===1){
+                st.radarStatusText[0]="雷達狀態: 準備中";
+                st.radarStatusColor[0]="#eeeeee";
+            }    
+            if(radarStatus[0]===2){
+                st.radarStatusText[0]="雷達狀態: 本機備便";
+                st.radarStatusColor[0]="#eeeeee";
+            }    
+            if(radarStatus[0]===3){
+                st.radarStatusText[0]="雷達狀態: 發射備便";
+                st.radarStatusColor[0]="#ccffcc";
+            }    
+            if(radarStatus[0]===4){
+                st.radarStatusText[0]="雷達狀態: 發射中";
+                st.radarStatusColor[0]="#ffff00";
+            }    
+            if(radarStatus[0]===5){
+                st.radarStatusText[0]="雷達狀態: 異常";
+                st.radarStatusColor[0]="#ffcccc";
+            }    
+            //======================
+            radarStatus[1]=2;
+            if(radarStatus[1]===1){
+                st.radarStatusText[1]="環控: 準備中";
+                st.radarStatusColor[1]="#eeeeee";
+            }    
+            if(radarStatus[1]===2){
+                st.radarStatusText[1]="環控: 正常";
+                st.radarStatusColor[1]="#ccffcc";
+            }    
+            //======================
+            radarStatus[2]=1;
+            if(radarStatus[2]===1){
+                st.radarStatusText[2]="放大器電源: 備便";
+                st.radarStatusColor[2]="#eeeeee";
+            }    
+            if(radarStatus[2]===2){
+                st.radarStatusText[2]="放大器電源: 正常";
+                st.radarStatusColor[2]="#ccffcc";
+            }    
+            if(radarStatus[2]===3){
+                st.radarStatusText[2]="放大器電源: 異常";
+                st.radarStatusColor[2]="#ffcccc";
+            }    
+            //======================
+            radarStatus[3]=3;
+            if(radarStatus[3]===1){
+                st.radarStatusText[3]="固態放大器: 備便";
+                st.radarStatusColor[3]="#eeeeee";
+            }    
+            if(radarStatus[3]===2){
+                st.radarStatusText[3]="固態放大器: 正常";
+                st.radarStatusColor[3]="#ccffcc";
+            }    
+            if(radarStatus[3]===3){
+                st.radarStatusText[3]="固態放大器: 異常";
+                st.radarStatusColor[3]="#ffcccc";
+            }    
+            //======================
+            radarStatus[4]=3;
+            if(radarStatus[4]===1){
+                st.radarStatusText[4]="輻射功率: 備便";
+                st.radarStatusColor[4]="#eeeeee";
+            }    
+            if(radarStatus[4]===2){
+                st.radarStatusText[4]="輻射功率: 正常";
+                st.radarStatusColor[4]="#ccffcc";
+            }    
+            if(radarStatus[4]===3){
+                st.radarStatusText[4]="輻射功率: 異常";
+                st.radarStatusColor[4]="#ffcccc";
+            }    
+            //======================
+            radarStatus[5]=1;
+            if(radarStatus[5]===1){
+                st.radarStatusText[5]="戰備狀態: 關閉";
+                st.radarStatusColor[5]="#eeeeee";
+            }    
+            if(radarStatus[5]===2){
+                st.radarStatusText[5]="戰備狀態: 開啟";
+                st.radarStatusColor[5]="#ffffcc";
+            }    
+            
+            //======================
+            radarStatus[6]=1;
+            if(radarStatus[6]===1){
+                st.radarStatusText[6]="遠端遙控: 關閉";
+                st.radarStatusColor[6]="#eeeeee";
+            }    
+            if(radarStatus[6]===2){
+                st.radarStatusText[6]="遠端遙控: 開啟";
+                st.radarStatusColor[6]="#ffffcc";
+            }    
+            //======================
+            radarStatus[7]=2;
+            if(radarStatus[7]===1){
+                st.radarStatusText[7]="脈波來源: 主雷同步";
+                st.radarStatusColor[7]="#eeeeee";
+            }    
+            if(radarStatus[7]===2){
+                st.radarStatusText[7]="脈波來源: 本機脈波";
+                st.radarStatusColor[7]="#eeeeee";
+            }    
+            //======================
+            radarStatus[8]=2;
+            if(radarStatus[8]===1){
+                st.radarStatusText[8]="輸出裝置: 天線";
+                st.radarStatusColor[8]="#eeeeee";
+            }    
+            if(radarStatus[8]===2){
+                st.radarStatusText[8]="輸出裝置: 假負載";
+                st.radarStatusColor[8]="#eeeeee";
+            }    
+            //======================
+            radarStatus[9]=3;
+            if(radarStatus[9]===1){
+                st.radarStatusText[9]="連線方式: 光纖";
+                st.radarStatusColor[9]="#eeeeee";
+            }    
+            if(radarStatus[9]===2){
+                st.radarStatusText[9]="連線方式: 無線";
+                st.radarStatusColor[9]="#eeeeee";
+            }    
+            if(radarStatus[9]===3){
+                st.radarStatusText[9]="連線方式: 自動";
+                st.radarStatusColor[9]="#eeeeee";
+            }    
+            
+        }
+            
+        
+            
+            
+            
+        
+        
+    }
     afterCreate() {
         var md = this.md;
         var op = md.opts;
@@ -490,72 +673,20 @@ class TargetPane {
         opts.innerText = op.title;
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
         //==============================
+        for(var i=0;i<10;i++){
+            var cname = lyMaps["mainBody"] + "~" + lyInx++;
+            var opts = {};
+            opts.fontSize = "0.5rh";
+            opts.innerText = "";
+            var watchReg="self.fatherMd.stas.radarStatusText["+i+"]";
+            md.setInputWatch(opts, "directName", watchReg, "innerText", 1);
+            var watchReg="self.fatherMd.stas.radarStatusColor["+i+"]";
+            md.setInputWatch(opts, "directName", watchReg, "baseColor", 1);
+            blocks[cname] = {name: "statusLabel#0", type: "Component~Cp_base~label.led", opts: opts};
+        }
         var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "雷達狀態: 未連線";
-        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "環控";
-        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "SSPA電源";
-        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "SSPA放大器";
-        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "SSPA功率";
-        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "戰備狀態";
-        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "遠端搖控";
-        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
-        //==============================
-        
-        
-        
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "脈波來源: 主雷同步";
-        blocks[cname] = {name: "souceLabel", type: "Component~Cp_base~label.view", opts: opts};
-        //===
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "輸出裝置: 輻射天線";
-        blocks[cname] = {name: "outPanel", type: "Component~Cp_base~label.view", opts: opts};
-        //===
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.fontSize = "0.6rh";
-        opts.innerText = "通訊方式: 無線";
-        blocks[cname] = {name: "commPanel", type: "Component~Cp_base~label.view", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        opts.innerText = "誘標控制";
+        opts.innerText = "設定";
         opts.fontSize = "0.6rh";
         opts.actionFunc = function (iobj) {
             console.log(iobj);
@@ -563,7 +694,21 @@ class TargetPane {
             iobj.keyId = md.name + "SetButton";
             KvLib.exe(op.actionFunc, iobj);
         };
-        blocks[cname] = {name: "commandButton", type: "Component~Cp_base~button.sys0", opts: opts};
+        blocks[cname] = {name: "setButton", type: "Component~Cp_base~button.sys0", opts: opts};
+        
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        var opts = {};
+        opts.innerText = "控制";
+        opts.fontSize = "0.6rh";
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            iobj.sender = md;
+            iobj.keyId = md.name + "SetButton";
+            KvLib.exe(op.actionFunc, iobj);
+        };
+        blocks[cname] = {name: "ctrButton", type: "Component~Cp_base~button.sys0", opts: opts};
+        
+        
         //==============================
     }
 }

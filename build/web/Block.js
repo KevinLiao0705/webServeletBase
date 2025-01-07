@@ -946,7 +946,7 @@ class Block {
                 continue;
             ipObj.cnt = 0;
             if (ipObj.type === "directName") {
-                if (ipObj.inputName === "self.stas.location.gpsDatas[0][0]") {
+                if (ipObj.inputName === "self.fatherMd.stas.radarStatusText["+0+"]") {
                     var obj = self.fatherMd.opts.hecButColor;
                     var uu = 0;
                 }
