@@ -2085,6 +2085,8 @@ class Ly_base {
             st.layoutAmt = 0;
             var hs = KvLib.getAllUnit(yArr, 0, st.ch, st.ym);
             for (var i = 0; i < hs.length; i++) {
+                if(!xyArr[i])
+                    continue;
                 var nowX = st.cx;
                 var ws = KvLib.getAllUnit(xyArr[i], 0, st.cw, st.xm);
                 for (var j = 0; j < ws.length; j++) {

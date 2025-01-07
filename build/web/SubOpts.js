@@ -288,10 +288,10 @@ class SubOpts {
 
         if ("Component~Cp_base~label.led"){
             var opts = gr.blockSubOpts["Component~Cp_base~label.led"] = {};
-            opts.propertyWidth = 40;
+            opts.propertyWidth = 200;
             opts.propertyHeight = 40;
             //=================
-            opts.borderRadius = "0.2rh";
+            opts.borderRadius = "0.4rh";
             opts.borderWidth = 2;
             //=================
             opts.baseColor="#ccc";
@@ -307,6 +307,14 @@ class SubOpts {
             //opts.ih="0.9rh";
         }
 
+        if ("Component~Cp_base~label.view"){
+            var opts = gr.blockSubOpts["Component~Cp_base~label.view"] = {};
+            KvLib.deepCoverObject(opts, gr.blockSubOpts["Component~Cp_base~label.led"]);
+            opts.borderRadius = "0.1rh";
+            opts.baseColor="#f0f0ff";
+        }
+
+
 
         if ("Component~Cp_base~label.sys2"){
             var opts = gr.blockSubOpts["Component~Cp_base~label.sys2"] = {};
@@ -315,6 +323,19 @@ class SubOpts {
             opts.innerTextColor="#fff";
             opts.textShadow = "3px 3px 3px #000";
         }
+
+
+        if ("Component~Cp_base~label.lamp"){
+            var opts = gr.blockSubOpts["Component~Cp_base~label.lamp"] = {};
+            KvLib.deepCoverObject(opts, gr.blockSubOpts["Component~Cp_base~button.sys0"]);
+            opts.mouseClick_f = 0;
+            opts.cursor="";
+            opts.baseColor="#cfc";
+            opts.borderRadius = "0.6rh";
+            
+            
+        }
+
 
         if ("Component~Cp_base~label.title"){
             var opts = gr.blockSubOpts["Component~Cp_base~label.title"] = {};
@@ -407,8 +428,8 @@ class SubOpts {
             opts.insideShadowBlur = null;
             opts.borderWidth = 2;
             opts.outsideShadowBlur = "0.5rh";
-            opts.altColorInx=3;
-            opts.backgroundInx=3;
+            opts.altColorInx=1;
+            opts.backgroundInx=1;
             opts.backgroundImagePosition="extend";
             //opts.baseColor="rgba(0,0,0,0)";
               

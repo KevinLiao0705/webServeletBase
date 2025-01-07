@@ -12,6 +12,28 @@ class DummyTarget {
             location.mastGpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
             location.sub1GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
             location.sub2GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+            
+            var radarStatus = syncData.radarStatus = {};
+            /*
+            雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中     
+            環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
+            SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
+            SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
+            SSPA功率    4.0: 未連線, 3.1:良好, 4.2: 異常 
+            戰備狀態    5.0: 未連線, 5.1:關閉, 5.2: 開啟 
+            遠端遙控    6.0: 未連線, 6.1:關閉, 6.2: 開啟 
+            遠端遙控    7.0: 未連線, 6.1:關閉, 6.3: 開啟 
+            脈波來源    8.0: 未連線, 8.1: 主雷同步, 8.2: 本機脈波
+            輸出裝置    9.0: 未連線, 9.1: 天線, 9.2:假負載 
+            通信方式    10.0: 未連線, 10.1: 光纖, 10.2:無線, 10.3:自動 
+            0.1
+             */
+            radarStatus.mastStatus = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+            radarStatus.sub1Status = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+            radarStatus.sub2Status = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+            
+            
+            
         }
         return opts;
     }
@@ -456,75 +478,85 @@ class TargetPane {
         var opts = {};
         opts.margin = 6;
         opts.xm = 2;
-        opts.ym = 10;
-        opts.yArr = ["0.140rh", "0.13rh", "0.13rh", "0.13rh", "0.13rh", "0.13rh", 9999];
-        opts.xyArr = [[9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], ["0.5rw", 9999], [9999]];
+        opts.ym = 4;
+        var yr = (1 / 9).toFixed(3) + "rh";
+        opts.yArr = [yr, yr, yr, yr, yr, yr, yr, yr, yr, yr,yr];
+        opts.xyArr = [[9999], [9999],["0.5rw", 9999],["0.5rw", 9999],["0.5rw", 9999],[9999], [9999], [9999], [9999], [ 9999]];
+        var lyInx = 0;
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["mainBody"] = cname;
-        var cname = lyMaps["mainBody"] + "~" + 0;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
         opts.innerText = op.title;
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
         //==============================
-        var cname = lyMaps["mainBody"] + "~" + 1;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
-        opts.innerText = "雷達狀態";
-        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.sys3", opts: opts};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "雷達狀態: 未連線";
+        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
-        var cname = lyMaps["mainBody"] + "~" + 2;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
-        opts.innerText = "備便";
-        opts.baseColor = "#cfc";
-        blocks[cname] = {name: "statusPlate", type: "Component~Cp_base~label.led", opts: opts};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "環控";
+        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
-        var cname = lyMaps["mainBody"] + "~" + 3;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
-        opts.innerText = "脈波來源";
-        blocks[cname] = {name: "souceLabel", type: "Component~Cp_base~label.sys3", opts: opts};
-        //===
-        var cname = lyMaps["mainBody"] + "~" + 4;
-        var opts = {};
-        opts.innerText = "主雷同步";
-        opts.baseColor = "#cfc";
-        blocks[cname] = {name: "sourcePlate", type: "Component~Cp_base~label.led", opts: opts};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "SSPA電源";
+        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
-        var cname = lyMaps["mainBody"] + "~" + 7;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
-        opts.innerText = "輸出裝置";
-        blocks[cname] = {name: "outPanel", type: "Component~Cp_base~label.sys3", opts: opts};
-        //===
-        var cname = lyMaps["mainBody"] + "~" + 8;
-        var opts = {};
-        opts.innerText = "輻射天線";
-        opts.baseColor = "#cfc";
-        blocks[cname] = {name: "outPlate", type: "Component~Cp_base~label.led", opts: opts};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "SSPA放大器";
+        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
-        var cname = lyMaps["mainBody"] + "~" + 5;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
-        opts.innerText = "通訊方式";
-        blocks[cname] = {name: "commPanel", type: "Component~Cp_base~label.sys3", opts: opts};
-        //===
-        var cname = lyMaps["mainBody"] + "~" + 6;
-        var opts = {};
-        opts.innerText = "無線";
-        opts.baseColor = "#cfc";
-        blocks[cname] = {name: "commPlate", type: "Component~Cp_base~label.led", opts: opts};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "SSPA功率";
+        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
-        var cname = lyMaps["mainBody"] + "~" + 9;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
+        opts.fontSize = "0.6rh";
         opts.innerText = "戰備狀態";
-        blocks[cname] = {name: "battlePanel", type: "Component~Cp_base~label.sys3", opts: opts};
-        //===
-        var cname = lyMaps["mainBody"] + "~" + 10;
-        var opts = {};
-        opts.innerText = "關閉";
-        opts.baseColor = "#888";
-        blocks[cname] = {name: "battlePlate", type: "Component~Cp_base~label.led", opts: opts};
+        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
         //==============================
-        var cname = lyMaps["mainBody"] + "~" + 11;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        var opts = {};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "遠端搖控";
+        blocks[cname] = {name: "statusLabel", type: "Component~Cp_base~label.led", opts: opts};
+        //==============================
+        
+        
+        
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        var opts = {};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "脈波來源: 主雷同步";
+        blocks[cname] = {name: "souceLabel", type: "Component~Cp_base~label.view", opts: opts};
+        //===
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        var opts = {};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "輸出裝置: 輻射天線";
+        blocks[cname] = {name: "outPanel", type: "Component~Cp_base~label.view", opts: opts};
+        //===
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        var opts = {};
+        opts.fontSize = "0.6rh";
+        opts.innerText = "通訊方式: 無線";
+        blocks[cname] = {name: "commPanel", type: "Component~Cp_base~label.view", opts: opts};
+        //==============================
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
         opts.innerText = "誘標控制";
-        opts.fontSize = "0.5rh";
+        opts.fontSize = "0.6rh";
         opts.actionFunc = function (iobj) {
             console.log(iobj);
             iobj.sender = md;
@@ -892,29 +924,82 @@ class LocationTarget {
 
         var radarDirections = location.radarDirections = [];
         var posOut = self.calPos(st.mistRadarPos, st.sub1RadarPos);
-        st.posOutA=posOut;
-        var dir=(Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
+        st.posOutA = posOut;
+        var dir = (Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
         radarDirections.push(dir);
         var posOut = self.calPos(st.mistRadarPos, st.sub2RadarPos);
-        st.posOutB=posOut;
-        var dir=(Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
+        st.posOutB = posOut;
+        var dir = (Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
         radarDirections.push(dir);
         var posOut = self.calPos(st.sub1RadarPos, st.sub2RadarPos);
-        var dir=(Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
+        var dir = (Math.pow(posOut[0] * posOut[0] + posOut[1] * posOut[1], 0.5)).toFixed(0);
         radarDirections.push(dir);
-        
+
         var radarPositions = location.radarPositions = [];
-        
-        var pos0=st.posOutA[0]|0;
-        var pos1=st.posOutA[1]|0;
-        var pos0=st.posOutA[2]|0;
-        var pos1=st.posOutA[3]|0;
-        
-        
-        
-        
-        
-        
+
+        var pos0 = st.posOutA[0] | 0;
+        var pos1 = st.posOutA[1] | 0;
+        var pos2 = st.posOutB[0] | 0;
+        var pos3 = st.posOutB[1] | 0;
+        var radarScreen = md.blockRefs["radarScreen"];
+
+        var scale = radarScreen.opts.roomInTbl[radarScreen.opts.roomInInx];
+        var sRate = radarScreen.stas.sRadius * 2 / radarScreen.stas.containerHeight;
+        //======================
+        var yRate = 0;
+        var xRate = 0;
+        var hide_f = 0;
+        if ((yRate * yRate + xRate * xRate) > 1)
+            hide_f = 1;
+        var rateY = (sRate * yRate * 0.5 + 0.5);
+        var rateX = (sRate * xRate * 0.5 + 0.5);
+        var nowString = gr.paraSet.mastAttitude[1] + "~" + rateY.toFixed(2) + "~" + rateX.toFixed(2) + "~" + hide_f;
+        if (radarScreen.opts.messages.mastRadar.preString !== nowString) {
+            radarScreen.opts.messages.mastRadar.preString = nowString;
+            radarScreen.opts.symbleEdit_f = 1;
+            radarScreen.opts.messages.mastRadar.angle = gr.paraSet.mastAttitude[1];
+            radarScreen.opts.messages.mastRadar.yr = 1 - rateY;
+            radarScreen.opts.messages.mastRadar.xr = rateX;
+            radarScreen.opts.messages.mastRadar.hide_f = hide_f;
+        }
+        //======================
+        var yRate = pos0 / scale;
+        var xRate = pos1 / scale;
+        var hide_f = 0;
+        if ((yRate * yRate + xRate * xRate) > 1)
+            hide_f = 1;
+        var rateY = (sRate * yRate * 0.5 + 0.5);
+        var rateX = (sRate * xRate * 0.5 + 0.5);
+        var nowString = gr.paraSet.sub1Attitude[1] + "~" + rateY.toFixed(2) + "~" + rateX.toFixed(2) + "~" + hide_f;
+        if (radarScreen.opts.messages.sub1Radar.preString !== nowString) {
+            radarScreen.opts.messages.sub1Radar.preString = nowString;
+            radarScreen.opts.symbleEdit_f = 1;
+            radarScreen.opts.messages.sub1Radar.angle = gr.paraSet.sub1Attitude[1];
+            radarScreen.opts.messages.sub1Radar.yr = 1 - rateY;
+            radarScreen.opts.messages.sub1Radar.xr = rateX;
+            radarScreen.opts.messages.sub1Radar.hide_f = hide_f;
+        }
+        //======================
+        var yRate = pos2 / scale;
+        var xRate = pos3 / scale;
+        var hide_f = 0;
+        if ((yRate * yRate + xRate * xRate) > 1)
+            hide_f = 1;
+        var rateY = (sRate * yRate * 0.5 + 0.5);
+        var rateX = (sRate * xRate * 0.5 + 0.5);
+        var nowString = gr.paraSet.sub2Attitude[1] + "~" + rateY.toFixed(2) + "~" + rateX.toFixed(2) + "~" + hide_f;
+        if (radarScreen.opts.messages.sub2Radar.preString !== nowString) {
+            radarScreen.opts.messages.sub2Radar.preString = nowString;
+            radarScreen.opts.symbleEdit_f = 1;
+            radarScreen.opts.messages.sub2Radar.angle = gr.paraSet.sub2Attitude[1];
+            radarScreen.opts.messages.sub2Radar.yr = 1 - rateY;
+            radarScreen.opts.messages.sub2Radar.xr = rateX;
+            radarScreen.opts.messages.sub2Radar.hide_f = hide_f;
+        }
+
+
+
+
 
 
 
@@ -935,8 +1020,8 @@ class LocationTarget {
         var Rm = a * (1.0 - e2) / Math.pow((1.0 - e2 * Math.pow(Math.sin(mid_lat), 2.0)), 1.5);
         var Rn = a / Math.sqrt(1.0 - e2 * Math.pow(Math.sin(mid_lat), 2.0));
         var posOut = [];
-        posOut.push(((pos0[0] - pos1[0]) * (Rm + mid_h)).toFixed(0));
-        posOut.push(((pos0[1] - pos1[1]) * (Rn + mid_h) * Math.cos(mid_lat)).toFixed(0));
+        posOut.push(((pos1[0] - pos0[0]) * (Rm + mid_h)).toFixed(0));
+        posOut.push(((pos1[1] - pos0[1]) * (Rn + mid_h) * Math.cos(mid_lat)).toFixed(0));
         posOut.push((-1 * (pos0[2] - pos1[2]).toFixed(0)));
         return posOut;
     }
@@ -1612,17 +1697,18 @@ class MyRadar {
         opts.speedAngleDiv = 3600;
         opts.radarColor = 0x3000ff00;
         opts.roomInInx = 0;
-        opts.roomInTbl = [500, 1000, 2000, 5000, 10000, 20000];
+        opts.roomInTbl = [500, 600, 800, 1000, 1200, 1600, 2000, 2400, 3000, 4000, 5000, 6000];
         //===============
         opts.messages = {};
         var mesObj = {};
-        mesObj.xr = 0.01;
+        mesObj.xr = 0.05;
         mesObj.yr = 0.01;
         mesObj.text = "Range: " + opts.roomInTbl[opts.roomInInx];
         mesObj.color = "#0f0";
         mesObj.offY = 10;
         mesObj.fontSize = 12;
         mesObj.fontFamily = "monospace";
+        mesObj.hide_f = 0;
         opts.messages.rangeText = mesObj;
         //===============
         var mesObj = {};
@@ -1631,9 +1717,11 @@ class MyRadar {
         mesObj.text = "➤";
         mesObj.color = "#f00";
         mesObj.offY = 11;
-        mesObj.angle = 270;
+        mesObj.angle = 0;
         mesObj.fontSize = 32;
         mesObj.fontFamily = "monospace";
+        mesObj.hide_f = 0;
+        mesObj.preString = "";
         opts.messages.mastRadar = mesObj;
         //===============
         var mesObj = {};
@@ -1642,9 +1730,11 @@ class MyRadar {
         mesObj.text = "➤";
         mesObj.color = "#0f0";
         mesObj.offY = 11;
-        mesObj.angle = 160;
+        mesObj.angle = 0;
         mesObj.fontSize = 32;
         mesObj.fontFamily = "monospace";
+        mesObj.hide_f = 0;
+        mesObj.preString = "";
         opts.messages.sub1Radar = mesObj;
         //===============
         var mesObj = {};
@@ -1653,9 +1743,11 @@ class MyRadar {
         mesObj.text = "➤";
         mesObj.color = "#00f";
         mesObj.offY = 11;
-        mesObj.angle = 45;
+        mesObj.angle = 0;
         mesObj.fontSize = 32;
         mesObj.fontFamily = "monospace";
+        mesObj.hide_f = 0;
+        mesObj.preString = "";
         opts.messages.sub2Radar = mesObj;
         //===============
 
@@ -1874,20 +1966,20 @@ class MyRadar {
         var keys = Object.keys(op.messages);
         for (var i = 0; i < keys.length; i++) {
             var mesObj = op.messages[keys[i]];
+            if (mesObj.hide_f)
+                continue;
             ctx.save();
             ctx.fillStyle = mesObj.color;
             ctx.font = mesObj.fontSize + "px " + mesObj.fontFamily;
             var xx = (mesObj.xr * st.containerWidth) | 0;
             var yy = (mesObj.yr * st.containerHeight) | 0;
             var text = mesObj.text;
-            if (mesObj.angle) {
-                var metrics = ctx.measureText(text);
-                ctx.translate(xx, yy);
-                ctx.rotate(2 * Math.PI * (mesObj.angle) / 360);
-                ctx.fillText(text, -(metrics.width) / 2, mesObj.offY);
-            } else {
-                ctx.fillText(text, xx, yy + mesObj.offY);
-            }
+            //
+            var metrics = ctx.measureText(text);
+            ctx.translate(xx, yy);
+            ctx.rotate(2 * Math.PI * (mesObj.angle - 90) / 360);
+            ctx.fillText(text, -(metrics.width) / 2, mesObj.offY);
+            //
             ctx.restore();
         }
     }
