@@ -872,6 +872,23 @@ class KvSetOpts {
         return setOpts;
     }
 
+    getParaSetOpts(op){
+        var kopts = {};
+        if (op.paraSetName) {
+            var dscObj = gr.paraSet["dsc~" + op.paraSetName];
+            if (dscObj) {
+                if (dscObj.getType) {
+                    kopts = sopt.getOptsPara(dscObj.getType);
+                    KvLib.deepCoverObject(kopts, dscObj);
+                    kopts.value=gr.paraSet[op.paraSetName];
+                }
+            }
+        }
+        KvLib.deepCoverObject(kopts, op);
+        return kopts;
+    }
+    
+    
     getEditUnit(op) {
         var kopts = {};
         if (op.paraSetName) {
