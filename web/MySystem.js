@@ -24,10 +24,13 @@ class MySystem {
         //=======================================================
     }
 
-    dispWebPage() {
+    dispWebPage(modelType) {
         var self = this;
         let gr = window.gr;
-        gr.nowAppType = gr.appType;
+        if (modelType)
+            gr.nowAppType = modelType;
+        else
+            gr.nowAppType = gr.appType;
         self.webInit();
         gr.mdSystem = new Block("mdSystem", "Model~MdaPopWin~sys0", {});
         gr.mdSystem.create("rootBody", -1000, -1000, 0, 0);
@@ -44,13 +47,13 @@ class MySystem {
                 gr.mdMain.create("rootBody");
                 return;
             }
-            gr.appPageCnt=1;
+            gr.appPageCnt = 1;
         }
         if (gr.appPageCnt === 1) {
             if (gr.enabelLogin_f) {
                 var opts = {};
                 gr.mdMain = mac.loginBox(opts);
-                if(gr.mdMain)
+                if (gr.mdMain)
                     gr.mdMain.create("rootBody");
                 return;
 
@@ -229,6 +232,15 @@ class MySystem {
         //=================
 
         self.repaint(0);
+        var strA = gr.appType.split("~");
+        if (strA.length === 3) {
+            var str = strA[1] + ".globleTime()";
+            try {
+                eval(str);
+            } catch (except) {
+            }
+
+        }
         if (gr.mdMain) {
             gr.mdMain.chkWatch();
         }

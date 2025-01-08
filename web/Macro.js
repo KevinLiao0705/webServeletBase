@@ -1694,9 +1694,11 @@ class KvBox {
         opts.w = op.w;
         opts.h = op.h;
         opts.title = op.title;
+        opts.eh=op.eh;
+        opts.ym=op.ym;
 
         opts.ksObjss = [];
-        var keys = Object.keys(op.paraSet);
+        var keys = op.setNames;
         //keys.sort();
         var index = 0;
         for (var i = 0; i < keys.length; i++) {
