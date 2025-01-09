@@ -1,11 +1,22 @@
 {
     "dsc~dataType": "int,float,str,intStr,floatStr,intA,floatA",
+
     "version": "1.0",
     "dsc~version": {
         "title": "版本",
         "readOnly_f": 1,
         "getType": "floatStr"
     },
+
+    "radarId": 0,
+    "dsc~radarId": {
+        "title": "雷達編號",
+        "getType": "int"
+    },
+
+
+
+
     "paraSetPassword": "69",
     "dsc~paraSetPassword": {
         "title": "參數設定密碼",
@@ -50,7 +61,7 @@
             "本機脈波"
         ]
     },
-    "mastToSub1CommType": 0,
+    "mastToSub1CommType": 2,
     "dsc~mastToSub1CommType": {
         "getType": "buttonRadio",
         "title": "主控與副控1連線方式",
@@ -60,8 +71,7 @@
             "自動"
         ]
     },
-
-    "mastToSub2CommType": 0,
+    "mastToSub2CommType": 2,
     "dsc~mastToSub2CommType": {
         "getType": "buttonRadio",
         "title": "主控與副控2連線方式",
@@ -71,8 +81,6 @@
             "自動"
         ]
     },
-
-
     "mastToSub1SpeechEnable": 1,
     "dsc~mastToSub1SpeechEnable": {
         "getType": "buttonRadio",
@@ -261,15 +269,137 @@
         "getType": "natureA",
         "title": "副控2經度設定"
     },
-    "sub2Attitude": [
-        478,
-        270
-    ],
+    "sub2Attitude": "478,270",
     "dsc~sub2Attitude": {
         "getType": "natureAStr",
         "title": "副控2姿態設定"
     },
     "dsc~line4": "===============================================================================",
+    "commTestPacks": "1024",
+    "dsc~commTestPacks": {
+        "getType": "intEnum",
+        "title": "檢測封包數",
+        "enum": [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128,
+            256,
+            512,
+            1024,
+            2048
+        ]
+    },
+    "vgTimeDelay": 40,
+    "dsc~vgTimeDelay": {
+        "getType": "nature",
+        "title": "VG時間延時",
+        "unitWidth": 50,
+        "unit": "5ns"
+    },
+    "sub1ChTimeFineTune": 10,
+    "dsc~sub1ChSyncTimeFineTune": {
+        "title": "副控1同步時間微調",
+        "unit": "5ns",
+        "getType": "int",
+        "min": 1,
+        "max": 99
+    },
+    "sub2ChTimeFineTune": 10,
+    "dsc~sub2ChSyncTimeFineTune": {
+        "title": "副控2同步時間微調",
+        "unit": "5ns",
+        "getType": "int",
+        "min": -2000,
+        "max": 2000
+    },
+    "sub1ChSyncType": 1,
+    "dsc~sub1ChSyncType": {
+        "title": "主控與副控1同步模式",
+        "getType": "buttonRadio",
+        "enum": [
+            "固定時間延時",
+            "1588同步追蹤"
+        ]
+    },
+    "sub2ChSyncType": 1,
+    "dsc~sub2ChSyncType": {
+        "title": "主控與副控2同步模式",
+        "getType": "buttonRadio",
+        "enum": [
+            "固定時間延時",
+            "1588同步追蹤"
+        ]
+    },
+    "sub1ChCommSet": 0,
+    "dsc~sub1ChCommSet": {
+        "title": "副控1通道",
+        "getType": "buttonRadio",
+        "enum": [
+            "關閉",
+            "開啟"
+        ]
+    },
+    "sub2ChCommSet": 1,
+    "dsc~sub2ChCommSet": {
+        "title": "副控2通道",
+        "getType": "buttonRadio",
+        "enum": [
+            "關閉",
+            "開啟"
+        ]
+    },
+    "sub1ChFiberDelay": 36,
+    "dsc~sub1ChFiberDelay": {
+        "title": "副控1通道光纖固定延時",
+        "getType": "int"
+    },
+    "sub2ChFiberDelay": 0,
+    "dsc~sub2ChFiberDelay": {
+        "title": "副控2通道光纖固定延時",
+        "unit": "5ns",
+        "getType": "int"
+    },
+    "sub1ChRfDelay": 5,
+    "dsc~sub1ChRfDelay": {
+        "title": "副控1通道RF固定延時",
+        "getType": "int"
+    },
+    "sub2ChRfDelay": 0,
+    "dsc~sub2ChRfDelay": {
+        "title": "副控2通道RF固定延時",
+        "unit": "5ns",
+        "getType": "int"
+    },
+    "sub1ChRfTxCh": 0,
+    "dsc~sub1ChRfTxCh": {
+        "title": "副控1RF發射頻道",
+        "max": 255,
+        "getType": "nature"
+    },
+    "sub2ChRfTxCh": 0,
+    "dsc~sub2ChRfTxCh": {
+        "title": "副控2RF發射頻道",
+        "max": 255,
+        "getType": "nature"
+    },
+    "sub1ChRfRxCh": 0,
+    "dsc~sub1ChRfRxCh": {
+        "title": "副控1RF接收頻道",
+        "max": 255,
+        "getType": "nature"
+    },
+    "sub2ChRfRxCh": 0,
+    "dsc~sub2ChRfRxCh": {
+        "title": "副控2RF接收頻道",
+        "max": 255,
+        "getType": "nature"
+    },
+    "dsc~line5": "===============================================================================",
     "test": [
         25,
         3,

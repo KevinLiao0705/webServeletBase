@@ -48,6 +48,16 @@ class DummyTarget {
             radarStatus.sub1Status = [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             radarStatus.sub2Status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+            //0 光纖連線狀態 0:未連線, 1:未連線 
+            //1 RF連線狀態 0:未連線, 1:未連線 
+            //2 1588修正時間  
+            //3 封包發送數  
+            //4 正確率
+            //5 主控RF接收能量
+            //6 副控RF接收能量
+            syncData.sub1CommDatas = [0, 1, 3, 4, 1200, 10, 20];
+            syncData.sub2CommDatas = [1, 0, 7, 8, 1201, 11, 22];
+
 
 
         }
@@ -195,7 +205,7 @@ class DummyTarget {
         opts.xc = 1;
         opts.yc = 10;
         opts.kvTexts = [];
-        opts.kvTexts.push("主控雷達設定");
+        opts.kvTexts.push("雷達參數設定");
         opts.kvTexts.push("測試脈波設定");
         opts.kvTexts.push("同步參數設定");
         opts.kvTexts.push("GPS參數設定");
@@ -215,6 +225,7 @@ class DummyTarget {
                     var content = JSON.stringify(gr.paraSet);
                     sv.saveStringToFile("responseDialogError", "null", fileName, content);
                 };
+                /*
                 var keys = Object.keys(gr.paraSet);
                 opts.setNames = [];
                 for (var i = 0; i < keys.length; i++) {
@@ -223,6 +234,13 @@ class DummyTarget {
                         continue;
                     opts.setNames.push(keys[i]);
                 }
+                */
+                opts.setNames = [];
+                if(gr.radarId===0){
+                    
+                }
+                
+                
                 box.paraEditBox(opts);
                 return;
             }
@@ -2368,43 +2386,43 @@ class SelfTest {
         ];
         return opts;
     }
-    chkWatch(){
+    chkWatch() {
         var self = this;
         var md = self.md;
         var op = md.opts;
         var st = md.stas;
-        var ids=gr.syncData.slotIds;
-        st.slotNames=[];
-        for(var i=0;i<12;i++){
-            var str="";
-            if(ids[i]>0){
-                str=op.slotNames[ids[i]-1];
+        var ids = gr.syncData.slotIds;
+        st.slotNames = [];
+        for (var i = 0; i < 12; i++) {
+            var str = "";
+            if (ids[i] > 0) {
+                str = op.slotNames[ids[i] - 1];
             }
             st.slotNames.push(str);
         }
-        
-        var status=gr.syncData.slotStatus;
-        st.slotLeds=[];
-        st.slotLedHides=[];
-        for(var i=0;i<12;i++){
-            var inx=0;
-            var hide_f=0;
-            if(st.slotNames[i]==="")
-                hide_f=1;
-            if(status[i]===1)
-                inx=1;
-            if(status[i]===2)
-                inx=2;
-            if(status[i]===3)
-                inx=3;
-            if(status[i]===4)
-                inx=4;
+
+        var status = gr.syncData.slotStatus;
+        st.slotLeds = [];
+        st.slotLedHides = [];
+        for (var i = 0; i < 12; i++) {
+            var inx = 0;
+            var hide_f = 0;
+            if (st.slotNames[i] === "")
+                hide_f = 1;
+            if (status[i] === 1)
+                inx = 1;
+            if (status[i] === 2)
+                inx = 2;
+            if (status[i] === 3)
+                inx = 3;
+            if (status[i] === 4)
+                inx = 4;
             st.slotLeds.push(inx);
             st.slotLedHides.push(hide_f);
         }
-        
-        
-        
+
+
+
     }
     create() {
     }
@@ -2521,8 +2539,8 @@ class SelfTest {
         opts.fontSize = "0.5rh";
         opts.xm = 4;
         opts.ym = 10;
-        opts.baseColor="#444";
-        
+        opts.baseColor = "#444";
+
         opts.actionFunc = function (iobj) {
             console.log(iobj);
             if (iobj.buttonId === "clear") {
@@ -2554,6 +2572,57 @@ class SyncTest {
     }
     create() {
     }
+
+    chkWatch() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        //0 光纖連線狀態 0:未連線, 1:未連線 
+        //1 RF連線狀態 0:未連線, 1:未連線 
+        //2 1588修正時間  
+        //3 封包發送數  
+        //4 正確率
+        //5 主控RF接收能量
+        //6 副控RF接收能量
+        for (var i = 0; i < 2; i++) {
+            if (i === 0) {
+                var datas = gr.syncData.sub1CommDatas;
+                var commDatas = st.sub1CommDatas = ["", "", "", "", "", ""];
+                var commColors = st.sub1CommColors = ["#eef", "#eef", "#eef", "#eef", "#eef", "#eef"];
+            }
+            if (i === 1) {
+                var datas = gr.syncData.sub2CommDatas;
+                var commDatas = st.sub2CommDatas = ["", "", "", "", "", ""];
+                var commColors = st.sub2CommColors = ["#eef", "#eef", "#eef", "#eef", "#eef", "#eef"];
+            }
+
+            if (datas[0] === 0) {
+                commDatas[0] = "未連線";
+                commColors[0] = "#eef";
+            } else {
+                commDatas[0] = "已連線";
+                commColors[0] = "#cfc";
+            }
+            if (datas[1] === 0) {
+                commDatas[1] = "未連線";
+                commColors[1] = "#eef";
+            } else {
+                commDatas[1] = "已連線";
+                commColors[1] = "#cfc";
+            }
+            commDatas[2] = "" + datas[2];
+            commDatas[3] = "" + datas[3];
+            commDatas[4] = "" + datas[4];
+            commDatas[5] = "" + datas[5];
+            commDatas[6] = "" + datas[6];
+
+        }
+
+
+
+    }
+
     actionFunc(iobj) {
         console.log(iobj);
         if (iobj.act === "mouseClick") {
@@ -2633,30 +2702,63 @@ class SyncTest {
         opts.xm = 10;
         opts.ym = 5;
         opts.xyArr = [
-            ["0.33rw", "0.33rw", 9999],
-            ["0.33rw", "0.33rw", 9999]
+            ["0.5rw", 9999],
+            ["0.5rw", 9999]
         ];
-        setOptss.push(sopt.getEditView({title: "時鐘運算偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
-        setOptss.push(sopt.getEditView({title: "時鐘最大誤差:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
-        setOptss.push(sopt.getSelect({title: "1588封包數:", titleWidth: 150, value: 0, dataType: "int"}));
-        setOptss[2].enum = ["1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048"];
-        setOptss.push(sopt.getEditView({title: "時間微調:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
-        setOptss.push(sopt.getEditView({title: "時間修正偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
-        setOptss.push(sopt.getEditView({title: "VG時間誤差:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
-        blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+        var setOpts = sopt.getParaSetOpts({paraSetName: "commTestPacks", titleWidth: 200, titleFontSize: "0.5rh"});
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", "gr.paraSet." + "commTestPacks", "editValue", 1]);
+        setOptss.push(setOpts);
+        var setOpts = sopt.getParaSetOpts({paraSetName: "vgTimeDelay", titleWidth: 200, titleFontSize: "0.5rh"});
+        setOpts.actButtons = [];
+        setOpts.readOnly_f = 1;
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", "gr.paraSet." + "vgTimeDelay", "editValue", 1]);
+        setOptss.push(setOpts);
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            if (iobj.act === "itemMouseClick") {
+                var setLine = iobj.setOptsObj;
+                var value = setLine.opts.setOpts.value;
+                gr.paraSet[setLine.opts.setOpts.paraSetName] = value;
+                var fileName = "paraSet";
+                var content = JSON.stringify(gr.paraSet);
+                sv.saveStringToFile("responseDialogError", null, fileName, content);
+
+            }
+
+        };
+        blocks[cname] = {name: "systemPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+        
         var targFunc = function (opts) {
+            opts.actionFunc = function (iobj) {
+                console.log(iobj);
+                if (iobj.act === "checkChanged" || iobj.act === "pressEnter") {
+                    var setLine = iobj.kvObj.fatherMd;
+                    var value = setLine.opts.setOpts.value;
+                    gr.paraSet[setLine.opts.setOpts.paraSetName] = value;
+                    var fileName = "paraSet";
+                    var content = JSON.stringify(gr.paraSet);
+                    sv.saveStringToFile("responseDialogError", null, fileName, content);
+                }
+            };
             opts.setOptss = [];
             var setOptss = opts.setOptss;
             opts.yArr = ["0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh", "0.1rh"];
             opts.ym = 10;
             opts.xm = 8;
+            if (opts.deviceInx === 0)
+                var preText = "sub1";
+            if (opts.deviceInx === 1)
+                var preText = "sub2";
             opts.xyArr = [
-                [9999, 230],
                 [9999],
                 [9999],
-                [9999, 260],
-                [9999, 260],
-                [9999, 260],
+                ["0.5rw", 9999],
+                [9999],
+                [9999],
+                [9999],
+                [9999],
                 ["0.5rw", 9999],
                 ["0.5rw", 9999],
                 ["0.5rw", 9999],
@@ -2667,35 +2769,116 @@ class SyncTest {
                 [9999],
                 [9999]
             ];
-            setOptss.push(sopt.getButtonRadio({title: "傳輸方式:", titleWidth: 140, enum: ["光纖", "無線"], value: 0, dataType: "int", radioName: opts.title + "_rn1"}));
-            setOptss.push(sopt.getLabelViews({title: "傳輸狀態:", titleWidth: 120, enum: ["斷線"], dataType: "int"}));
-            setOptss.push(sopt.getButtonRadio({title: "通道設定:", titleWidth: 140, enum: ["開啟", "關閉"], value: 0, dataType: "int", radioName: opts.title + "_rn2"}));
-            setOptss.push(sopt.getButtonRadio({title: "同步模式:", titleWidth: 140, enum: ["固定延時偏移", "1588延時追蹤"], value: 0, dataType: "int"}));
-            setOptss.push(sopt.getEditView({title: "光纖延時偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int", radioName: opts.title + "_rn3"}));
-            setOptss.push(sopt.getLabelViews({title: "1588修正:", titleWidth: 140, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getEditView({title: "RF延時偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "1588修正:", titleWidth: 140, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getEditView({title: "延時運算偏移:", titleWidth: 150, value: 123, unit: "5ns", unitWidth: 50, dataType: "int"}));
-            setOptss.push(sopt.getEditView({title: "無線頻道:", titleWidth: 140, value: 123, dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "同時偏移:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "回傳封包遺失數:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "封包發送數 x256:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "封包接收數 x256:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "正確率/1000:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "副控封包遺失數:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "主雷達RF接收能量:", titleWidth: 180, enum: ["123"], dataType: "int"}));
-            setOptss.push(sopt.getLabelViews({title: "副控RF接收能量:", titleWidth: 180, enum: ["123"], dataType: "int"}));
+
+            if (opts.deviceInx === 0) {
+                var watchReg0 = "self.fatherMd.fatherMd.fatherMd.stas.sub1CommDatas";
+                var watchReg1 = "self.fatherMd.fatherMd.fatherMd.stas.sub1CommColors";
+            }
+            if (opts.deviceInx === 1) {
+                var watchReg0 = "self.fatherMd.fatherMd.fatherMd.stas.sub2CommDatas";
+                var watchReg1 = "self.fatherMd.fatherMd.fatherMd.stas.sub2CommColors";
+            }
+            //===============
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChCommSet", titleWidth: 200, titleFontSize: "0.4rh"});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", gr.paraSet[preText + "ChCommSet"], "editValue", 1]);
+            setOptss.push(setOpts);
+            //===============
+            if (opts.deviceInx === 0) {
+                var setOpts = sopt.getParaSetOpts({paraSetName: "mastToSub1CommType", titleWidth: 200, titleFontSize: "0.4rh"});
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directName", "gr.paraSet." + "mastToSub1CommType", "editValue", 1]);
+            } else {
+                var setOpts = sopt.getParaSetOpts({paraSetName: "mastToSub2CommType", titleWidth: 200, titleFontSize: "0.4rh"});
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directName", "gr.paraSet." + "mastToSub2CommType", "editValue", 1]);
+            }
+            setOptss.push(setOpts);
+            //===============
+            var setOpts = sopt.getView({title: "光纖連線狀態:", titleWidth: 140, value: ""});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", watchReg0 + "[0]", "editValue", 1]);
+            watchDatas.push(["directName", watchReg1 + "[0]", "editBaseColor", 1]);
+            setOptss.push(setOpts);
+            //===============
+            var setOpts = sopt.getView({title: "RF連線狀態:", titleWidth: 140, value: ""});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", watchReg0 + "[1]", "editValue", 1]);
+            watchDatas.push(["directName", watchReg1 + "[1]", "editBaseColor", 1]);
+            setOptss.push(setOpts);
+            //===============
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChSyncType", titleWidth: 200, titleFontSize: "0.4rh"});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", "gr.paraSet." + preText + "ChSyncType", "editValue", 1]);
+            setOptss.push(setOpts);
+            //=======
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChFiberDelay", titleWidth: 250, titleFontSize: "0.4rh"});
+            setOpts.actButtons = ["pad"];
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", "gr.paraSet." + preText + "ChFiberDelay", "editValue", 1]);
+            setOptss.push(setOpts);
+            //========
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChRfDelay", titleWidth: 250, titleFontSize: "0.4rh"});
+            setOpts.actButtons = ["pad"];
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", "gr.paraSet." + preText + "ChRfDelay", "editValue", 1]);
+            setOptss.push(setOpts);
+            //================
+            var setOpts = sopt.getView({title: "1588修正時間:", titleWidth: 250, "unitWidth": 50, unit: "5us", value: ""});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", watchReg0 + "[2]", "editValue", 1]);
+            setOptss.push(setOpts);
+            //=================
+
+
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChRfTxCh", titleWidth: 180, titleFontSize: "0.4rh"});
+            setOpts.actButtons = ["pad"];
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", "gr.paraSet." + preText + "ChRfTxCh", "editValue", 1]);
+            setOptss.push(setOpts);
+
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChRfRxCh", titleWidth: 180, titleFontSize: "0.4rh"});
+            setOpts.actButtons = ["pad"];
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", "gr.paraSet." + preText + "ChRfRxCh", "editValue", 1]);
+            setOptss.push(setOpts);
+
+            //================
+            var setOpts = sopt.getView({title: "封包發送數:", titleWidth: 160, value: ""});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", watchReg0 + "[3]", "editValue", 1]);
+            setOptss.push(setOpts);
+            //=================
+            var setOpts = sopt.getView({title: "封包正確率:", titleWidth: 160, value: ""});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", watchReg0 + "[4]", "editValue", 1]);
+            setOptss.push(setOpts);
+            //=================
+
+
+            var setOpts = sopt.getView({title: "主控RF接收能量:", titleWidth: 180, "unitWidth": 50, unit: "DB", value: ""});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", watchReg0 + "[5]", "editValue", 1]);
+            setOptss.push(setOpts);
+            //=================
+            var setOpts = sopt.getView({title: "副控RF接收能量:", titleWidth: 180, "unitWidth": 50, unit: "DB", value: ""});
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", watchReg0 + "[6]", "editValue", 1]);
+            setOptss.push(setOpts);
+
         };
         var cname = lyMaps["centerBody"] + "~" + 0;
         var opts = {};
         opts.title = "副控1";
+        opts.deviceInx = 0;
         targFunc(opts);
-        blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+        blocks[cname] = {name: "syncPanel#0", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         var cname = lyMaps["centerBody"] + "~" + 1;
         var opts = {};
+        opts.deviceInx = 1;
         opts.title = "副控2";
         targFunc(opts);
-        blocks[cname] = {name: "rangePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+        blocks[cname] = {name: "syncPanel#1", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         var cname = lyMaps["mainBody"] + "~" + 3;
         var opts = {};
         opts.buttons = ["傳輸開始", "傳輸停止", "邏輯分析", "波形顯示"];

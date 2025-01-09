@@ -513,15 +513,8 @@ class KvSetOpts {
                 opts.nullErr_f = 0;
                 opts.value = "0";
                 return opts;
-
-
-
-
             case "floatStrA":
                 return sopt.getOptsFloatStrA();
-
-
-
             case "floatAStrA":
                 var opts = sopt.getOptsFloat();
                 opts.dataType = "str";
@@ -530,13 +523,7 @@ class KvSetOpts {
                 opts.actButtons = ["pad"];
                 opts.array = 1;
                 opts.value = "0";
-
-
-
-
-
                 return sopt.getOptsFloatAStrA();
-
             case "intEnum":
                 return sopt.getOptsIntEnum();
             case "strEnum":
@@ -564,6 +551,22 @@ class KvSetOpts {
         }
         return setOpts;
     }
+
+    getLabelView(op) {
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.xm = 4;
+        setOpts.lm = 0;
+        setOpts.fontSize = 20;
+        setOpts.titleFontSize = 20;
+        setOpts.titleWidth = 200;
+        setOpts.title = "labelViews";
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+
 
     getEditView(op) {
         var setOpts = {};
@@ -926,7 +929,7 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.actButtons = [];
         setOpts.readOnly_f = 1;
-        setOpts.editBaseColor = "#cfc";
+        setOpts.editBaseColor = "#eeeeff";
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
@@ -1364,6 +1367,9 @@ class KvBox {
             }
             var md = iobj.sender;
             var mdaPad = md.blockRefs["mainMd"];
+            if(!mdaPad){
+                return;
+            }    
             var setLine = mdaPad.blockRefs["lcd"];
             if (setLine.opts.setOpts.setType === "inputText") {
                 var inputText = setLine.blockRefs["inputText"];

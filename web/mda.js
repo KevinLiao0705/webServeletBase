@@ -3424,8 +3424,7 @@ class MdaSetLine {
                 if (setOpts.array)
                     if (checkType === "floatAStr" || checkType === "intAStr" || checkType === "objStr") {
                         setOpts.value = inValue;
-                    }
-                    else
+                    } else
                         setOpts.value = ivA;
                 else
                     setOpts.value = ivA[0];
@@ -3563,7 +3562,7 @@ class MdaSetLine {
              */
             if (iobj.act === "blur") {
                 iobj.sender = md;
-                iobj.setOpts = md.opts.setOpts;
+                iobj.setOptsObj = md;
                 KvLib.exeFunc(op.actionFunc, iobj);
                 return;
             }
@@ -3574,7 +3573,7 @@ class MdaSetLine {
                     return;
                 }
                 iobj.sender = md;
-                iobj.setOpts = md.opts.setOpts;
+                iobj.setOptsObj = md;
                 KvLib.exeFunc(op.actionFunc, iobj);
 
                 var colorPlate = md.blockRefs["colorPlate"];
@@ -3589,7 +3588,7 @@ class MdaSetLine {
             if (iobj.act === "escape") {
                 console.log(iobj);
                 iobj.sender = md;
-                iobj.setOpts = md.opts.setOpts;
+                iobj.setOptsObj = md;
                 KvLib.exeFunc(op.actionFunc, iobj);
             }
             if (iobj.act === "blur") {
@@ -3607,6 +3606,7 @@ class MdaSetLine {
                     op.setOpts.value = iobj.value;
                     kobj.reCreate();
                     iobj.sender = md;
+                    iobj.setOptsObj = md;
                     KvLib.exeFunc(op.actionFunc, iobj);
                 }
             }
@@ -3641,6 +3641,7 @@ class MdaSetLine {
             opts.actionFunc = function (iobj) {
                 console.log(iobj);
                 iobj.sender = md;
+                iobj.setOptsObj = md;
                 if (md.opts.setOpts.value)
                     iobj.act = "collaps";
                 else
@@ -3815,13 +3816,22 @@ class MdaSetLine {
                         //maskClickFunc();
                         MdaPopWin.popOffTo(iobj.sender.opts.popStackCnt);
                         iobj.sender = md;
-                        setOpts.value = KvLib.getKvText(iobj.kvText, "").text;
+                        iobj.setOptsObj = md;
+                        var textValue = KvLib.getKvText(iobj.kvText, "").text;
 
                         var kobj = md.blockRefs["inputText"];
-                        kobj.opts.editValue = setOpts.value;
+                        kobj.opts.editValue = textValue;
                         var elem = kobj.elems["inputText"];
                         if (elem)
-                            elem.value = "" + setOpts.value;
+                            elem.value = "" + textValue;
+
+                        var errStrs = md.mdClass.checkValue(1);
+                        if (errStrs) {
+                            box.errorBox({kvTexts: errStrs});
+                            return;
+                        }
+
+
                         KvLib.exeFunc(op.actionFunc, iobj);
                     };
                     opts.menus = dbg.getMenus("menu0", setOpts.enum.length);
@@ -3889,9 +3899,20 @@ class MdaSetLine {
                                 var elem = inputTextObj.elems["textArea"];
                             }
                             elem.value = iobj.inputText;
+                            var errStrs = md.mdClass.checkValue(1);
+                            if (errStrs) {
+                                box.errorBox({kvTexts: errStrs});
+                                return;
+                            }
+                            iobj.sender = md;
+                            iobj.setOptsObj = md;
+                            iobj.act = "pressEnter";
+                            iobj.kvObj = inputTextObj;
+                            KvLib.exeFunc(op.actionFunc, iobj);
                             return;
                         }
                         iobj.sender = md;
+                        iobj.setOptsObj = md;
                         iobj.act = "pressEnter";
                         iobj.value = iobj.inputText;
                         KvLib.exeFunc(op.actionFunc, iobj);
@@ -3900,6 +3921,7 @@ class MdaSetLine {
                     opts.value = elem.value;
 
                     var tmpSetOpts = KvLib.copyObj(setOpts);
+                    tmpSetOpts.watchDatas = [];
                     tmpSetOpts.titleWidth = 0;
                     tmpSetOpts.noWidth = 0;
                     tmpSetOpts.iconWidth = 0;
@@ -4023,6 +4045,7 @@ class MdaSetLine {
                 opts.actionFunc = function (iobj) {
                     console.log(iobj);
                     iobj.sender = md;
+                    iobj.setOptsObj = md;
                     var strA = iobj.kvObj.name.split("#");
                     var inx = KvLib.toInt(strA[1]);
                     iobj.buttonInx = inx;
@@ -4066,14 +4089,15 @@ class MdaSetLine {
                 opts.actionFunc = function (iobj) {
                     console.log(iobj);
                     iobj.sender = md;
+                    iobj.setOptsObj = md;
                     var strA = iobj.kvObj.name.split("#");
                     var inx = KvLib.toInt(strA[1]);
                     iobj.buttonInx = inx;
                     iobj.buttonText = md.opts.setOpts.enum[inx];
-                    if(md.opts.setOpts.enumId)
-                        iobj.buttonId=md.opts.setOpts.enumId[inx];
-                    iobj.act="actButtonClick";
-                    iobj.kvObj=md;
+                    if (md.opts.setOpts.enumId)
+                        iobj.buttonId = md.opts.setOpts.enumId[inx];
+                    iobj.act = "actButtonClick";
+                    iobj.kvObj = md;
                     KvLib.exeFunc(op.actionFunc, iobj);
                 };
                 opts.baseColor = "#ccf";
@@ -4109,6 +4133,7 @@ class MdaSetLine {
                 opts.actionFunc = function (iobj) {
                     console.log(iobj);
                     iobj.sender = md;
+                    iobj.setOptsObj = md;
                     var strA = iobj.kvObj.name.split("#");
                     var inx = KvLib.toInt(strA[1]);
                     setOpts.value ^= (1 << inx);
@@ -4151,6 +4176,7 @@ class MdaSetLine {
                 opts.actionFunc = function (iobj) {
                     console.log(iobj);
                     iobj.sender = md;
+                    iobj.setOptsObj = md;
                     var strA = iobj.kvObj.name.split("#");
                     var inx = KvLib.toInt(strA[1]);
                     setOpts.value ^= (1 << inx);
@@ -4223,8 +4249,9 @@ class MdaSetLine {
                 var strA = iobj.kvObj.name.split("#");
                 var inx = KvLib.toInt(strA[1], -1);
                 op.setOpts.value = inx;
-                iobj.sender=md;
-                KvLib.exe(op.actionFunc,iobj);
+                iobj.sender = md;
+                iobj.setOptsObj = md;
+                KvLib.exe(op.actionFunc, iobj);
             };
             for (var i = 0; i < setOpts.enum.length; i++) {
                 var cname = md.lyMaps["mainBody"] + "~" + i;
@@ -4270,12 +4297,12 @@ class MdaSetLine {
             if (!op.disBlur_f)
                 opts.blur_f = 1;
             opts.readOnly_f = setOpts.readOnly_f;
-            opts.editBaseColor=setOpts.editBaseColor;
-            if(setOpts.watchDatas){
-                for(var i=0;i<setOpts.watchDatas.length;i++){
-                    var items=setOpts.watchDatas[i];
+            opts.editBaseColor = setOpts.editBaseColor;
+            if (setOpts.watchDatas) {
+                for (var i = 0; i < setOpts.watchDatas.length; i++) {
+                    var items = setOpts.watchDatas[i];
                     md.setInputWatch(opts, items[0], items[1], items[2], items[3]);
-                }    
+                }
             }
             md.newBlock(cname, opts, "Component~Cp_base~inputText.sys0", "inputText");
             document.onkeydown = function (evt) {
@@ -5587,10 +5614,10 @@ class MdaSetGroup {
             st.blurObjName = sender.name;
             return;
         }
-        iobj.sender=md;
+        iobj.sender = md;
         KvLib.exe(op.actionFunc, iobj);
         return;
-        
+
         if (iobj.act === "actButtonClick") {
             if (iobj.sender.name === ("mdaSetLine#" + op.editIndex)) {
                 if (iobj.buttonInx === op.editButtonIndex) {
