@@ -217,7 +217,6 @@ class DummyTarget {
                 var opts = {};
                 opts.paraSet = gr.paraSet;
                 opts.title = iobj.selectText;
-                opts.group = "all";
                 opts.actionFunc = function (iobj) {
                     console.log(iobj);
                     KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
@@ -225,22 +224,42 @@ class DummyTarget {
                     var content = JSON.stringify(gr.paraSet);
                     sv.saveStringToFile("responseDialogError", "null", fileName, content);
                 };
+                opts.setNames = [];
                 /*
-                var keys = Object.keys(gr.paraSet);
-                opts.setNames = [];
-                for (var i = 0; i < keys.length; i++) {
-                    var strA = keys[i].split("~");
-                    if (strA[0] === "dsc")
-                        continue;
-                    opts.setNames.push(keys[i]);
+                 var keys = Object.keys(gr.paraSet);
+                 for (var i = 0; i < keys.length; i++) {
+                 var strA = keys[i].split("~");
+                 if (strA[0] === "dsc")
+                 continue;
+                 opts.setNames.push(keys[i]);
+                 }
+                 */
+                if (gr.appId === 0) {
+                    opts.setNames.push("mastPulseSource");
+                    opts.setNames.push("mastToSub1CommType");
+                    opts.setNames.push("mastToSub2CommType");
+                    opts.setNames.push("mastToSub1SpeechEnable");
+                    opts.setNames.push("mastToSub2SpeechEnable");
+                    opts.setNames.push("sub1ChCommSet");
+                    opts.setNames.push("sub2ChCommSet");
+                    opts.setNames.push("sub1ChRfTxCh");
+                    opts.setNames.push("sub1ChRfRxCh");
+                    opts.setNames.push("sub2ChRfTxCh");
+                    opts.setNames.push("sub2ChRfRxCh");
+                    opts.setNames.push("pulseWidthMax");
+                    opts.setNames.push("pulseWidthMin");
+                    opts.setNames.push("pulseDutyMax");
+                    opts.setNames.push("pulseDutyMin");
+                    opts.setNames.push("pulseFreqMax");
+                    opts.setNames.push("pulseFreqMin");
+                    opts.setNames.push("radarStartAngle");
+                    opts.setNames.push("radarEndAngle");
+                    opts.setNames.push("radarScanRpm");
+                    opts.setNames.push("radarFadeTime");
+
                 }
-                */
-                opts.setNames = [];
-                if(gr.radarId===0){
-                    
-                }
-                
-                
+
+
                 box.paraEditBox(opts);
                 return;
             }
@@ -366,6 +385,68 @@ class DummyTarget {
                 box.setLineBox(opts);
                 return;
             }
+            if (iobj.selectInx === 2) {
+                var opts = {};
+                opts.paraSet = gr.paraSet;
+                opts.title = iobj.selectText;
+                opts.actionFunc = function (iobj) {
+                    console.log(iobj);
+                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                    var fileName = "paraSet";
+                    var content = JSON.stringify(gr.paraSet);
+                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                };
+                opts.setNames = [];
+                if (gr.appId === 0) {
+                    opts.setNames.push("commTestPacks");
+                    opts.setNames.push("vgTimeDelay");
+                    opts.setNames.push("sub1ChTimeFineTune");
+                    opts.setNames.push("sub2ChTimeFineTune");
+                    opts.setNames.push("sub1ChSyncType");
+                    opts.setNames.push("sub2ChSyncType");
+                    opts.setNames.push("sub1ChFiberDelay");
+                    opts.setNames.push("sub1ChRfDelay");
+                    opts.setNames.push("sub2ChFiberDelay");
+                    opts.setNames.push("sub2ChRfDelay");
+
+
+                }
+                box.paraEditBox(opts);
+                return;
+            }
+
+            if (iobj.selectInx === 3) {
+                var opts = {};
+                opts.paraSet = gr.paraSet;
+                opts.title = iobj.selectText;
+                opts.actionFunc = function (iobj) {
+                    console.log(iobj);
+                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                    var fileName = "paraSet";
+                    var content = JSON.stringify(gr.paraSet);
+                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                };
+                opts.setNames = [];
+                if (gr.appId === 0) {
+                    opts.setNames.push("locationFromSource");
+                    opts.setNames.push("mastLatitude");
+                    opts.setNames.push("mastLongitude");
+                    opts.setNames.push("mastAttitude");
+                    opts.setNames.push("sub1Latitude");
+                    opts.setNames.push("sub1Longitude");
+                    opts.setNames.push("sub1Attitude");
+                    opts.setNames.push("sub2Latitude");
+                    opts.setNames.push("sub2Longitude");
+                    opts.setNames.push("sub2Attitude");
+
+                }
+                box.paraEditBox(opts);
+                return;
+            }
+
+
+
+
 
         };
         box.selectBox(opts);
@@ -1170,6 +1251,7 @@ class LocationTarget {
         radarScanDatas.push(gr.paraSet.radarStartAngle);
         radarScanDatas.push(gr.paraSet.radarEndAngle);
         radarScanDatas.push(gr.paraSet.radarScanRpm);
+        radarScanDatas.push(gr.paraSet.radarFadeTime);
 
         var radarDirections = location.radarDirections = [];
         var posOut = self.calPos(st.mistRadarPos, st.sub1RadarPos);
@@ -1487,6 +1569,8 @@ class LocationTarget {
                                     var name0 = "radarEndAngle";
                                 if (setInx === 2)
                                     var name0 = "radarScanRpm";
+                                if (setInx === 3)
+                                    var name0 = "radarFadeTime";
                                 gr.paraSet[name0] = iobj.inputText;
                             } else {
                                 if (sender.name === "ladarGpsPanel")
@@ -1675,7 +1759,7 @@ class LocationTarget {
         opts.yArr = [40, 40, 40, 9999];
         opts.xyArr = [
             ["0.5rw", 9999],
-            ["0.5rw", 9999],
+            ["0.4rw", "0.4rw", 9999],
             [9999],
             [9999]
         ];
@@ -1696,8 +1780,15 @@ class LocationTarget {
         watchDatas.push(["directName", radarScanDatas + "[2]", "editValue", 1]);
         setOptss.push(setOpts);
         //
-        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>', "地圖"], enumId: ["pad", "map"], fontSize: 25}));
-        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['放大', '縮小', "啟動", "停止"], enumId: ["roomIn", "roomOut", "radarStart", "radarStop"], fontSize: 25}));
+        var setOpts = sopt.getEditUnit({paraSetName: "radarFadeTime", titleWidth: 200, unitWidth: 0});
+        var watchDatas = setOpts.watchDatas = [];
+        watchDatas.push(["directName", radarScanDatas + "[3]", "editValue", 1]);
+        setOptss.push(setOpts);
+        //
+
+
+        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ['<i class="gf">&#xf028</i>'], enumId: ["pad"], fontSize: 25}));
+        setOptss.push(sopt.getButtonActs({titleWidth: 0, enum: ["地圖", '放大', '縮小', "啟動", "停止"], enumId: ["map", "roomIn", "roomOut", "radarStart", "radarStop"], fontSize: 25}));
         opts.editIndex = 3;
         /*
          opts.actionFunc = function (iobj) {
@@ -2136,7 +2227,7 @@ class MyRadar {
             return;
         if (!st.fadeCnt)
             st.fadeCnt = 0;
-        if (++st.fadeCnt < 5) {
+        if (++st.fadeCnt < gr.paraSet.radarFadeTime) {
             return;
         }
         st.fadeCnt = 0;
@@ -2262,7 +2353,7 @@ class MyRadar {
         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         ctx.stroke();
         //======================
-        ctx.strokeStyle = "#0f0";
+        ctx.strokeStyle = "#f00";
         ctx.lineWidth = op.axeWidth;
         ctx.beginPath();
         ctx.arc(centerX, centerY, sRadius * 0.25, 0, 2 * Math.PI);
@@ -2729,7 +2820,7 @@ class SyncTest {
 
         };
         blocks[cname] = {name: "systemPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-        
+
         var targFunc = function (opts) {
             opts.actionFunc = function (iobj) {
                 console.log(iobj);
@@ -2757,7 +2848,7 @@ class SyncTest {
                 ["0.5rw", 9999],
                 [9999],
                 [9999],
-                [9999],
+                ["0.5rw", 9999],
                 [9999],
                 ["0.5rw", 9999],
                 ["0.5rw", 9999],
@@ -2812,18 +2903,34 @@ class SyncTest {
             watchDatas.push(["directName", "gr.paraSet." + preText + "ChSyncType", "editValue", 1]);
             setOptss.push(setOpts);
             //=======
-            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChFiberDelay", titleWidth: 250, titleFontSize: "0.4rh"});
+
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChTimeFineTune", titleWidth: 250, titleFontSize: "0.4rh"});
             setOpts.actButtons = ["pad"];
+            var watchDatas = setOpts.watchDatas = [];
+            watchDatas.push(["directName", "gr.paraSet." + preText + "ChTimeFineTune", "editValue", 1]);
+            setOptss.push(setOpts);
+            //================
+
+
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChFiberDelay", titleWidth: 200, titleFontSize: "0.4rh"});
+            setOpts.actButtons = ["pad"];
+            setOpts.unitWidth = 0;
             var watchDatas = setOpts.watchDatas = [];
             watchDatas.push(["directName", "gr.paraSet." + preText + "ChFiberDelay", "editValue", 1]);
             setOptss.push(setOpts);
             //========
-            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChRfDelay", titleWidth: 250, titleFontSize: "0.4rh"});
+            var setOpts = sopt.getParaSetOpts({paraSetName: preText + "ChRfDelay", titleWidth: 200, titleFontSize: "0.4rh"});
             setOpts.actButtons = ["pad"];
+            setOpts.unitWidth = 0;
             var watchDatas = setOpts.watchDatas = [];
             watchDatas.push(["directName", "gr.paraSet." + preText + "ChRfDelay", "editValue", 1]);
             setOptss.push(setOpts);
             //================
+
+
+
+
+
             var setOpts = sopt.getView({title: "1588修正時間:", titleWidth: 250, "unitWidth": 50, unit: "5us", value: ""});
             var watchDatas = setOpts.watchDatas = [];
             watchDatas.push(["directName", watchReg0 + "[2]", "editValue", 1]);

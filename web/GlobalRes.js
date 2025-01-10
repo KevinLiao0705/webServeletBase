@@ -2,6 +2,7 @@ class GlobalRes {
     constructor() {
         //this.appName="webBuilder";
         this.appName="sync";
+        this.appId=0;
         //=========
         //this.appType="Model~MdaMdTest~base.sys0";
         this.appType="Model~DummyTarget~base.sys0";
