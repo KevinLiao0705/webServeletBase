@@ -946,7 +946,7 @@ class Block {
                 continue;
             ipObj.cnt = 0;
             if (ipObj.type === "directName") {
-                if (ipObj.inputName === "self.fatherMd.fatherMd.fatherMd.stas.commDatas["+0+"]") {
+                if (ipObj.inputName === "self.fatherMd.fatherMd.fatherMd.stas.signalButtonColors[3]") {
                     var obj = self.fatherMd.opts.hecButColor;
                     var uu = 0;
                 }

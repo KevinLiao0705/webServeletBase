@@ -20,6 +20,90 @@ class Macro {
         opts["outName"] = outName;
         sv.callServer(JSON.stringify(obj));
     }
+
+    setXyArr(opts, rowCount,col) {
+        var yr = (1 / rowCount).toFixed(3);
+        opts.yArr = [];
+        opts.xyArr = [];
+        for (var i = 0; i < rowCount; i++) {
+            opts.yArr.push(yr + "rh");
+            if(!col)
+                opts.xyArr.push([9999]);
+            else{
+                var xr = (1 / col).toFixed(3);
+                var arr=[];
+                for(var j=0;j<col;j++){
+                    arr.push(xr + "rw");
+                }
+                opts.xyArr.push(arr);
+            }
+        }
+    }
+
+    setFootBar(md, cname) {
+        var lyMaps = md.lyMaps;
+        var blocks = md.opts.blocks;
+        var layouts = md.opts.layouts;
+        //======================
+        var opts = {};
+        opts.xArr = [9999, 100, 100, 100];
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["footBar"] = cname;
+        //============
+        var cname = lyMaps["footBar"] + "~" + 0;
+        var opts = {};
+        opts.textAlign = "left";
+        opts.lpd = 5;
+        var watchReg = "gr.footBarMessageText";
+        md.setInputWatch(opts, "directName", watchReg, "innerText", 1);
+        var watchReg = "gr.footBarMessageColor";
+        md.setInputWatch(opts, "directName", watchReg, "innerTextColor", 1);
+        blocks[cname] = {name: "message", type: "Component~Cp_base~label.sys0", opts: opts};
+        //============
+        var cname = lyMaps["footBar"] + "~" + 1;
+        var opts = {};
+        var watchReg = "gr.footBarStatus0";
+        md.setInputWatch(opts, "directName", watchReg, "innerText", 1);
+        blocks[cname] = {name: "footBarStatus0", type: "Component~Cp_base~label.sys0", opts: opts};
+        //============
+        var cname = lyMaps["footBar"] + "~" + 2;
+        var opts = {};
+        var watchReg = "gr.footBarStatus1";
+        md.setInputWatch(opts, "directName", watchReg, "innerText", 1);
+        blocks[cname] = {name: "footBarStatus1", type: "Component~Cp_base~label.sys0", opts: opts};
+        //============
+        var cname = lyMaps["footBar"] + "~" + 3;
+        var opts = {};
+        var watchReg = "gr.footBarStatus2";
+        md.setInputWatch(opts, "directName", watchReg, "innerText", 1);
+        blocks[cname] = {name: "footBarStatus2", type: "Component~Cp_base~label.sys0", opts: opts};
+    }
+
+    setHeadTitleBar(md, cname, title, actionPrg) {
+        var lyMaps = md.lyMaps;
+        var blocks = md.opts.blocks;
+        var layouts = md.opts.layouts;
+        //======================
+        var opts = {};
+        opts.xArr = [9999, 200];
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["headTitleBar"] = cname;
+        //============
+        var cname = lyMaps["headTitleBar"] + "~" + 0;
+        var opts = {};
+        opts.innerText = title;
+        opts.textAlign = "left";
+        opts.lpd = 10;
+        blocks[cname] = {name: "headTitleBarTitle", type: "Component~Cp_base~label.title", opts: opts};
+        //============
+        var cname = lyMaps["headTitleBar"] + "~" + 1;
+        var opts = {};
+        opts.innerText = "ESC";
+        opts.actionFunc = actionPrg;
+        blocks[cname] = {name: "status0", type: "Component~Cp_base~button.sys0", opts: opts};
+        //============
+    }
+
     setKvText(eng, id, img, chnT) {
         var obj = {};
         obj.objName = "textObj";
@@ -530,9 +614,29 @@ class KvSetOpts {
                 return sopt.getOptsStrEnum();
             case "buttonRadio":
                 return sopt.getOptsButtonRadio();
+            case "button":
+                return sopt.getOptsButton();
+            case "buttonActs":
+                return sopt.getOptsButtonActs();
+            case "buttonSelect":
+                return sopt.getOptsButtonSelect();
+            case "buttonOnOffs":
+                return sopt.getOptsButtonOnOffs();
             default:
                 return sopt.getOptsStr();
         }
+    }
+
+    getOptsButton(op) {
+        var setOpts = {};
+        setOpts.setType = "button";
+        setOpts.enum = ["button"];
+        setOpts.enumId = ["0"];
+        setOpts.titleWidth = 0;
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
     }
 
     getLabelViews(op) {
@@ -566,7 +670,6 @@ class KvSetOpts {
         }
         return setOpts;
     }
-
 
     getEditView(op) {
         var setOpts = {};
@@ -771,6 +874,62 @@ class KvSetOpts {
         return setOpts;
     }
 
+    getOptsButtonActs(op) {
+        var setOpts = {};
+        setOpts.setType = "buttonActs";
+        setOpts.enum = ["button1", "button2", "button3"];
+        setOpts.xm = 4;
+        setOpts.lm = 0;
+        setOpts.fontSize = 14;
+        setOpts.titleFontSize = 20;
+        setOpts.titleWidth = 200;
+        setOpts.title = "buttonActs";
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+
+
+    getOptsButtonSelect(op) {
+        var setOpts = {};
+        setOpts.setType = "buttonSelect";
+        setOpts.enum = ["button1", "button2", "button3"];
+        setOpts.onColor = "#cfc";
+        setOpts.xm = 4;
+        setOpts.lm = 0;
+        setOpts.fontSize = 14;
+        setOpts.titleFontSize = 20;
+        setOpts.titleWidth = 200;
+        setOpts.title = "buttonSelect";
+        setOpts.value=0;
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+
+
+    getOptsButtonOnOffs(op) {
+        var setOpts = {};
+        setOpts.setType = "buttonOnOffs";
+        setOpts.enum = ["button1", "button2", "button3"];
+        setOpts.selectColor = "#cfc";
+        setOpts.xm = 4;
+        setOpts.lm = 0;
+        setOpts.fontSize = 14;
+        setOpts.titleFontSize = 20;
+        setOpts.titleWidth = 200;
+        setOpts.title = "buttonSelect";
+        setOpts.onColor="#cfc";
+        setOpts.value=0;
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+
+
     //====================================
 
     getInputSelect(op) {
@@ -875,7 +1034,7 @@ class KvSetOpts {
         return setOpts;
     }
 
-    getParaSetOpts(op){
+    getParaSetOpts(op) {
         var kopts = {};
         if (op.paraSetName) {
             var dscObj = gr.paraSet["dsc~" + op.paraSetName];
@@ -883,15 +1042,14 @@ class KvSetOpts {
                 if (dscObj.getType) {
                     kopts = sopt.getOptsPara(dscObj.getType);
                     KvLib.deepCoverObject(kopts, dscObj);
-                    kopts.value=gr.paraSet[op.paraSetName];
+                    kopts.value = gr.paraSet[op.paraSetName];
                 }
             }
         }
         KvLib.deepCoverObject(kopts, op);
         return kopts;
     }
-    
-    
+
     getEditUnit(op) {
         var kopts = {};
         if (op.paraSetName) {
@@ -900,7 +1058,7 @@ class KvSetOpts {
                 if (dscObj.getType) {
                     kopts = sopt.getOptsPara(dscObj.getType);
                     KvLib.deepCoverObject(kopts, dscObj);
-                    kopts.value=gr.paraSet[op.paraSetName];
+                    kopts.value = gr.paraSet[op.paraSetName];
                     kopts.actButtons = [];
                 }
             }
@@ -1367,9 +1525,9 @@ class KvBox {
             }
             var md = iobj.sender;
             var mdaPad = md.blockRefs["mainMd"];
-            if(!mdaPad){
+            if (!mdaPad) {
                 return;
-            }    
+            }
             var setLine = mdaPad.blockRefs["lcd"];
             if (setLine.opts.setOpts.setType === "inputText") {
                 var inputText = setLine.blockRefs["inputText"];
@@ -1700,8 +1858,8 @@ class KvBox {
         opts.w = op.w;
         opts.h = op.h;
         opts.title = op.title;
-        opts.eh=op.eh;
-        opts.ym=op.ym;
+        opts.eh = op.eh;
+        opts.ym = op.ym;
 
         opts.ksObjss = [];
         var keys = op.setNames;
@@ -1762,18 +1920,17 @@ class KvBox {
                 for (var i = 0; i < iobj.ksObjss.length; i++) {
                     var obj = iobj.ksObjss[i][0];
                     var setOpts = obj.opts.setOpts;
-                    var checkType=setOpts.checkType;
+                    var checkType = setOpts.checkType;
                     if (checkType === "floatAStr" || checkType === "intAStr" || checkType === "objStr") {
-                        var strA=setOpts.value.split(",");
-                        var strB=[];
-                        for(var j=0;j<strA.length;j++){
-                            var str=strA[j].trim();
-                            var str=str.slice(1,str.length-1);
+                        var strA = setOpts.value.split(",");
+                        var strB = [];
+                        for (var j = 0; j < strA.length; j++) {
+                            var str = strA[j].trim();
+                            var str = str.slice(1, str.length - 1);
                             strB.push(str);
                         }
                         paraSet[setOpts.id] = strB;
-                    }
-                    else
+                    } else
                         paraSet[setOpts.id] = setOpts.value;
                 }
                 var obj = {};

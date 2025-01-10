@@ -468,10 +468,6 @@ class DummyTarget {
         md.setPns(opts);
         opts.mouseClick_f = 1;
         opts.baseColor = "#222";
-        opts.actionFunc = function (iobj) {
-            console.log("base");
-            //console.log(iobj);
-        };
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.none", opts: opts};
         //======================================    
         var cname = lyMaps["body"] + "~" + 0;
@@ -490,6 +486,7 @@ class DummyTarget {
         opts.buttons = ["佈署", "自測", "同步", "波形", "設定"];
         opts.buttonIds = ["location", "selfTest", "sync", "wave", "setting"];
         opts.actionFunc = function (iobj) {
+            console.log(iobj);
             if (iobj.buttonId === "location") {
                 sys.dispWebPage("Model~LocationTarget~base.sys0");
                 return;
@@ -500,6 +497,17 @@ class DummyTarget {
             }
             if (iobj.buttonId === "sync") {
                 sys.dispWebPage("Model~SyncTest~base.sys0");
+                return;
+            }
+            if (iobj.buttonId === "wave") {
+                var opts={};
+                opts.actionFunc=function(iobj){
+                    console.log(iobj);
+                    if(iobj.act==="esc")
+                        MdaPopWin.popOff(2);
+                };
+                var kvObj = new Block("myScope", "Model~MyNewScope~base.sys0", opts);
+                var mesObj = mda.popObj(0, 0, kvObj);
                 return;
             }
 

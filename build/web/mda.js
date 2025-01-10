@@ -4108,6 +4108,45 @@ class MdaSetLine {
 
 
 
+
+
+        if (setOpts.setType === "button") {
+            var opts = {};
+            opts.xm = setOpts.xm;
+            if (setOpts.lm)
+                opts.lm = setOpts.lm;
+            if (setOpts.rm)
+                opts.rm = setOpts.rm;
+            opts.innerText = setOpts.enum[0];
+            opts.fontSize = "0.7rh";
+            if (setOpts.fontSize)
+                opts.fontSize = setOpts.fontSize;
+            opts.actionFunc = function (iobj) {
+                console.log(iobj);
+                iobj.sender = md;
+                iobj.setOptsObj = md;
+                var strA = iobj.kvObj.name.split("#");
+                var inx = KvLib.toInt(strA[1]);
+                iobj.buttonInx = inx;
+                iobj.buttonText = md.opts.setOpts.enum[inx];
+                if (md.opts.setOpts.enumId)
+                    iobj.buttonId = md.opts.setOpts.enumId[inx];
+                iobj.act = "actButtonClick";
+                iobj.kvObj = md;
+                KvLib.exeFunc(op.actionFunc, iobj);
+            };
+            opts.baseColor = "#ccf";
+            if (setOpts.watchDatas) {
+                for (var i = 0; i < setOpts.watchDatas.length; i++) {
+                    var items = setOpts.watchDatas[i];
+                    md.setInputWatch(opts, items[0], items[1], items[2], items[3]);
+                }
+            }
+            md.newBlock(cname, opts, "Component~Cp_base~button.sys0", "buttonMain#" + i);
+            return;
+        }
+
+
         if (setOpts.setType === "buttonChecks") {
             var opts = {};
             opts.xc = setOpts.enum.length;
@@ -4406,6 +4445,10 @@ class MdaSetLine {
         lyMaps["body"] = cname;
         var opts = {};
         md.setPns(opts);
+        if (op.setOpts.baseColor)
+            opts.baseColor = op.setOpts.baseColor;
+        if (op.setOpts.borderWidth !== undefined)
+            opts.borderWidth = op.setOpts.borderWidth;
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.none", opts: opts};
     }
 }

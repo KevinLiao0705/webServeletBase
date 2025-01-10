@@ -42,6 +42,13 @@ class GlobalRes {
         this.syncTmp={};
         this.blockSubOpts={};
         //============================
+        this.footBarMessageText="";
+        this.footBarMessageColor="#000";
+        this.footBarStatus0="";
+        this.footBarStatus1="";
+        this.footBarStatus2="";
+        this.footBarMessageTime=0;
+        /*
         this.message = "";
         this.messageKobj = null;
         this.messageTime = 0;
@@ -50,6 +57,7 @@ class GlobalRes {
         this.status1 = "";
         this.status2 = "";
         this.status3 = "";
+        */
         this.version="1.0";
         //============================
         this.animates = [];

@@ -1473,6 +1473,8 @@ class Component {
 
                 return;
             }
+            
+            
             if (this.baseType === "plot") {
                 var opts = {};
                 opts.width = st.cw;

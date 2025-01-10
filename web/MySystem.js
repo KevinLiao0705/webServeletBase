@@ -230,6 +230,14 @@ class MySystem {
         if (deltaTime > 30)
             console.log("baseTimer Over 30ms: " + deltaTime.toFixed(2));
         //=================
+        
+        if(gr.footBarMessageTime){
+            gr.footBarMessageTime--;
+            if(gr.footBarMessageTime===0){
+                gr.footBarMessageText="";
+            }
+        }
+
 
         self.repaint(0);
         var strA = gr.appType.split("~");
