@@ -624,6 +624,12 @@ class KvSetOpts {
                 return sopt.getOptsButtonSelect();
             case "buttonOnOffs":
                 return sopt.getOptsButtonOnOffs();
+            case "labelViews":
+                return sopt.getOptsLabelViews();
+            case "view":
+                return sopt.getOptsView();
+            case "ledView":
+                return sopt.getOptsLedView();
             default:
                 return sopt.getOptsStr();
         }
@@ -640,6 +646,24 @@ class KvSetOpts {
         }
         return setOpts;
     }
+    
+    getOptsLabelViews(op) {
+        var setOpts = {};
+        setOpts.setType = "labelViews";
+        setOpts.enum = ["label1", "label2", "label3"];
+        setOpts.enumColors = ["#eef", "#eef", "#eef"];
+        setOpts.xm = 4;
+        setOpts.lm = 0;
+        setOpts.fontSize = 20;
+        setOpts.titleFontSize = 20;
+        setOpts.titleWidth = 200;
+        setOpts.title = "labelViews";
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+    
 
     getLabelViews(op) {
         var setOpts = {};
@@ -908,10 +932,11 @@ class KvSetOpts {
         var setOpts = {};
         setOpts.setType = "buttonSelect";
         setOpts.enum = ["button1", "button2", "button3"];
-        setOpts.onColor = "#cfc";
+        setOpts.onColor = "#fff";
+        setOpts.offColor= "#aaa";
         setOpts.xm = 4;
         setOpts.lm = 0;
-        setOpts.fontSize = 14;
+        setOpts.fontSize = "0.6rh";
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonSelect";
@@ -1106,6 +1131,41 @@ class KvSetOpts {
         }
         return setOpts;
     }
+    
+    getOptsView(op) {
+        var setOpts = {};
+        setOpts.setType = "inputText";
+        setOpts.dataType = "int";
+        setOpts.checkType = "int";
+        setOpts.value = 0;
+        setOpts.min = 0;
+        setOpts.titleFontSize = 20;
+        setOpts.actButtons = [];
+        setOpts.readOnly_f = 1;
+        setOpts.editBaseColor = "#eeeeff";
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+
+    getOptsLedView(op) {
+        var setOpts = {};
+        setOpts.setType = "ledView";
+        setOpts.dataType = "str";
+        setOpts.checkType = "str";
+        setOpts.value = "";
+        setOpts.titleFontSize = "0.5rh";
+        setOpts.actButtons = [];
+        setOpts.readOnly_f = 1;
+        setOpts.editBaseColor = "#eeeeff";
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+    
+    
 
     getTextArea(op) {
         var opts = {};

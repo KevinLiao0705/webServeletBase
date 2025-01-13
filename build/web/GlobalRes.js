@@ -4,9 +4,12 @@ class GlobalRes {
         this.appName="sync";
         this.appId=0;
         //=========
-        //this.appType="Model~MdaMdTest~base.sys0";
-        this.appType="Model~DummyTarget~base.sys0";
-        
+        if(this.appId===0)
+            this.appType="Model~DummyTargetMaster~base.sys0";
+        if(this.appId===1)
+            this.appType="Model~DummyTargetSub~base.sys0";
+        if(this.appId===2)
+            this.appType="Model~DummyTargetSub~base.sys0";
         
         this.language = "chnT";
         this.appPageCnt=0;

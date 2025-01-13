@@ -3396,11 +3396,13 @@ class MdaSetLine {
                             return [setOpts.title, KvLib.getKvText(syst.errorOfDataFormat).text];
                     }
                     if (setOpts.max !== null && setOpts.max !== undefined)
-                        if (iv > setOpts.max)
+                        if (iv > setOpts.max) {
                             return [setOpts.title, KvLib.getKvText(syst.dataOverTheMax).text + setOpts.max + " !!!"];
+                        }
                     if (setOpts.min !== null && setOpts.min !== undefined)
-                        if (iv < setOpts.min)
+                        if (iv < setOpts.min) {
                             return [setOpts.title, KvLib.getKvText(syst.dataLessTheMin).text + setOpts.min + " !!!"];
+                        }
                     if (setOpts.dataType === "str")
                         ivA.push(iValue);
                     else
@@ -4074,6 +4076,23 @@ class MdaSetLine {
         }
 
 
+
+        if (setOpts.setType === "ledView") {
+            var opts = {};
+            if (setOpts.lm)
+                opts.lm = setOpts.lm;
+            if (setOpts.rm)
+                opts.rm = setOpts.rm;
+            md.newLayout(cname, opts, "Layout~Ly_base~array.sys0", "mainBody");
+            var opts = {};
+            opts.innerText = setOpts.value;
+            opts.baseColor = setOpts.editBaseColor;
+            if (setOpts.fontSize)
+                opts.fontSize = setOpts.fontSize;
+            md.newBlock(cname, opts, "Component~Cp_base~label.led", "labelMain#" + i);
+            return;
+        }
+
         if (setOpts.setType === "buttonActs") {
             var opts = {};
             opts.xm = setOpts.xm;
@@ -4299,8 +4318,12 @@ class MdaSetLine {
                 var cname = md.lyMaps["mainBody"] + "~" + i;
                 var opts = {};
                 opts.innerText = setOpts.enum[i];
-                if (setOpts.value === i)
+                if (setOpts.value === i){
                     opts.baseColor = setOpts.onColor;
+                    if (setOpts.enumColors) {
+                        opts.baseColor = setOpts.enumColors[i];
+                    }
+                }    
                 else
                     opts.baseColor = setOpts.offColor;
                 opts.actionFunc = buttonFunc;
@@ -5666,13 +5689,8 @@ class MdaSetGroup {
         opts.setOptss = [];
         var setOptss = opts.setOptss;
         setOptss.push(sopt.getEditUnit({title: "緯度:", titleWidth: 60, "unit": "度", unitWidth: 50}));
-        setOptss.push(sopt.getEditUnit({"unit": "分", unitWidth: 50}));
-        opts.yArr = [45, 45, 45, 45, 9999];
+        opts.yArr = [9999];
         opts.xyArr = [
-            [200, 100, 100, 9999],
-            [100, 100, 100, 9999],
-            [100, 100, 100, 9999],
-            [100, 100, 100, 9999],
             [9999]
         ];
 
@@ -5704,7 +5722,6 @@ class MdaSetGroup {
             var sender = iobj.sender;
             st.blurTime = 0;
             st.blurObjName = sender.name;
-            return;
         }
         iobj.sender = md;
         KvLib.exe(op.actionFunc, iobj);

@@ -15,6 +15,7 @@ class MyNewScopeCtr {
         this.subTypeOpts(opts);
         opts.title = "title";
         opts.baseColor = "#ccc";
+        opts.tunerSetInx=-1;
         opts.xm = 30;
         opts.chSelectInx = 0;
         opts.bitSelectInx = 3;
@@ -29,8 +30,8 @@ class MyNewScopeCtr {
         opts.chNames = ["測試信號", "脈波信號 A", "脈波信號 B", "輸出功率", "反射功率", "總電流"];
         //==============
         opts.xScale = 3;
+        opts.xOffset = 0;
         opts.yOffsets = [0, -50, 50, 100];
-        //
         opts.yScales = [1, 2, 3, 4];
         opts.yScaleTbl = ["1 mV", "2 mV", "5 mV", "10 mV", "20 mV", "50 mV", "100 mV", "200 mV", "500 mV", "1 V", "2 V", "5 V", "10 V"];
         //
@@ -105,9 +106,82 @@ class MyNewScopeCtr {
             ["0.5rw", 9999]
         ];
         //
+        
+        var adjustActionPrg = function (iobj) {
+            console.log(iobj);
+            var sobj = iobj.setOptsObj;
+            var strA = sobj.name.split("#");
+            var setInx = KvLib.toInt(strA[1], -1);
+            if (iobj.act === "mouseClick") {
+                var strB = iobj.kvObj.name.split("#");
+                var butInx = KvLib.toInt(strB[1], -1);
+                if (strA[0] === "mdaSetLine") {
+                    op.chSelectInx = sobj.opts.setOpts.value;
+                    var signalAdjust = md.blockRefs["signalAdjust"];
+                    if (setInx === 3) {//ch select
+                        var setLine = signalAdjust.blockRefs["mdaSetLine#4"];
+                        var setOpts = setLine.opts.setOpts;
+                        setOpts.enum = op.yScaleTbl;
+                        setOpts.value = op.yScales[op.chSelectInx];
+                        setLine.reCreate();
+
+                        var setLine = signalAdjust.blockRefs["mdaSetLine#5"];
+                        var setOpts = setLine.opts.setOpts;
+                        setOpts.value = op.yOffsets[op.chSelectInx];
+                        setLine.reCreate();
+
+
+                        return;
+                    }
+                }
+
+            }
+            
+            if (iobj.act === "blur") {
+                op.tunerSetInx=setInx;
+                if(op.tunerSetInx===0){
+                    var tuner=md.blockRefs["tuner"];
+                    tuner.opts.addAngleMul = 0.02;
+                }
+                return;
+            }
+            
+            
+            if (iobj.act === "valueChanged" || iobj.act === "pressEnter") {
+                var obj = {};
+                if (setInx === 0)//grid
+                    obj.act = "gridValueChanged";
+                if (setInx === 1) {//xScale
+                    obj.act = "xScaleChanged";
+                    obj.valueText = op.xScaleTbl[iobj.setOptsObj.opts.setOpts.value];
+                }
+                if (setInx === 2) {//
+                    obj.act = "xOffsetChanged";
+                }
+                if (setInx === 4) {//
+                    obj.act = "yScaleChanged";
+                    obj.valueText = op.yScaleTbl[iobj.setOptsObj.opts.setOpts.value];
+                }
+                if (setInx === 5) {//
+                    obj.act = "yOffsetChanged";
+                    obj.valueText = op.yScaleTbl[iobj.setOptsObj.opts.setOpts.value];
+                }
+                obj.chInx = op.chSelectInx;
+                obj.sender = md;
+                obj.kvObj = md;
+                obj.value = iobj.setOptsObj.opts.setOpts.value;
+                KvLib.exe(op.actionFunc, obj);
+                return;
+            }
+        };
+        
+        
         var names = op.chNames;
         var ids = ["signal", "signal1", "signal2", "signal3", "signal4", "signal5"];
         var regDatas = "self.fatherMd.fatherMd.fatherMd.stas.signalButtonColors";
+
+
+
 
         for (var i = 0; i < 6; i++) {
             var setOpts = sopt.getOptsPara("button");
@@ -136,6 +210,26 @@ class MyNewScopeCtr {
         opts.baseColor = "#006";
         opts.actionFunc = function (iobj) {
             console.log(iobj);
+            if(iobj.act==="rotated"){
+                if(op.tunerSetInx>=0){
+                    var signalAdjust=md.blockRefs["signalAdjust"];                    
+                    var setLine=signalAdjust.blockRefs["mdaSetLine#"+op.tunerSetInx];                    
+                    setLine.opts.setOpts.value+=iobj.addValue*-1;
+                    if(setLine.opts.setOpts.value>setLine.opts.setOpts.max)
+                        setLine.opts.setOpts.value=setLine.opts.setOpts.max;
+                    if(setLine.opts.setOpts.value<setLine.opts.setOpts.min)
+                        setLine.opts.setOpts.value=setLine.opts.setOpts.min;
+                    var newSetLine=setLine.reCreate();
+                    if(iobj.addValue!==0){
+                        var obj={};
+                        obj.act="valueChanged";
+                        obj.setOptsObj=newSetLine;
+                        adjustActionPrg(obj);
+                    }
+                    return;
+                }
+            }
+            
         };
         blocks[cname] = {name: "tuner", type: "Model~MyNewTuner~base.sys0", opts: opts};
         //=======================================
@@ -146,66 +240,6 @@ class MyNewScopeCtr {
         var setOptss = opts.setOptss;
         mac.setXyArr(opts, 6);
         //
-        var actionPrg = function (iobj) {
-            console.log(iobj);
-            if (iobj.act === "mouseClick") {
-                var sobj = iobj.setOptsObj;
-                var strA = sobj.name.split("#");
-                var setInx = KvLib.toInt(strA[1], -1);
-                var strB = iobj.kvObj.name.split("#");
-                var butInx = KvLib.toInt(strB[1], -1);
-                if (strA[0] === "mdaSetLine") {
-                    op.chSelectInx = sobj.opts.setOpts.value;
-                    var signalAdjust = md.blockRefs["signalAdjust"];
-                    if (setInx === 3) {//ch select
-                        var setLine2 = signalAdjust.blockRefs["mdaSetLine#2"];
-                        var setOpts = setLine2.opts.setOpts;
-                        setOpts.enum = op.yScaleTbl;
-                        setOpts.value = op.yScales[op.chSelectInx];
-                        setLine2.reCreate();
-
-                        //var setLine1 = signalAdjust.blockRefs["mdaSetLine#1"];
-                        //var setOpts = setLine1.opts.setOpts;
-                        //setOpts.value = op.yOffsets[op.chSelectInx];
-                        //setLine1.reCreate();
-
-
-                        return;
-                    }
-                }
-
-            }
-            if (iobj.act === "valueChanged") {
-                var inx = KvLib.toInt(iobj.setOptsObj.name.split("#")[1], -1);
-                var obj = {};
-                if (inx === 0)//grid
-                    obj.act = "gridValueChanged";
-                if (inx === 1) {//xScale
-                    obj.act = "xScaleChanged";
-                    obj.valueText = op.xScaleTbl[iobj.setOptsObj.opts.setOpts.value];
-                }
-                if (inx === 2) {//
-                    obj.act = "xOffSetChanged";
-                }
-                if (inx === 4) {//
-                    obj.act = "yScaleChanged";
-                    obj.value = iobj.setOptsObj.opts.setOpts.value;
-                    obj.valueText = op.yScaleTbl[iobj.setOptsObj.opts.setOpts.value];
-                }
-                if (inx === 5) {//
-                    obj.act = "yOffsetChanged";
-                    obj.value = iobj.setOptsObj.opts.setOpts.value;
-                    obj.valueText = op.yScaleTbl[iobj.setOptsObj.opts.setOpts.value];
-                }
-                obj.chInx = op.chSelectInx;
-                obj.sender = md;
-                obj.kvObj = md;
-                obj.value = iobj.setOptsObj.opts.setOpts.value;
-                KvLib.exe(op.actionFunc, obj);
-                return;
-
-            }
-        };
 
         var setOpts = sopt.getOptsPara("nature");
         setOpts.iconWidth = 40;
@@ -225,13 +259,16 @@ class MyNewScopeCtr {
         setOpts.image = "systemResource/icons8-magnifierLR-80.png";
         setOptss.push(setOpts);
 
-        var setOpts = sopt.getOptsPara("incEnum");
-        setOpts.enum = op.xScaleTbl;
-        setOpts.max = setOpts.enum.length;
-        setOpts.value = op.xScale;
+
+        var setOpts = sopt.getOptsPara("int");
         setOpts.iconWidth = 40;
         setOpts.image = "systemResource/xlr-64.png";
+        setOpts.max = 1000;
+        setOpts.min = -1000;
+        setOpts.value = op.xOffset;
         setOptss.push(setOpts);
+
+
 
 
         var setOpts = sopt.getOptsPara("buttonSelect");
@@ -266,7 +303,7 @@ class MyNewScopeCtr {
 
 
 
-        opts.actionFunc = actionPrg;
+        opts.actionFunc = adjustActionPrg;
         blocks[cname] = {name: "signalAdjust", type: "Model~MdaSetGroup~base.sys0", opts: opts};
 
 
@@ -322,56 +359,9 @@ class MyNewScopeCtr {
         setOptss.push(setOpts);
 
 
-        /*
-         var setOpts = sopt.getOptsPara("nature");
-         setOpts.iconWidth = 40;
-         setOpts.image = "systemResource/icons8-up-down-64.png";
-         setOptss.push(setOpts);
-         var setOpts = sopt.getOptsPara("nature");
-         setOpts.iconWidth = 40;
-         setOpts.image = "systemResource/icons8-magnifier-48.png";
-         setOptss.push(setOpts);
-         var setOpts = sopt.getOptsPara("nature");
-         setOpts.iconWidth = 40;
-         setOpts.image = "systemResource/icons8-grid-50.png";
-         setOptss.push(setOpts);
-         var setOpts = sopt.getOptsPara("buttonSelect");
-         setOpts.titleWidth = 0;
-         setOpts.image = "systemResource/icons8-grid-50.png";
-         setOpts.fontSize = "0.8rh";
-         setOpts.enum = ["5", "4", "3", "2", "1"];
-         setOptss.push(setOpts);
-         */
-
         opts.actionFunc = actionPrg;
         blocks[cname] = {name: "signalCtr", type: "Model~MdaSetGroup~base.sys0", opts: opts};
 
-
-
-        return;
-
-        for (var i = 0; i < 1; i++) {
-            var setOpts = sopt.getOptsPara("nature");
-            setOpts.enum = [names[i]];
-            setOpts.enumId = [names[i]];
-            setOpts.baseColor = "#008";
-            setOpts.borderWidth = 0;
-            setOpts.fontSize = "0.6rh";
-            var watchDatas = setOpts.watchDatas = [];
-            watchDatas.push(["directName", regDatas + "[" + i + "]", "baseColor", 1]);
-            setOptss.push(setOpts);
-        }
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-            var inx = KvLib.toInt(iobj.setOptsObj.name.split("#")[1], 0);
-            inx++;
-            if (op.signalCnt === inx)
-                op.signalCnt = 0;
-            else
-                op.signalCnt = inx;
-        };
-        blocks[cname] = {name: "signalSourcePanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-        //=========================
 
 
         return;
@@ -406,7 +396,7 @@ class MyNewScope {
 
         opts.centerLineColor = "#fff";
         //===============
-        opts.xAxeOffsV = 0;
+        opts.xAxeOffs = 0;
         opts.xScaleTbl = [
             "1 nS", "2 nS", "5 nS", "10 nS", "20 nS", "50 nS", "100 nS", "200 nS", "500 nS",
             "1 uS", "2 uS", "5 uS", "10 uS", "20 uS", "50 uS", "100 uS", "200 uS", "500 uS",
@@ -456,7 +446,7 @@ class MyNewScope {
         lineObj.name = "CH1";
         lineObj.color = "#f00";
         lineObj.offset = 0;//1=main grid len 
-        lineObj.yScaleSet = 5;//
+        lineObj.yScaleSet = 4;//
         lineObj.stInx = 0;
         lineObj.buffer = buffer;
         opts.lines.push(lineObj);
@@ -470,8 +460,8 @@ class MyNewScope {
         lineObj.offOn_f = 1;
         lineObj.name = "CH2";
         lineObj.color = "#0f0";
-        lineObj.offset = 0;//1=main grid len 
-        lineObj.yScaleSet = 5;//
+        lineObj.offset = 10;//1=main grid len 
+        lineObj.yScaleSet = 4;//
         lineObj.stInx = 0;
         lineObj.buffer = buffer;
         opts.lines.push(lineObj);
@@ -485,8 +475,8 @@ class MyNewScope {
         lineObj.offOn_f = 1;
         lineObj.name = "CH3";
         lineObj.color = "#ff0";
-        lineObj.offset = 0;//1=main grid len 
-        lineObj.yScaleSet = 5;//
+        lineObj.offset = -10;//1=main grid len 
+        lineObj.yScaleSet = 4;//
         lineObj.stInx = 0;
         lineObj.buffer = buffer;
         opts.lines.push(lineObj);
@@ -500,8 +490,8 @@ class MyNewScope {
         lineObj.offOn_f = 1;
         lineObj.name = "CH4";
         lineObj.color = "#0ff";
-        lineObj.offset = 0;//1=main grid len 
-        lineObj.yScaleSet = 5;//
+        lineObj.offset = 20;//1=main grid len 
+        lineObj.yScaleSet = 4;//
         lineObj.stInx = 0;
         lineObj.buffer = buffer;
         opts.lines.push(lineObj);
@@ -637,11 +627,6 @@ class MyNewScope {
         var op = md.opts;
         var st = md.stas;
         var ctx = st.ctx;
-        if (editObj) {
-            if (editObj.setName === "xScale") {
-                op.xAxeOffsV = op.xAxeOffsV * editObj.preValue / editObj.newValue;
-            }
-        }
         self.drawAxe(1);
         self.drawClear();
         if (op.testSinWave_f) {
@@ -695,24 +680,17 @@ class MyNewScope {
         //============================================
         var maxY = st.containerHeight - st.xyOffy;
         var minY = st.containerHeight - st.xyOffy - st.yAxeLen;
-        if (st.xoffs === null || st.xoffs === undefined) {
-            st.xoffs = 0;
-        }
         if (!st.sampleTime)
             st.sampleTime = st.xScale * op.xAxeGridAmt / op.sampleAmt;
-        if (op.run_f) {
-            //st.sampleTime = st.xScale * op.xAxeGridAmt / op.sampleAmt;
-            var stepLen = st.xAxeLen * st.sampleTime / (st.xScale * 10);
-        } else {
-            var stepLen = st.xAxeLen * st.sampleTime / (st.xScale * 10);
-        }
-
-
+        var stepLen = st.xAxeLen * st.sampleTime / (st.xScale * 10);
+        //=================================================
         var first_f = 0;
         var timev = 0;
         var halfSamples = parseInt(op.sampleAmt / 2) + 1;
         var first_f = 0;
-        var offx = st.xAxeLen * op.xAxeOffsV / (st.xScale * 10);
+        var xOffset = (st.xScale * 10) * op.xAxeOffs / 100;
+        //================================================
+        var offx = st.xAxeLen * xOffset / (st.xScale * 10);
         var xlen = st.xAxeLen / 2 + offx;
         var inx = opts.stInx - halfSamples - 1;
         if (inx < 0)
@@ -776,6 +754,7 @@ class MyNewScope {
     }
 
     drawBufs(opts, bufObj, clr) {
+        return;
         var op = this.md.opts;
         var st = this.md.stas;
         var ctx = st.ctx1;
@@ -815,7 +794,9 @@ class MyNewScope {
                 vv = op.yAxeTotalV + op.yAxeOffsV;
             var vlen = vv - op.yAxeOffsV;
             var xv = i * st.xScale;
-            if (xv > (op.xAxeTotalV + op.xAxeOffsV))
+
+            var xOffset = (st.xScale * 10) * op.xAxeOffs / 100;
+            if (xv > (op.xAxeTotalV + xOffset))
                 break;
             if (i === 0)
                 ctx.moveTo(x + xv * st.xPixelDivUnit, y - vlen * st.yPixelDivUnit);
@@ -846,8 +827,9 @@ class MyNewScope {
         op.messages = [];
         var mesObj = {};
 
+        var xOffset = (st.xScale * 10) * op.xAxeOffs / 100;
         var unit = "ns";
-        var value = op.xAxeOffsV * -1;
+        var value = xOffset * -1;
 
 
         var mstr = "";
@@ -1012,7 +994,12 @@ class MyNewScope {
                 ctx.fillStyle = op.lines[i].color;
                 var str = (i + 1) + "\u27a4";
                 var size = ctx.measureText(str);
-                ctx.fillText(str, x - size.width - 2, y - st.yAxeLen / 2 + fontSize / 2 - 2 - op.lines[i].offset * st.yAxeLen / 100);
+                var offset = op.lines[i].offset;
+                if (offset > 50)
+                    offset = 50;
+                if (offset < -50)
+                    offset = -50;
+                ctx.fillText(str, x - size.width - 2, y - st.yAxeLen / 2 + fontSize / 2 - 2 - offset * st.yAxeLen / 100);
             }
         }
 
@@ -1024,7 +1011,7 @@ class MyNewScope {
         var y = st.containerHeight - st.xyOffy - st.yAxeLen + 7;
         ctx.fillText(str, x, y);
 
-        var xoff = st.xAxeLen * op.xAxeOffsV / (st.xScale * 10);
+        var xoff = st.xAxeLen * xOffset / (st.xScale * 10);
 
         xoff += st.xAxeLen * 5 / 10;
         if (xoff < 0)
@@ -1101,18 +1088,19 @@ class MyNewScope {
             var str = op.yScaleTbl[op.lines[i].yScaleSet];
             var strA = str.split(" ");
             var yScale = 1000;
-            op.lines[i].yScale=yScale;
+            op.lines[i].yScale = yScale;
             if (strA.length !== 2)
                 continue;
             var ii = KvLib.toInt(strA[0], null);
             if (ii === null)
-                continue;;
+                continue;
+            ;
             if (strA[1] === "mV") {
-                op.lines[i].yScale=ii;
+                op.lines[i].yScale = ii;
                 continue;
             }
             if (strA[1] === "V") {
-                op.lines[i].yScale=ii*1000;
+                op.lines[i].yScale = ii * 1000;
                 continue;
             }
         }
@@ -1178,6 +1166,11 @@ class MyNewScope {
                 self.createScope();
                 return;
             }
+            if (iobj.act === "xOffsetChanged") {
+                op.xAxeOffs = iobj.value;
+                self.createScope();
+                return;
+            }
             if (iobj.act === "yScaleChanged") {
                 op.lines[iobj.chInx].yScaleSet = iobj.value;
                 self.transYScale();
@@ -1238,10 +1231,16 @@ class MyNewScope {
         //==============
         opts.xScale = op.xScale;
         opts.yOffsets = [0, -50, 50, 100];
+
+        opts.xOffset = op.xAxeOffs;
+
+
         //
         opts.yScales = [];
-        for(var i=0;i<op.lines.length;i++){
+        opts.yOffsets = [];
+        for (var i = 0; i < op.lines.length; i++) {
             opts.yScales.push(op.lines[i].yScaleSet);
+            opts.yOffsets.push(op.lines[i].offset);
         }
         opts.yScaleTbl = op.yScaleTbl;
         //
@@ -1284,6 +1283,7 @@ class MyNewTuner {
         opts.baseColor = "#222";
         opts.xm = 30;
         opts.signalCnt = 3;
+        opts.addAngleMul = 10;
         return opts;
     }
     subTypeOpts(opts) {
@@ -1396,14 +1396,17 @@ class MyNewTuner {
                 obj.sender = md;
                 KvLib.exe(op.actionFunc, iobj);
             }
-
-
-
-
             var rotateAng = ang - md.stas.nowAngle;
             md.stas.rotateAng = rotateAng;
             //self.stas.nowAngle = ang;
             KvLib.drawRotated(rotateAng, st.canvas, st.ctx, st.img, "ccw");
+            var obj = {};
+            obj.act = "rotated";
+            if (rotateAng < 0)
+                rotateAng += 360;
+            obj.angle = rotateAng | 0;
+            obj.addValue = md.stas.addValue;
+            KvLib.exe(op.actionFunc, obj);
 
 
         };
@@ -1443,20 +1446,6 @@ class MyNewTuner {
         opts.baseColor = op.baseColor;
         opts.whr = 1;
         blocks[cname] = {name: "container", type: "Component~Cp_base~container.sys0", opts: opts};
-        return;
-
-
-        var cname = lyMaps["body"] + "~" + 0;
-        var opts = {};
-        opts.backgroundImageUrls = ["systemResource/knob.png"];
-        opts.whr = 1;
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-        };
-        blocks[cname ] = {name: "icon", type: "Component~Cp_base~icons.sys0", opts: opts};
-
-
-
         return;
     }
 }
