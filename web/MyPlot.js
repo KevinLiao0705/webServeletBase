@@ -4,27 +4,6 @@
  * and open the template in the editor.
  */
 
-/* global KvLib, gr */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 class MyNewScopeCtr {
     constructor() {
@@ -37,8 +16,31 @@ class MyNewScopeCtr {
         opts.title = "title";
         opts.baseColor = "#ccc";
         opts.xm = 30;
-        opts.deviceInx = 0;//0:sub1,sub2
+        opts.chSelectInx = 0;
+        opts.bitSelectInx = 3;
+        opts.xScaleTbl = [
+            "1 nS", "2 nS", "5 nS", "10 nS", "20 nS", "50 nS", "100 nS", "200 nS", "500 nS",
+            "1 uS", "2 uS", "5 uS", "10 uS", "20 uS", "50 uS", "100 uS", "200 uS", "500 uS",
+            "1 mS", "2 mS", "5 mS", "10 mS", "20 mS", "50 mS", "100 mS", "200 mS", "500 mS", "1 S"
+        ];
+
+        //=========================
         opts.signalCnt = 1;
+        opts.chNames = ["測試信號", "脈波信號 A", "脈波信號 B", "輸出功率", "反射功率", "總電流"];
+        //==============
+        opts.xScale = 3;
+        opts.yOffsets = [0, -50, 50, 100];
+        //
+        opts.yScales = [1, 2, 3, 4];
+        opts.yScaleTbl = ["1 mV", "2 mV", "5 mV", "10 mV", "20 mV", "50 mV", "100 mV", "200 mV", "500 mV", "1 V", "2 V", "5 V", "10 V"];
+        //
+        opts.gridDispInx = 0;
+
+        opts.run_f = 1;
+        opts.typeCnt = 0;
+        opts.trig_f = 0;
+        opts.dispValue = 15;
+        //==============
         return opts;
     }
     subTypeOpts(opts) {
@@ -103,8 +105,8 @@ class MyNewScopeCtr {
             ["0.5rw", 9999]
         ];
         //
-        var names = ["測試信號", "脈波信號 A", "脈波信號 B", "輸出功率", "反射功率", "總電流"];
-        var ids = ["testSignal", "signal1", "signal2", "signal3", "signal4", "signal5"];
+        var names = op.chNames;
+        var ids = ["signal", "signal1", "signal2", "signal3", "signal4", "signal5"];
         var regDatas = "self.fatherMd.fatherMd.fatherMd.stas.signalButtonColors";
 
         for (var i = 0; i < 6; i++) {
@@ -131,7 +133,7 @@ class MyNewScopeCtr {
         //=========================
         var cname = lyMaps["mainBody"] + "~" + 1;
         var opts = {};
-        opts.baseColor="#006";
+        opts.baseColor = "#006";
         opts.actionFunc = function (iobj) {
             console.log(iobj);
         };
@@ -146,42 +148,128 @@ class MyNewScopeCtr {
         //
         var actionPrg = function (iobj) {
             console.log(iobj);
+            if (iobj.act === "mouseClick") {
+                var sobj = iobj.setOptsObj;
+                var strA = sobj.name.split("#");
+                var setInx = KvLib.toInt(strA[1], -1);
+                var strB = iobj.kvObj.name.split("#");
+                var butInx = KvLib.toInt(strB[1], -1);
+                if (strA[0] === "mdaSetLine") {
+                    op.chSelectInx = sobj.opts.setOpts.value;
+                    var signalAdjust = md.blockRefs["signalAdjust"];
+                    if (setInx === 3) {//ch select
+                        var setLine2 = signalAdjust.blockRefs["mdaSetLine#2"];
+                        var setOpts = setLine2.opts.setOpts;
+                        setOpts.enum = op.yScaleTbl;
+                        setOpts.value = op.yScales[op.chSelectInx];
+                        setLine2.reCreate();
+
+                        //var setLine1 = signalAdjust.blockRefs["mdaSetLine#1"];
+                        //var setOpts = setLine1.opts.setOpts;
+                        //setOpts.value = op.yOffsets[op.chSelectInx];
+                        //setLine1.reCreate();
+
+
+                        return;
+                    }
+                }
+
+            }
+            if (iobj.act === "valueChanged") {
+                var inx = KvLib.toInt(iobj.setOptsObj.name.split("#")[1], -1);
+                var obj = {};
+                if (inx === 0)//grid
+                    obj.act = "gridValueChanged";
+                if (inx === 1) {//xScale
+                    obj.act = "xScaleChanged";
+                    obj.valueText = op.xScaleTbl[iobj.setOptsObj.opts.setOpts.value];
+                }
+                if (inx === 2) {//
+                    obj.act = "xOffSetChanged";
+                }
+                if (inx === 4) {//
+                    obj.act = "yScaleChanged";
+                    obj.value = iobj.setOptsObj.opts.setOpts.value;
+                    obj.valueText = op.yScaleTbl[iobj.setOptsObj.opts.setOpts.value];
+                }
+                if (inx === 5) {//
+                    obj.act = "yOffsetChanged";
+                    obj.value = iobj.setOptsObj.opts.setOpts.value;
+                    obj.valueText = op.yScaleTbl[iobj.setOptsObj.opts.setOpts.value];
+                }
+                obj.chInx = op.chSelectInx;
+                obj.sender = md;
+                obj.kvObj = md;
+                obj.value = iobj.setOptsObj.opts.setOpts.value;
+                KvLib.exe(op.actionFunc, obj);
+                return;
+
+            }
         };
 
         var setOpts = sopt.getOptsPara("nature");
         setOpts.iconWidth = 40;
-        setOpts.image = "systemResource/icons8-left-right-64.png";
-        setOptss.push(setOpts);
-        var setOpts = sopt.getOptsPara("nature");
-        setOpts.iconWidth = 40;
-        setOpts.image = "systemResource/icons8-up-down-64.png";
-        setOptss.push(setOpts);
-        var setOpts = sopt.getOptsPara("nature");
-        setOpts.iconWidth = 40;
-        setOpts.image = "systemResource/icons8-magnifier-48.png";
-        setOptss.push(setOpts);
-        var setOpts = sopt.getOptsPara("nature");
-        setOpts.iconWidth = 40;
         setOpts.image = "systemResource/icons8-grid-50.png";
+        setOpts.max = 9;
+        setOpts.min = 0;
+        setOpts.value = op.gridDispInx;
+        setOpts.actButtons = ["inc", "dec"];
         setOptss.push(setOpts);
+
+
+        var setOpts = sopt.getOptsPara("incEnum");
+        setOpts.enum = op.xScaleTbl;
+        setOpts.max = setOpts.enum.length;
+        setOpts.value = op.xScale;
+        setOpts.iconWidth = 40;
+        setOpts.image = "systemResource/icons8-magnifierLR-80.png";
+        setOptss.push(setOpts);
+
+        var setOpts = sopt.getOptsPara("incEnum");
+        setOpts.enum = op.xScaleTbl;
+        setOpts.max = setOpts.enum.length;
+        setOpts.value = op.xScale;
+        setOpts.iconWidth = 40;
+        setOpts.image = "systemResource/xlr-64.png";
+        setOptss.push(setOpts);
+
+
         var setOpts = sopt.getOptsPara("buttonSelect");
         setOpts.titleWidth = 40;
-        setOpts.title="CH";
+        setOpts.title = "CH";
         setOpts.fontSize = "0.8rh";
+        setOpts.value = op.chSelectInx;
         setOpts.enum = ["1", "2", "3", "4"];
         setOptss.push(setOpts);
-        var setOpts = sopt.getOptsPara("buttonSelect");
-        setOpts.titleWidth = 40;
-        setOpts.title="BIT";
-        setOpts.fontSize = "0.8rh";
-        setOpts.enum = ["4", "3", "2", "1"];
+
+
+
+        var setOpts = sopt.getOptsPara("incEnum");
+        setOpts.enum = op.yScaleTbl;
+        setOpts.max = setOpts.enum.length;
+        setOpts.value = op.yScales[op.chSelectInx];
+        setOpts.iconWidth = 40;
+        setOpts.image = "systemResource/icons8-magnifierUD-80.png";
         setOptss.push(setOpts);
-        
-        
+
+        var setOpts = sopt.getOptsPara("int");
+        setOpts.iconWidth = 40;
+        setOpts.image = "systemResource/yud-64.png";
+        setOpts.max = 100;
+        setOpts.min = -100;
+        setOpts.value = op.yOffsets[op.chSelectInx];
+        setOptss.push(setOpts);
+
+
+
+
+
+
+
         opts.actionFunc = actionPrg;
         blocks[cname] = {name: "signalAdjust", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-        
-        
+
+
         //=======================================
         var cname = lyMaps["mainBody"] + "~" + 3;
         var opts = {};
@@ -192,71 +280,74 @@ class MyNewScopeCtr {
         //
         var actionPrg = function (iobj) {
             console.log(iobj);
+            KvLib.exe(op.actionFunc, iobj);
         };
 
         var setOpts = sopt.getOptsPara("buttonSelect");
         setOpts.titleWidth = 60;
-        setOpts.title="RUN";
-        setOpts.enum=['<i class="gf">&#xe037</i>','<i class="gf">&#xe034</i>'];
-        setOpts.selectColor="#cfc";
-        setOpts.value=0;
-        setOpts.fontSize="0.9rh";
+        setOpts.title = "RUN";
+        setOpts.enum = ['<i class="gf">&#xe034</i>', '<i class="gf">&#xe037</i>'];
+        setOpts.enumId = ['pause', 'run'];
+        setOpts.selectColor = "#cfc";
+        setOpts.value = op.run_f;
+        setOpts.fontSize = "0.9rh";
         setOptss.push(setOpts);
 
         var setOpts = sopt.getOptsPara("buttonSelect");
         setOpts.titleWidth = 60;
-        setOpts.title="TRIG";
-        setOpts.enum=['ON','OFF'];
-        setOpts.selectColor="#cfc";
-        setOpts.value=0;
-        setOpts.fontSize="0.7rh";
+        setOpts.title = "TRIG";
+        setOpts.enum = ['OFF', 'ON'];
+        setOpts.selectColor = "#cfc";
+        setOpts.value = op.trig_f;
+        setOpts.fontSize = "0.7rh";
         setOptss.push(setOpts);
 
         var setOpts = sopt.getOptsPara("buttonSelect");
         setOpts.titleWidth = 60;
-        setOpts.title="TYPE";
-        setOpts.enum=['MAIN','ROLL'];
-        setOpts.selectColor="#cfc";
-        setOpts.value=0;
-        setOpts.fontSize="0.7rh";
+        setOpts.title = "TYPE";
+        setOpts.enum = ['MAIN', 'ROLL'];
+        setOpts.selectColor = "#cfc";
+        setOpts.value = op.typeCnt;
+        setOpts.fontSize = "0.7rh";
         setOptss.push(setOpts);
-        
+
         var setOpts = sopt.getOptsPara("buttonOnOffs");
         setOpts.titleWidth = 60;
-        setOpts.title="DISP";
-        setOpts.enum=['CH1','CH2','CH3','CH4'];
-        setOpts.selectColor="#cfc";
-        setOpts.value=15;
-        setOpts.fontSize="0.6rh";
+        setOpts.title = "DISP";
+        setOpts.enum = ['CH1', 'CH2', 'CH3', 'CH4'];
+        setOpts.enumId = ['ch1', 'ch2', 'ch3', 'ch4'];
+        setOpts.selectColor = "#cfc";
+        setOpts.value = op.dispValue;
+        setOpts.fontSize = "0.6rh";
         setOptss.push(setOpts);
-        
-        
+
+
         /*
-        var setOpts = sopt.getOptsPara("nature");
-        setOpts.iconWidth = 40;
-        setOpts.image = "systemResource/icons8-up-down-64.png";
-        setOptss.push(setOpts);
-        var setOpts = sopt.getOptsPara("nature");
-        setOpts.iconWidth = 40;
-        setOpts.image = "systemResource/icons8-magnifier-48.png";
-        setOptss.push(setOpts);
-        var setOpts = sopt.getOptsPara("nature");
-        setOpts.iconWidth = 40;
-        setOpts.image = "systemResource/icons8-grid-50.png";
-        setOptss.push(setOpts);
-        var setOpts = sopt.getOptsPara("buttonSelect");
-        setOpts.titleWidth = 0;
-        setOpts.image = "systemResource/icons8-grid-50.png";
-        setOpts.fontSize = "0.8rh";
-        setOpts.enum = ["5", "4", "3", "2", "1"];
-        setOptss.push(setOpts);
-        */
-        
+         var setOpts = sopt.getOptsPara("nature");
+         setOpts.iconWidth = 40;
+         setOpts.image = "systemResource/icons8-up-down-64.png";
+         setOptss.push(setOpts);
+         var setOpts = sopt.getOptsPara("nature");
+         setOpts.iconWidth = 40;
+         setOpts.image = "systemResource/icons8-magnifier-48.png";
+         setOptss.push(setOpts);
+         var setOpts = sopt.getOptsPara("nature");
+         setOpts.iconWidth = 40;
+         setOpts.image = "systemResource/icons8-grid-50.png";
+         setOptss.push(setOpts);
+         var setOpts = sopt.getOptsPara("buttonSelect");
+         setOpts.titleWidth = 0;
+         setOpts.image = "systemResource/icons8-grid-50.png";
+         setOpts.fontSize = "0.8rh";
+         setOpts.enum = ["5", "4", "3", "2", "1"];
+         setOptss.push(setOpts);
+         */
+
         opts.actionFunc = actionPrg;
         blocks[cname] = {name: "signalCtr", type: "Model~MdaSetGroup~base.sys0", opts: opts};
 
-        
-        
+
+
         return;
 
         for (var i = 0; i < 1; i++) {
@@ -291,7 +382,6 @@ class MyNewScopeCtr {
     }
 }
 
-
 class MyNewScope {
     constructor() {
     }
@@ -311,32 +401,32 @@ class MyNewScope {
         opts.axeWidth = 0.5;
         //===
         opts.mainAxeColor = "#aaa";
-        opts.subAxeColor = "#444";
+        opts.subAxeColorTbl = ["#000", "#111", "#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999"];
+        opts.gridDispInx = 4;
+
         opts.centerLineColor = "#fff";
         //===============
         opts.xAxeOffsV = 0;
-        opts.xScale = 1000000;//unit=ns;
-        opts.xyOffx = 50;    //total 1000    //origin point x 
-        opts.xAxeLen = 900;  //total 1000    //x axile len rate    
+        opts.xScaleTbl = [
+            "1 nS", "2 nS", "5 nS", "10 nS", "20 nS", "50 nS", "100 nS", "200 nS", "500 nS",
+            "1 uS", "2 uS", "5 uS", "10 uS", "20 uS", "50 uS", "100 uS", "200 uS", "500 uS",
+            "1 mS", "2 mS", "5 mS", "10 mS", "20 mS", "50 mS", "100 mS", "200 mS", "500 mS", "1 S"
+        ];
+        opts.xScale = 8;//unit=ns;
+        opts.xyOffx = 10;    //total 1000    //origin point x 
+        opts.xAxeLen = 980;  //total 1000    //x axile len rate    
         opts.xAxeGridAmt = 10;
         opts.xSubAxeGridAmt = 5;
         //===============
+        opts.yScaleTbl = ["1 mV", "2 mV", "5 mV", "10 mV", "20 mV", "50 mV", "100 mV", "200 mV", "500 mV", "1 V", "2 V", "5 V", "10 V"];
+
         opts.xAxeTotalV = 500;
-        opts.xScale = 500;
-
-
-
-        opts.xyOffy = 50;    //total 1000    //origin point y 
-        opts.yAxeLen = 900;
         opts.yAxeOffsV = -100;
         opts.yAxeTotalV = 200;
-        opts.yUnit = "(mV)";
 
 
-
-
-        opts.xyOffy = 50;    //total 1000    //origin point y 
-        opts.yAxeLen = 900;
+        opts.xyOffy = 30;    //total 1000    //origin point y 
+        opts.yAxeLen = 940;
         opts.yAxeGridAmt = 10;
         opts.ySubAxeGridAmt = 5;
         //===============
@@ -366,8 +456,7 @@ class MyNewScope {
         lineObj.name = "CH1";
         lineObj.color = "#f00";
         lineObj.offset = 0;//1=main grid len 
-        lineObj.scale = 25;//
-        lineObj.unit = "mv";
+        lineObj.yScaleSet = 5;//
         lineObj.stInx = 0;
         lineObj.buffer = buffer;
         opts.lines.push(lineObj);
@@ -382,8 +471,7 @@ class MyNewScope {
         lineObj.name = "CH2";
         lineObj.color = "#0f0";
         lineObj.offset = 0;//1=main grid len 
-        lineObj.scale = 25;//
-        lineObj.unit = "mv";
+        lineObj.yScaleSet = 5;//
         lineObj.stInx = 0;
         lineObj.buffer = buffer;
         opts.lines.push(lineObj);
@@ -398,8 +486,7 @@ class MyNewScope {
         lineObj.name = "CH3";
         lineObj.color = "#ff0";
         lineObj.offset = 0;//1=main grid len 
-        lineObj.scale = 25;//
-        lineObj.unit = "mv";
+        lineObj.yScaleSet = 5;//
         lineObj.stInx = 0;
         lineObj.buffer = buffer;
         opts.lines.push(lineObj);
@@ -414,8 +501,7 @@ class MyNewScope {
         lineObj.name = "CH4";
         lineObj.color = "#0ff";
         lineObj.offset = 0;//1=main grid len 
-        lineObj.scale = 25;//
-        lineObj.unit = "mv";
+        lineObj.yScaleSet = 5;//
         lineObj.stInx = 0;
         lineObj.buffer = buffer;
         opts.lines.push(lineObj);
@@ -605,7 +691,7 @@ class MyNewScope {
         var xzero = st.xyOffx;
         var ycen = st.containerHeight - st.xyOffy - st.yAxeLen / 2;
         var yGridLen = st.yAxeLen / op.yAxeGridAmt;
-        var yOffset = st.yAxeLen * opts.offset / 1000;
+        var yOffset = st.yAxeLen * opts.offset / 100;
         //============================================
         var maxY = st.containerHeight - st.xyOffy;
         var minY = st.containerHeight - st.xyOffy - st.yAxeLen;
@@ -613,12 +699,12 @@ class MyNewScope {
             st.xoffs = 0;
         }
         if (!st.sampleTime)
-            st.sampleTime = op.xScale * op.xAxeGridAmt / op.sampleAmt;
+            st.sampleTime = st.xScale * op.xAxeGridAmt / op.sampleAmt;
         if (op.run_f) {
-            //st.sampleTime = op.xScale * op.xAxeGridAmt / op.sampleAmt;
-            var stepLen = st.xAxeLen * st.sampleTime / (op.xScale * 10);
+            //st.sampleTime = st.xScale * op.xAxeGridAmt / op.sampleAmt;
+            var stepLen = st.xAxeLen * st.sampleTime / (st.xScale * 10);
         } else {
-            var stepLen = st.xAxeLen * st.sampleTime / (op.xScale * 10);
+            var stepLen = st.xAxeLen * st.sampleTime / (st.xScale * 10);
         }
 
 
@@ -626,14 +712,14 @@ class MyNewScope {
         var timev = 0;
         var halfSamples = parseInt(op.sampleAmt / 2) + 1;
         var first_f = 0;
-        var offx = st.xAxeLen * op.xAxeOffsV / (op.xScale * 10);
+        var offx = st.xAxeLen * op.xAxeOffsV / (st.xScale * 10);
         var xlen = st.xAxeLen / 2 + offx;
         var inx = opts.stInx - halfSamples - 1;
         if (inx < 0)
             inx += op.sampleSize;
         for (var i = 0; i < halfSamples; i++) {
             var vv = opts.buffer[inx];
-            var ylen = vv * yGridLen / opts.scale;
+            var ylen = vv * yGridLen / opts.yScale;
             var realY = ycen + ylen - yOffset;
             if (realY > maxY)
                 realY = maxY;
@@ -662,7 +748,7 @@ class MyNewScope {
             inx += op.sampleSize;
         for (var i = 0; i < halfSamples; i++) {
             var vv = opts.buffer[inx];
-            var ylen = vv * yGridLen / opts.scale;
+            var ylen = vv * yGridLen / opts.yScale;
             var realY = ycen + ylen - yOffset;
             if (realY > maxY)
                 realY = maxY;
@@ -704,7 +790,7 @@ class MyNewScope {
         var y = st.containerHeight - st.xyOffy;
         var inx;
 
-        var maxLen = parseInt(op.xAxeTotalV / op.xScale);
+        var maxLen = parseInt(op.xAxeTotalV / st.xScale);
         if (bufObj.bufLen < maxLen)
             var backLen = bufObj.bufLen;
         else
@@ -712,7 +798,7 @@ class MyNewScope {
 
         for (var i = 0; i < bufObj.bufLen; i++) {
 
-            if ((i * op.xScale) >= op.xAxeTotalV)
+            if ((i * st.xScale) >= op.xAxeTotalV)
                 break;
             var inxSt = bufObj.bufEnd - backLen;
             if (inxSt < 0)
@@ -722,13 +808,13 @@ class MyNewScope {
                 inx -= bufObj.bufMax;
             var vv = bufObj.buffer[inx][bufObj.bufName];
             vv -= opts.offset;
-            vv *= opts.scale;
+            vv *= opts.yScale;
             if (vv < op.yAxeOffsV)
                 vv = op.yAxeOffsV;
             if (vv > op.yAxeTotalV + op.yAxeOffsV)
                 vv = op.yAxeTotalV + op.yAxeOffsV;
             var vlen = vv - op.yAxeOffsV;
-            var xv = i * op.xScale;
+            var xv = i * st.xScale;
             if (xv > (op.xAxeTotalV + op.xAxeOffsV))
                 break;
             if (i === 0)
@@ -799,7 +885,7 @@ class MyNewScope {
 
         var mesObj = {};
         var unit = "ns";
-        var value = op.xScale;
+        var value = st.xScale;
         if (value >= 1000) {
             unit = "us";
             value = value / 1000;
@@ -831,42 +917,20 @@ class MyNewScope {
             var opts = op.lines[i];
             if (!opts.offOn_f)
                 continue
-
-
             var mesObj = {};
-            var unit = opts.unit;
-            var value = opts.scale;
-            if (unit === "mv")
-                value = value * 1000;
-            if (unit === "v")
-                value = value * 1000000;
-            unit = "uv";
-            if (value >= 1000) {
-                unit = "mv";
-                value = value / 1000;
-                if (value >= 1000) {
-                    unit = "v";
-                    value = value / 1000;
-                }
-            }
-            if (value < 10)
-                var vStr = value.toFixed(2);
-            else if (value < 100)
-                var vStr = value.toFixed(1);
-            else
-                var vStr = value.toFixed(0);
+            var vStr = op.yScaleTbl[opts.yScaleSet];
             mesObj.x = x;
             mesObj.y = st.containerHeight - st.xyOffy - st.yAxeLen;
-            mesObj.text = (i + 1) + ":" + vStr + " " + unit + "/";
+            mesObj.text = (i + 1) + ":" + vStr + "/";
             mesObj.color = opts.color;
             mesObj.font = "12px sans-serif";
             op.messages.push(mesObj);
             var size = ctx.measureText(mesObj.text);
             x += size.width + 20;
-
-
-
         }
+
+
+
 
 
 
@@ -879,7 +943,8 @@ class MyNewScope {
             }
         }
 
-        ctx.strokeStyle = op.subAxeColor;
+        ctx.strokeStyle = op.subAxeColorTbl[op.gridDispInx ];
+
         //===============================
         ctx.lineWidth = op.axeWidth;
         ctx.beginPath();
@@ -930,7 +995,7 @@ class MyNewScope {
             ctx.lineWidth = op.axeWidth;
             ctx.beginPath();
             var x = st.xyOffx;
-            var y = st.conrainerHeight - st.xyOffy;
+            var y = st.containerHeight - st.xyOffy;
             var xadd = st.xAxeLen / 2;
             var yadd = st.yAxeLen / 2;
             ctx.moveTo(x + xadd * 1, y);
@@ -947,7 +1012,7 @@ class MyNewScope {
                 ctx.fillStyle = op.lines[i].color;
                 var str = (i + 1) + "\u27a4";
                 var size = ctx.measureText(str);
-                ctx.fillText(str, x - size.width - 2, y - st.yAxeLen / 2 + fontSize / 2 - 2 - op.lines[i].offset * st.yAxeLen / 1000);
+                ctx.fillText(str, x - size.width - 2, y - st.yAxeLen / 2 + fontSize / 2 - 2 - op.lines[i].offset * st.yAxeLen / 100);
             }
         }
 
@@ -959,7 +1024,7 @@ class MyNewScope {
         var y = st.containerHeight - st.xyOffy - st.yAxeLen + 7;
         ctx.fillText(str, x, y);
 
-        var xoff = st.xAxeLen * op.xAxeOffsV / (op.xScale * 10);
+        var xoff = st.xAxeLen * op.xAxeOffsV / (st.xScale * 10);
 
         xoff += st.xAxeLen * 5 / 10;
         if (xoff < 0)
@@ -996,6 +1061,62 @@ class MyNewScope {
         }
 
     }
+    transXScale() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        var str = op.xScaleTbl[op.xScale];
+        var strA = str.split(" ");
+        st.xScale = 500;
+        if (strA.length !== 2)
+            return;
+        var ii = KvLib.toInt(strA[0], null);
+        if (ii === null)
+            return;
+        if (strA[1] === "nS") {
+            st.xScale = ii;
+            return;
+        }
+        if (strA[1] === "uS") {
+            st.xScale = ii * 1000;
+            return;
+        }
+        if (strA[1] === "mS") {
+            st.xScale = ii * 1000000;
+            return;
+        }
+        if (strA[1] === "S") {
+            st.xScale = ii * 1000000000;
+            return;
+        }
+    }
+
+    transYScale() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        for (var i = 0; i < op.lines.length; i++) {
+            var str = op.yScaleTbl[op.lines[i].yScaleSet];
+            var strA = str.split(" ");
+            var yScale = 1000;
+            op.lines[i].yScale=yScale;
+            if (strA.length !== 2)
+                continue;
+            var ii = KvLib.toInt(strA[0], null);
+            if (ii === null)
+                continue;;
+            if (strA[1] === "mV") {
+                op.lines[i].yScale=ii;
+                continue;
+            }
+            if (strA[1] === "V") {
+                op.lines[i].yScale=ii*1000;
+                continue;
+            }
+        }
+    }
 
     build() {
         var self = this;
@@ -1004,6 +1125,8 @@ class MyNewScope {
         var lyMaps = md.lyMaps;
         var blocks = op.blocks;
         var layouts = op.layouts;
+        self.transXScale();
+        self.transYScale();
         //======================================    
         var cname = "c";
         var opts = {};
@@ -1042,6 +1165,94 @@ class MyNewScope {
         var cname = lyMaps["centerBody"] + "~" + 1;
         var opts = {};
         opts.baseColor = "#222";
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            if (iobj.act === "gridValueChanged") {
+                op.gridDispInx = iobj.value;
+                self.drawAxe(1);
+                return;
+            }
+            if (iobj.act === "xScaleChanged") {
+                op.xScale = iobj.value;
+                self.transXScale();
+                self.createScope();
+                return;
+            }
+            if (iobj.act === "yScaleChanged") {
+                op.lines[iobj.chInx].yScaleSet = iobj.value;
+                self.transYScale();
+                self.createScope();
+                return;
+            }
+            if (iobj.act === "yOffsetChanged") {
+                op.lines[iobj.chInx].offset = iobj.value;
+                self.transYScale();
+                self.createScope();
+                return;
+            }
+
+
+            if (iobj.act === "mouseClick") {
+                if (iobj.buttonId === "run") {
+                    md.opts.run_f = 1;
+                    return;
+                }
+                if (iobj.buttonId === "pause") {
+                    md.opts.run_f = 0;
+                    return;
+                }
+                if (iobj.buttonId === "ch1") {
+                    if (iobj.setOptsObj.opts.setOpts.value & 1)
+                        op.lines[0].offOn_f = 1;
+                    else
+                        op.lines[0].offOn_f = 0;
+                    return;
+                }
+                if (iobj.buttonId === "ch2") {
+                    if (iobj.setOptsObj.opts.setOpts.value & 2)
+                        op.lines[1].offOn_f = 1;
+                    else
+                        op.lines[1].offOn_f = 0;
+                    return;
+                }
+                if (iobj.buttonId === "ch3") {
+                    if (iobj.setOptsObj.opts.setOpts.value & 4)
+                        op.lines[2].offOn_f = 1;
+                    else
+                        op.lines[2].offOn_f = 0;
+                    return;
+                }
+                if (iobj.buttonId === "ch4") {
+                    if (iobj.setOptsObj.opts.setOpts.value & 8)
+                        op.lines[3].offOn_f = 1;
+                    else
+                        op.lines[3].offOn_f = 0;
+                    return;
+                }
+
+            }
+        };
+        //=========================
+        opts.signalCnt = 1;
+        opts.chNames = ["測試信號", "脈波信號 A", "脈波信號 B", "輸出功率", "反射功率", "總電流"];
+        //==============
+        opts.xScale = op.xScale;
+        opts.yOffsets = [0, -50, 50, 100];
+        //
+        opts.yScales = [];
+        for(var i=0;i<op.lines.length;i++){
+            opts.yScales.push(op.lines[i].yScaleSet);
+        }
+        opts.yScaleTbl = op.yScaleTbl;
+        //
+        opts.gridDispInx = op.gridDispInx;
+
+        opts.run_f = op.run_f;
+        opts.typeCnt = 0;
+        opts.trig_f = 0;
+        opts.dispValue = 15;
+
+
         blocks[cname] = {name: "scopeCtr", type: "Model~MyNewScopeCtr~base.sys0", opts: opts};
 
 
@@ -1060,343 +1271,6 @@ class MyNewScope {
 
     }
 }
-
-
-
-//===========================================
-class MyTuner {
-    static init() {
-        var bobj = gr.modelOpts["Md_tuner"] = {};
-        var dsc = bobj["optsDsc"] = {};
-        var sobj = bobj["subOpts"] = {};
-        var modelOptsFunc = function (obj) {
-            obj.propertyWidth = 210;
-            obj.propertyHeight = 250;
-            obj.borderWidth = 1;
-            obj.baseColor = "#333";
-            obj.borderColor = "#fff";
-            obj.knobName = "Test";
-            dsc.knobName = sys.setOptsSet("knobName", "str", "inputText");
-            obj.muls = [0.01, 0.1, 1, 10, 100];
-            dsc.muls = sys.setOptsSet("muls", "ratio~array", "inputFloat~array");
-            obj.mulInx = 2;
-            dsc.mulInx = sys.setOptsSet("mulInx", "num", "inputNumber", 0, 0, 4);
-            obj.title = "Test";
-            dsc.title = sys.setOptsSet("title", "str", "inputText", 1);
-            obj.max = 100;
-            dsc.max = sys.setOptsSet("max", "num", "inputNumber");
-            obj.value = 0;
-            dsc.value = sys.setOptsSet("value", "num", "inputNumber");
-            obj.min = -100;
-            dsc.min = sys.setOptsSet("min", "num", "inputNumber");
-            obj.lineHeight = 30;
-            dsc.lineHeight = sys.setOptsSet("lineHeight", "num", "inputNumber", 0, 0);
-            obj.buttonHeight = 50;
-            dsc.buttonHeight = sys.setOptsSet("buttonHeight", "num", "inputNumber", 0, 0);
-            obj.rightWidth = 50;
-            dsc.rightWidth = sys.setOptsSet("rightWidth", "num", "inputNumber", 0, 0);
-            obj.valueFixed = 2;
-            dsc.valueFixed = sys.setOptsSet("valueFixed", "num", "inputNumber", 0, 0);
-
-            var setObj = obj.setObj = {};
-            setObj.name = "";
-            setObj.showDataType_f = 0;
-            setObj.titleWidth = 0;
-            setObj.setType = "inputText";
-            setObj.dataType = "str";
-            setObj.nullOk_f = 1;
-            dsc.setObj = sys.setOptsSet("setObj", "object", "setObject");
-            InitOpts.getSetObjDsc(dsc);
-
-
-            obj.end = 0;
-            obj.dataType = "num";
-
-        };
-        if ("sys") {
-            modelOptsFunc(bobj);
-            var obj = sobj["sys"] = {};
-        }
-
-    }
-    constructor() {
-    }
-    initOpts(md) {
-        return Model.getOpts(md.baseType, md.subType);
-    }
-    afterCreate() {
-        var self = this;
-        var md = self.md;
-    }
-    build(md) {
-        var self = this;
-        this.md = md;
-        var op = md.opts;
-        var lyMap = md.lyMap;
-        var comps = op.comps;
-        var models = op.models;
-        var layouts = op.layouts;
-        var layoutGroups = op.layoutGroups;
-        //======================================================================
-        var valueChangeFunc = function (kvObj, inputValue) {
-
-            if (kvObj.fatherMd.name === "tuner")
-                var tunerObj = kvObj.fatherMd;
-            else
-                var tunerObj = kvObj.fatherMd.fatherMd;
-
-            var op = tunerObj.opts;
-            if (op.setObj.name === "")
-                return;
-            if (op.setObj.value === null || op.setObj.value === undefined)
-                return;
-            //op.value = 0;
-            if (op.setObj.mulFixA_f) {
-                var value = op.setObj.value;
-                var mul = 1;
-                for (var i = 0; i < 15; i++) {
-                    var valueInt = parseInt(value / 10);
-                    if (!valueInt)
-                        break;
-                    mul *= 10;
-                    value = valueInt;
-                }
-                if (inputValue === 1) {
-                    if (value < 2)
-                        value = 2;
-                    else if (value < 5)
-                        value = 5;
-                    else {
-                        value = 1;
-                        mul *= 10;
-                    }
-                } else {
-                    if (value >= 5)
-                        value = 2;
-                    else if (value > 1)
-                        value = 1;
-                    else {
-                        value = 5;
-                        mul *= 0.1;
-                    }
-                }
-                op.setObj.value = value * mul;
-                if (op.setObj.value < op.setObj.min)
-                    op.setObj.value = op.setObj.min;
-            } else {
-                var addValue = inputValue;
-                if (op.setObj.muls)
-                    addValue = addValue * op.setObj.muls[op.setObj.mulInx];
-                op.setObj.value += addValue;
-                if (op.setObj.max !== null && op.setObj.max !== undefined) {
-                    if (op.setObj.value >= op.setObj.max)
-                        op.setObj.value = op.setObj.max;
-                }
-                if (op.setObj.min !== null && op.setObj.min !== undefined) {
-                    if (op.setObj.value <= op.setObj.min)
-                        op.setObj.value = op.setObj.min;
-                }
-                var valueStr = op.setObj.value.toFixed(op.setObj.fixed);
-                op.setObj.value = KvLib.parseNumber(valueStr);
-            }
-            var mobj = tunerObj.modelRefs["setValue"];
-            mobj.opts.setObj = op.setObj;
-            mobj.reCreate();
-            if (op.actionFunc) {
-                var oobj = {};
-                oobj.act = "valueChange";
-                oobj.kvObj = tunerObj;
-                op.actionFunc(oobj);
-            }
-        };
-
-        var actionFunc = function (iobj) {
-            var kvObj = iobj.kvObj;
-            var name = kvObj.name;
-            if (iobj.act === "click") {
-                var strA = name.split("#");
-                if (strA[0] === "mulButton") {
-                    var md = kvObj.fatherMd;
-                    var op = md.opts;
-                    op.setObj.mulInx = parseInt(strA[1]);
-                    for (var i = 0; i < op.setObj.muls.length; i++) {
-                        var comp = md.compRefs["mulButton" + "#" + i];
-                        var opts = comp.opts;
-                        if (i === op.setObj.mulInx)
-                            opts.baseColor = "#ccf";
-                        else
-                            opts.baseColor = "#ccc";
-                        comp.reCreate();
-                    }
-                    return;
-                }
-                var md = kvObj.fatherMd.fatherMd;
-                var op = md.opts;
-
-                if (strA[0] === "upButton") {
-                    if (op.setObj.value === null || op.setObj.value === undefined)
-                        return;
-                    valueChangeFunc(kvObj, 1);
-                    return;
-                }
-                if (strA[0] === "downButton") {
-                    if (op.setObj.value === null || op.setObj.value === undefined)
-                        return;
-                    valueChangeFunc(kvObj, -1);
-                    return;
-                }
-                if (strA[0] === "keyboardButton") {
-                    var opts = {};
-                    opts.actionFunc = function (iobj) {
-                        op.value = KvLib.parseNumber(iobj.value);
-                        var valueStr = op.value.toFixed(op.valueFixed);
-                        var comp = md.compRefs["setValue"];
-                        comp.opts.editValue = valueStr;
-                        comp.reCreate();
-                        if (op.actionFunc) {
-                            var oobj = {};
-                            oobj.act = "valueChange";
-                            oobj.value = op.value;
-                            oobj.kvObj = md;
-                            op.actionFunc(oobj);
-                        }
-                    };
-
-                    var setObj = {};
-                    setObj.dataType = op.dataType;
-                    setObj.setType = "inputNumber";
-                    setObj.nullOk_f = 0;
-                    setObj.name = op.title;
-                    setObj.value = op.value;
-                    setObj.max = op.max;
-                    setObj.min = op.min;
-                    setObj.fixed = op.valueFixed;
-                    opts.setObj = setObj;
-                    var mod = new Model("", "Md_numpad~sys", opts, {});
-                    var popOpts = {};
-                    popOpts.kvObj = mod;
-                    popOpts.w = 600;
-                    popOpts.h = 500;
-                    sys.popOnModel(popOpts);
-                    /*
-                     var self = this;
-                     var opts = {};
-                     opts.kvObj = null;
-                     opts.w = op.w;
-                     opts.h = op.h;
-                     opts.shadow_f = 1;
-                     opts.center_f = 1;
-                     opts.maskTouchOff_f = 0;
-                     * 
-                     */
-                }
-
-                return;
-            }
-            return;
-        };
-        var cname = "c";
-        var opts = {};
-        opts.xc = 1;
-        opts.yc = 4;
-        opts.ihO = {};
-        opts.ihO.c0 = op.lineHeight;
-        opts.ihO.c1 = op.lineHeight;
-        opts.ihO.c2 = op.buttonHeight;
-        opts.ihO.c3 = 9999;
-        var muls = op.setObj.muls;
-        if (!muls) {
-            opts.ihO.c2 = 0;
-            muls = [];
-        }
-
-        opts.color = op.baseColor;
-        md.setFarme(opts);
-        layouts[cname] = {name: cname, type: "base", opts: opts};
-        lyMap.set("body", cname);
-        //======================================================================
-        if (muls.length) {
-            var cname = lyMap.get("body") + "~" + 2;
-            var opts = {};
-            opts.xc = muls.length;
-            layouts[cname] = {name: cname, type: "base", opts: opts};
-            lyMap.set("pnMulButton", cname);
-        }
-        //======================================================================
-        var cname = lyMap.get("body") + "~" + 3;
-        var opts = {};
-        opts.xc = 2;
-        opts.iwO = {};
-        opts.iwO.c0 = 9999;
-        opts.iwO.c1 = op.rightWidth;
-        layouts[cname] = {name: cname, type: "base", opts: opts};
-        lyMap.set("pnMain", cname);
-        //======================================================================
-        var cname = lyMap.get("pnMain") + "~" + 1;
-        var opts = {};
-        opts.yc = 3;
-        layouts[cname] = {name: cname, type: "base", opts: opts};
-        lyMap.set("pnUpDown", cname);
-        //======================================================================
-        var cname = lyMap.get("body") + "~" + 0;
-        var opts = {};
-        opts.textAlign = "center";
-        opts.innerText = op.setObj.name;
-        opts.fontSize = 0;
-        comps[cname] = {name: "titleLabel", type: "label~sys", opts: opts};
-        //======================================================================
-        var cname = lyMap.get("body") + "~" + 1;
-        var opts = {};
-        opts.setObj = op.setObj;
-        models[cname] = {name: "setValue", type: "Md_editOptsLine~sys", opts: opts};
-        //======================================================================
-        for (var i = 0; i < muls.length; i++) {
-            var cname = lyMap.get("pnMulButton") + "~" + i;
-            var opts = {};
-            opts.innerText = muls[i];
-            opts.maxByte = 10;
-            opts.fontSize = "fixWidth";
-            if (i === op.setObj.mulInx)
-                opts.baseColor = "#ccf";
-            opts.clickFunc = actionFunc;
-            comps[cname] = {name: "mulButton#" + i, type: "button~sys", opts: opts};
-        }
-        //======================================================================
-        var cname = lyMap.get("pnMain") + "~" + 0;
-        var opts = {};
-        opts.imageInx = 0;
-        opts.imageUrls = ['./systemResource/knob.png'];
-        opts.margin = 5;
-        opts.whr = 1;
-        if (op.setObj.mulFixA_f)
-            opts.addAngleMul = 0.01;
-        opts.actionFunc = function (iobj) {
-            valueChangeFunc(iobj.kvObj, iobj.value);
-        };
-        comps[cname] = {name: "knob", type: "image~knob", opts: opts};
-        //======================================================================
-        var cname = lyMap.get("pnUpDown") + "~" + 0;
-        var opts = {};
-        opts.innerText = '<i class="material-icons">&#xe312;</i>';
-        opts.clickFunc = actionFunc;
-        comps[cname] = {name: "keyboardButton", type: "button~iconFont", opts: opts};
-        //======================================================================
-        var cname = lyMap.get("pnUpDown") + "~" + 1;
-        var opts = {};
-        opts.title = '<i class="material-icons">&#xe147;</i>';
-        opts.actionFunc = actionFunc;
-        models[cname] = {name: "upButton", type: "Md_pushButton", opts: opts};
-        //======================================================================
-        var cname = lyMap.get("pnUpDown") + "~" + 2;
-        var opts = {};
-        opts.title = '<i class="material-icons">&#xe15c;</i>';
-        opts.actionFunc = actionFunc;
-        models[cname] = {name: "downButton", type: "Md_pushButton", opts: opts};
-        //======================================================================
-
-    }
-}
-//===========================================
 
 class MyNewTuner {
     constructor() {
@@ -1426,9 +1300,9 @@ class MyNewTuner {
         var op = md.opts;
         var st = md.stas;
         //=======================================================
-        st.nowAngle=0;
-        st.preAngle=0;
-        
+        st.nowAngle = 0;
+        st.preAngle = 0;
+
         var plotObj = md.blockRefs["container"];
         var plotElem = plotObj.elems["base"];
         st.containerWidth = plotObj.stas.containerWidth;

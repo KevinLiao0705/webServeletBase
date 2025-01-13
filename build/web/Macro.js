@@ -610,6 +610,8 @@ class KvSetOpts {
                 return sopt.getOptsFloatAStrA();
             case "intEnum":
                 return sopt.getOptsIntEnum();
+            case "incEnum":
+                return sopt.getOptsIncEnum();
             case "strEnum":
                 return sopt.getOptsStrEnum();
             case "buttonRadio":
@@ -859,6 +861,17 @@ class KvSetOpts {
         opts.enum = [123, 456];
         return opts;
     }
+    
+    
+    getOptsIncEnum() {
+        var opts = sopt.getOptsNature();
+        opts.setType="incEnum";
+        opts.actButtons = ["inc","dec"];
+        opts.enum = ["xxx", "string2", "string3", "string4", "string5"];
+        return opts;
+    }
+    
+    
 
     getOptsButtonRadio() {
         var setOpts = {};

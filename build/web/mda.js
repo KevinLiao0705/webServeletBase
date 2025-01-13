@@ -3967,51 +3967,67 @@ class MdaSetLine {
 
 
                 if (strA[1] === "inc" || strA[1] === "dec") {
+                    var kobj = md.blockRefs["inputText"];
+                    kobj.opts.editValue = setOpts.value;
+                    var elem = kobj.elems["inputText"];
                     if (dt === "kvType") {
                         dt = "int";
                     }
                     if (dt === "int") {
-                        var kobj = md.blockRefs["inputText"];
-                        kobj.opts.editValue = setOpts.value;
-                        var elem = kobj.elems["inputText"];
-                        if (setOpts.checkType === "hex")
-                            var value = KvLib.hexStrToInt(elem.value, null);
-                        else
-                            var value = KvLib.toInt(elem.value, null);
-                        if (value === null)
-                            return;
-                        if (strA[1] === "inc")
-                            value++;
-                        else
-                            value--;
+                        if (setOpts.setType === "incEnum") {
+                            if (strA[1] === "inc")
+                                setOpts.value++;
+                            if (strA[1] === "dec")
+                                setOpts.value--;
+                            if (setOpts.value >= setOpts.enum.length)
+                                setOpts.value = setOpts.enum.length - 1;
+                            if (setOpts.value < 0)
+                                setOpts.value = 0;
+                            elem.value = setOpts.enum[setOpts.value];
+                        } else {
+                            if (setOpts.checkType === "hex")
+                                var value = KvLib.hexStrToInt(elem.value, null);
+                            else
+                                var value = KvLib.toInt(elem.value, null);
 
-                        if (setOpts.min !== undefined && setOpts.min !== null) {
-                            if (value < setOpts.min)
-                                if (setOpts.loop_f)
-                                    value = setOpts.max;
-                                else
-                                    value = setOpts.min;
+                            if (value === null)
+                                return;
+                            if (strA[1] === "inc")
+                                value++;
+                            else
+                                value--;
+                            if (setOpts.min !== undefined && setOpts.min !== null) {
+                                if (value < setOpts.min)
+                                    if (setOpts.loop_f)
+                                        value = setOpts.max;
+                                    else
+                                        value = setOpts.min;
 
-                        }
-                        if (setOpts.max !== undefined && setOpts.max !== null) {
-                            if (value > setOpts.max) {
-                                if (setOpts.loop_f)
-                                    value = setOpts.min;
-                                else
-                                    value = setOpts.max;
                             }
+                            if (setOpts.max !== undefined && setOpts.max !== null) {
+                                if (value > setOpts.max) {
+                                    if (setOpts.loop_f)
+                                        value = setOpts.min;
+                                    else
+                                        value = setOpts.max;
+                                }
+                            }
+                            if (setOpts.checkType === "hex") {
+                                if (value < 0)
+                                    value = 0;
+                            }
+                            setOpts.value = value;
+                            if (setOpts.checkType === "hex")
+                                elem.value = "" + setOpts.value.toString(16);
+                            else
+                                elem.value = "" + setOpts.value;
                         }
-                        if (setOpts.checkType === "hex") {
-                            if (value < 0)
-                                value = 0;
-                        }
-                        setOpts.value = value;
-                        if (setOpts.checkType === "hex")
-                            elem.value = "" + setOpts.value.toString(16);
-                        else
-                            elem.value = "" + setOpts.value;
-                        //elem.focus();
                         elem.setSelectionRange(-1, -1);
+                        iobj.act = "valueChanged";
+                        iobj.setOptsObj = md;
+                        iobj.sender = md;
+                        iobj.value = setOpts.value;
+                        KvLib.exe(op.actionFunc, iobj);
                         return;
 
                     }
@@ -4226,6 +4242,15 @@ class MdaSetLine {
                         iobj.kvObj.opts.innerTextColor = setOpts.onTextColor;
                     }
                     iobj.kvObj.reCreate();
+                    iobj.buttonInx = KvLib.toInt(iobj.kvObj.name.split("#")[1], -1);
+                    iobj.buttonText = iobj.kvObj.opts.innerText;
+                    if (md.opts.setOpts.enumId) {
+                        iobj.buttonId = md.opts.setOpts.enumId[iobj.buttonInx];
+                    }
+                    iobj.setOptsObj = md;
+                    iobj.sender = md;
+                    KvLib.exe(op.actionFunc, iobj);
+
                 };
 
                 opts.baseColor = "#ccc";
@@ -4258,6 +4283,17 @@ class MdaSetLine {
                 var inx = KvLib.toInt(strA[1], -1);
                 op.setOpts.value = inx;
                 md.mdClass.reNew();
+
+                iobj.buttonInx = KvLib.toInt(iobj.kvObj.name.split("#")[1], -1);
+                iobj.buttonText = iobj.kvObj.opts.innerText;
+                if (md.opts.setOpts.enumId) {
+                    iobj.buttonId = md.opts.setOpts.enumId[iobj.buttonInx];
+                }
+                iobj.setOptsObj = md;
+                iobj.sender = md;
+                KvLib.exe(op.actionFunc, iobj);
+
+
             };
             for (var i = 0; i < setOpts.enum.length; i++) {
                 var cname = md.lyMaps["mainBody"] + "~" + i;
@@ -4397,10 +4433,23 @@ class MdaSetLine {
         }
         if (setOpts.setType === "label") {
             var opts = {};
-            opts.innerText = setOpts.value;
+            opts.editValue = setOpts.value;
             md.newBlock(cname, opts, "Component~Cp_base~label.sys3", "label");
             return;
         }
+
+        if (setOpts.setType === "incEnum") {
+            var opts = {};
+            opts.editValue = setOpts.enum[setOpts.value];
+            opts.innerText = "";
+            opts.readOnly_f = 1;
+            opts.lpd = 0;
+            opts.rpd = 0;
+            md.newBlock(cname, opts, "Component~Cp_base~inputText.sys0", "inputText");
+            return;
+        }
+
+
         if (setOpts.setType === "select" || setOpts.setType === "inputSelect") {
             var opts = {};
             opts.actionFunc = retFunc;
