@@ -10,6 +10,8 @@ class GlobalRes {
             this.appType="Model~DummyTargetSub~base.sys0";
         if(this.appId===2)
             this.appType="Model~DummyTargetSub~base.sys0";
+        if(this.appId===3)
+            this.appType="Model~DummyTargetCtr~base.sys0";
         
         this.language = "chnT";
         this.appPageCnt=0;
