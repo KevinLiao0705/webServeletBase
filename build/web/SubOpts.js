@@ -253,16 +253,22 @@ class SubOpts {
         if ("Component~Cp_base~images.lcd"){
             var opts = gr.blockSubOpts["Component~Cp_base~images.lcd"] = {};
             KvLib.deepCoverObject(opts, gr.blockSubOpts["Component~Cp_base~plate.none"]);
-            opts.borderWidth = 0;
-            opts.backgroundImageUrls=["systemResource/lcd.bmp"];
+            opts.backgroundImageUrls=["systemResource/lcd4.bmp"];
             opts.backgroundInx=0;
             opts.backgroundImagePosition="extend";
             opts.baseColor="rgba(0,0,0,0)";
             opts.borderRadius = 4;
-            opts.borderWidth = 1;
-            opts.innerText="1234567890";
-            opts.textAlign="left";
-            opts.lpd="0.04rw";
+            opts.borderColor="#000";
+            opts.borderWidth = 2;
+            opts.innerText="12345";
+            opts.fontSize="1.0rh";
+            opts.fontWeight="bold";
+            opts.innerTextColor="#f00";
+            opts.fontFamily="digital_1";
+            //opts.insideShadowBlur = "0.2rh";
+            opts.textShadow = "2px 2px 2px #000";
+            
+            
         }
         
         if ("Component~Cp_base~label.sys0"){

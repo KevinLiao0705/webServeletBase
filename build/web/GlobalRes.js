@@ -2,7 +2,7 @@ class GlobalRes {
     constructor() {
         //this.appName="webBuilder";
         this.appName="sync";
-        this.appId=0;
+        this.appId=3;
         //=========
         if(this.appId===0)
             this.appType="Model~DummyTargetMaster~base.sys0";
@@ -12,6 +12,10 @@ class GlobalRes {
             this.appType="Model~DummyTargetSub~base.sys0";
         if(this.appId===3)
             this.appType="Model~DummyTargetCtr~base.sys0";
+        if(this.appId===4)
+            this.appType="Model~DummyTargetCtr~base.sys0";
+        if(this.appId===99)
+            this.appType="Model~MdaMdTest~base.sys0";
         
         this.language = "chnT";
         this.appPageCnt=0;

@@ -4083,8 +4083,6 @@ class MdaSetLine {
                 opts.lm = setOpts.lm;
             if (setOpts.rm)
                 opts.rm = setOpts.rm;
-            md.newLayout(cname, opts, "Layout~Ly_base~array.sys0", "mainBody");
-            var opts = {};
             opts.innerText = setOpts.value;
             opts.baseColor = setOpts.editBaseColor;
             if (setOpts.fontSize)
@@ -4092,6 +4090,69 @@ class MdaSetLine {
             md.newBlock(cname, opts, "Component~Cp_base~label.led", "labelMain#" + i);
             return;
         }
+
+        if (setOpts.setType === "led") {
+            var opts = {};
+            opts.backgroundInx = setOpts.value;
+            md.newBlock(cname, opts, "Component~Cp_base~icons.led", "labelMain#" + i);
+            return;
+        }
+
+        if (setOpts.setType === "leds") {
+            var opts = {};
+            opts.xm = setOpts.xm;
+            if (setOpts.lm)
+                opts.lm = setOpts.lm;
+            if (setOpts.rm)
+                opts.rm = setOpts.rm;
+            if (setOpts.xArr) {
+                opts.xArr = setOpts.xArr;
+                md.newLayout(cname, opts, "Layout~Ly_base~xyArray.sys0", "mainBody");
+            } else {
+                opts.xc = setOpts.enum.length;
+                md.newLayout(cname, opts, "Layout~Ly_base~array.sys0", "mainBody");
+            }
+            for (var i = 0; i < setOpts.enum.length; i++) {
+                var cname = md.lyMaps["mainBody"] + "~" + i;
+                var opts = {};
+                opts.innerText = setOpts.enum[i];
+                opts.innerTextColor = setOpts.editTextColor;
+                opts.fontSize = "0.7rh";
+                if (setOpts.fontSize)
+                    opts.fontSize = setOpts.fontSize;
+                opts.headIconWidth = 40;
+                if (setOpts.headIconWidth)
+                    opts.headIconWidth = setOpts.headIconWidth;
+                opts.imageUrls = [];
+                opts.imageUrls.push("systemResource/gray_light.png");
+                opts.imageUrls.push("systemResource/green_light.png");
+                opts.imageUrls.push("systemResource/red_light.png");
+                opts.imageUrls.push("systemResource/yellow_light.png");
+                opts.imageUrls.push("systemResource/blue_light.png");
+                opts.backgroundInx=setOpts.value[i];
+                md.newBlock(cname, opts, "Component~Cp_base~plate.none", "labelMain#" + i);
+            }
+            return;
+        }
+
+
+
+
+        if (setOpts.setType === "lcdView") {
+            var opts = {};
+            if (setOpts.lm)
+                opts.lm = setOpts.lm;
+            if (setOpts.rm)
+                opts.rm = setOpts.rm;
+            opts.innerText = setOpts.value;
+            opts.baseColor = setOpts.editBaseColor;
+            opts.innerTextColor = setOpts.editTextColor;
+            if (setOpts.fontSize)
+                opts.fontSize = setOpts.fontSize;
+            md.newBlock(cname, opts, "Component~Cp_base~images.lcd", "labelMain#" + i);
+            return;
+        }
+
 
         if (setOpts.setType === "buttonActs") {
             var opts = {};
@@ -4140,6 +4201,8 @@ class MdaSetLine {
             }
             return;
         }
+
+
 
 
 
@@ -4318,13 +4381,12 @@ class MdaSetLine {
                 var cname = md.lyMaps["mainBody"] + "~" + i;
                 var opts = {};
                 opts.innerText = setOpts.enum[i];
-                if (setOpts.value === i){
+                if (setOpts.value === i) {
                     opts.baseColor = setOpts.onColor;
                     if (setOpts.enumColors) {
                         opts.baseColor = setOpts.enumColors[i];
                     }
-                }    
-                else
+                } else
                     opts.baseColor = setOpts.offColor;
                 opts.actionFunc = buttonFunc;
                 if (setOpts.fontSize)
@@ -5675,7 +5737,7 @@ class MdaSetGroup {
         var self = this;
         var opts = {};
         Block.setBaseOpts(opts);
-        opts.baseColor = "#006";
+        opts.baseColor = "#002";
         opts.title = "GroupSet";
         opts.titleWidth = 100;
         opts.titleColor = "#fff";
@@ -5841,6 +5903,8 @@ class MdaSetGroup {
             var cname = lyMaps["gridBody"] + "~" + i;
             var opts = {};
             opts.setOpts = op.setOptss[i];
+            if(!opts.setOpts)
+                continue;
             opts.titleBorderWidth = 1;
             if (opts.setOpts) {
                 opts.actionFunc = this.actionFunc;

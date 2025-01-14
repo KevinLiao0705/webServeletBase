@@ -11,7 +11,296 @@ class DummyTargetMaster {
 
     static paraSetPrg() {
 
+        var setPrg = function () {
+            var opts = {};
+            opts.title = "設定";
+            opts.xc = 1;
+            opts.yc = 11;
+            opts.h = 700;
+            opts.kvTexts = [];
+            opts.kvTexts.push("雷達參數設定");
+            opts.kvTexts.push("測試脈波設定");
+            opts.kvTexts.push("同步參數設定");
+            opts.kvTexts.push("GPS參數設定");
+            opts.kvTexts.push("下載記錄檔");
+            opts.kvTexts.push("系統重啟");
+            opts.kvTexts.push("主控同步控制器測試");
+            opts.kvTexts.push("副控1同步控制器測試");
+            opts.kvTexts.push("副控2同步控制器測試");
+            opts.kvTexts.push("副控1中央制器測試");
+            opts.kvTexts.push("副控2中央制器測試");
+            opts.actionFunc = function (iobj) {
+                console.log(iobj);
+                if (iobj.selectInx === 0) {
+                    var opts = {};
+                    opts.paraSet = gr.paraSet;
+                    opts.title = iobj.selectText;
+                    opts.actionFunc = function (iobj) {
+                        console.log(iobj);
+                        KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                        var fileName = "paraSet";
+                        var content = JSON.stringify(gr.paraSet);
+                        sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                    };
+                    opts.setNames = [];
+                    /*
+                     var keys = Object.keys(gr.paraSet);
+                     for (var i = 0; i < keys.length; i++) {
+                     var strA = keys[i].split("~");
+                     if (strA[0] === "dsc")
+                     continue;
+                     opts.setNames.push(keys[i]);
+                     }
+                     */
+                    if (gr.appId === 0) {
+                        opts.setNames.push("mastPulseSource");
+                        opts.setNames.push("mastToSub1CommType");
+                        opts.setNames.push("mastToSub2CommType");
+                        opts.setNames.push("mastToSub1SpeechEnable");
+                        opts.setNames.push("mastToSub2SpeechEnable");
+                        opts.setNames.push("sub1ChCommSet");
+                        opts.setNames.push("sub2ChCommSet");
+                        opts.setNames.push("sub1ChRfTxCh");
+                        opts.setNames.push("sub1ChRfRxCh");
+                        opts.setNames.push("sub2ChRfTxCh");
+                        opts.setNames.push("sub2ChRfRxCh");
+                        opts.setNames.push("pulseWidthMax");
+                        opts.setNames.push("pulseWidthMin");
+                        opts.setNames.push("pulseDutyMax");
+                        opts.setNames.push("pulseDutyMin");
+                        opts.setNames.push("pulseFreqMax");
+                        opts.setNames.push("pulseFreqMin");
+                        opts.setNames.push("radarStartAngle");
+                        opts.setNames.push("radarEndAngle");
+                        opts.setNames.push("radarScanRpm");
+                        opts.setNames.push("radarFadeTime");
 
+                    }
+
+
+                    box.paraEditBox(opts);
+                    return;
+                }
+                if (iobj.selectInx === 1) {
+                    var opts = {};
+                    opts.actionFunc = function (iobj) {
+                        console.log(iobj);
+                        KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                        var fileName = "paraSet";
+                        var content = JSON.stringify(gr.paraSet);
+                        sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                    };
+                    var op = {};
+                    //======
+                    var opts = {};
+                    opts.title = iobj.selectText;
+                    var pulsePara = gr.paraSet["localPulseGenParas"];
+                    opts.ksObjWs = ["0.5rw", 9999];
+                    opts.ksObjss = [];
+                    opts.xm = 20;
+                    opts.eh = 50;
+                    opts.etm = 0;
+                    opts.headTitles = ["名稱", "波寬(us)", "工作比(%)", "頻率(G)", "次數"];
+                    opts.headTitleXArr = [240, 9999, 106, 80, 64];
+                    opts.headTitleHeight = 24;
+                    var ksObjs = [];
+                    for (var i = 0; i < pulsePara.length; i++) {
+                        var strA = pulsePara[i].split(" ");
+                        if ((i % 2) === 0) {
+                            var ksObjs = [];
+                        }
+                        var ksObj = {};
+                        ksObj.name = "setLine#" + ((i / 2) | 0) + "." + (i % 2);
+                        ksObj.type = "Model~MdaSetLine~base.sys0";
+                        var kopts = ksObj.opts = {};
+                        var setOpts = kopts.setOpts = sopt.getButtonActs();
+                        if (strA[0] === "1")
+                            setOpts.checked_f = 1;
+                        setOpts.enum = [strA[1], strA[2], strA[3], strA[4]];
+                        setOpts.value = 0;
+                        setOpts.id = "" + i;
+                        setOpts.titleWidth = 200;
+                        setOpts.titleFontSize = 20;
+                        setOpts.checkWidth = 40;
+                        setOpts.title = "脈波 " + (i + 1);
+                        setOpts.xArr = [9999, 100, 80, 60];
+                        setOpts.fontSize = 24;
+                        ksObjs.push(ksObj);
+                        if (i % 2)
+                            opts.ksObjss.push(ksObjs);
+                    }
+
+
+                    opts.actionFunc = function (iobj) {
+                        console.log(iobj);
+                        if (iobj.act === "actButtonClick") {
+                            var setLineObj = iobj.kvObj;
+                            if (iobj.buttonInx === 0) {
+                                var setOpts = sopt.getOptsFloat();
+                                setOpts.min = gr.paraSet.pulseWidthMin;
+                                setOpts.max = gr.paraSet.pulseWidthMax;
+                            }
+                            if (iobj.buttonInx === 1) {
+                                var setOpts = sopt.getOptsFloat();
+                                setOpts.min = gr.paraSet.pulseDutyMin;
+                                setOpts.max = gr.paraSet.pulseDutyMax;
+                            }
+                            if (iobj.buttonInx === 2) {
+                                var setOpts = sopt.getOptsFloat();
+                                setOpts.min = gr.paraSet.pulseFreqMin;
+                                setOpts.max = gr.paraSet.pulseFreqMax;
+                            }
+                            if (iobj.buttonInx === 3) {
+                                var setOpts = sopt.getOptsNature();
+                                setOpts.min = 1;
+                                setOpts.max = 99;
+                            }
+                            var butInx = iobj.buttonInx;
+                            setOpts.value = KvLib.toNumber(setLineObj.opts.setOpts.enum[iobj.buttonInx], 0);
+                            var opts = {};
+                            opts.setOpts = setOpts;
+                            opts.actionFunc = function (iobj) {
+                                console.log(iobj);
+                                if (iobj.act === "padEnter") {
+                                    setLineObj.opts.setOpts.enum[butInx] = iobj.inputText;
+                                    setLineObj.reCreate();
+                                }
+                            };
+                            box.intPadBox(opts);
+                            return;
+                        }
+
+
+                        if (iobj.act === "mouseClick" && iobj.buttonId === "ok") {
+                            console.log(iobj);
+                            var mdaBox = iobj.sender;
+                            var container = mdaBox.blockRefs["mainMd"];
+                            var ksObjss = container.opts.ksObjss;
+                            var inx = 0;
+                            var strA = [];
+                            for (var i = 0; i < ksObjss.length; i++) {
+                                var ksObjs = ksObjss[i];
+                                for (var j = 0; j < ksObjs.length; j++) {
+                                    var setOpts = ksObjs[j].opts.setOpts;
+                                    var str = "";
+                                    if (setOpts.checked_f)
+                                        str += "1";
+                                    else
+                                        str += "0";
+                                    for (var k = 0; k < setOpts.enum.length; k++) {
+                                        str += " ";
+                                        str += setOpts.enum[k];
+                                    }
+                                    strA.push(str);
+                                }
+                            }
+                            gr.paraSet["localPulseGenParas"] = strA;
+                            var fileName = "paraSet";
+                            var content = JSON.stringify(gr.paraSet);
+                            sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                        }
+                    };
+                    box.setLineBox(opts);
+                    return;
+                }
+                if (iobj.selectInx === 2) {
+                    var opts = {};
+                    opts.paraSet = gr.paraSet;
+                    opts.title = iobj.selectText;
+                    opts.actionFunc = function (iobj) {
+                        console.log(iobj);
+                        KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                        var fileName = "paraSet";
+                        var content = JSON.stringify(gr.paraSet);
+                        sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                    };
+                    opts.setNames = [];
+                    if (gr.appId === 0) {
+                        opts.setNames.push("commTestPacks");
+                        opts.setNames.push("vgTimeDelay");
+                        opts.setNames.push("sub1ChTimeFineTune");
+                        opts.setNames.push("sub2ChTimeFineTune");
+                        opts.setNames.push("sub1ChSyncType");
+                        opts.setNames.push("sub2ChSyncType");
+                        opts.setNames.push("sub1ChFiberDelay");
+                        opts.setNames.push("sub1ChRfDelay");
+                        opts.setNames.push("sub2ChFiberDelay");
+                        opts.setNames.push("sub2ChRfDelay");
+
+
+                    }
+                    box.paraEditBox(opts);
+                    return;
+                }
+                if (iobj.selectInx === 3) {
+                    var opts = {};
+                    opts.paraSet = gr.paraSet;
+                    opts.title = iobj.selectText;
+                    opts.actionFunc = function (iobj) {
+                        console.log(iobj);
+                        KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
+                        var fileName = "paraSet";
+                        var content = JSON.stringify(gr.paraSet);
+                        sv.saveStringToFile("responseDialogError", "null", fileName, content);
+                    };
+                    opts.setNames = [];
+                    if (gr.appId === 0) {
+                        opts.setNames.push("locationFromSource");
+                        opts.setNames.push("mastLatitude");
+                        opts.setNames.push("mastLongitude");
+                        opts.setNames.push("mastAttitude");
+                        opts.setNames.push("sub1Latitude");
+                        opts.setNames.push("sub1Longitude");
+                        opts.setNames.push("sub1Attitude");
+                        opts.setNames.push("sub2Latitude");
+                        opts.setNames.push("sub2Longitude");
+                        opts.setNames.push("sub2Attitude");
+
+                    }
+                    box.paraEditBox(opts);
+                    return;
+                }
+
+                if (iobj.selectInx === 6) {
+                    gr.appId = 0;
+                    gr.appType = "Model~DummyTargetMaster~base.sys0";
+                    sys.dispWebPage(gr.appType);
+                    return;
+                }
+                if (iobj.selectInx === 7) {
+                    gr.appId = 1;
+                    gr.appType = "Model~DummyTargetSub~base.sys0";
+                    sys.dispWebPage(gr.appType);
+                    return;
+                }
+                if (iobj.selectInx === 8) {
+                    gr.appId = 2;
+                    gr.appType = "Model~DummyTargetSub~base.sys0";
+                    sys.dispWebPage(gr.appType);
+                    return;
+                }
+                if (iobj.selectInx === 9) {
+                    gr.appId = 3;
+                    gr.appType = "Model~DummyTargetCtr~base.sys0";
+                    sys.dispWebPage(gr.appType);
+                    return;
+                }
+                if (iobj.selectInx === 10) {
+                    gr.appId = 3;
+                    gr.appType = "Model~DummyTargetCtr~base.sys0";
+                    sys.dispWebPage(gr.appType);
+                    return;
+                }
+
+
+
+
+            };
+
+            box.selectBox(opts);
+        };
+        setPrg();
+        return;
         var opts = {};
         opts.title = "輸入密碼";
         opts.setOpts = sopt.getIntPassword({});
@@ -33,291 +322,10 @@ class DummyTargetMaster {
                 return;
             }
             MdaPopWin.popOff(2);
-            DummyTargetMaster.paraSetPrg();
+            setPrg();
         };
         box.intPadBox(opts);
 
-    }
-    var setPrg = function () {
-        var opts = {};
-        opts.title = "設定";
-        opts.xc = 1;
-        opts.yc = 10;
-        opts.kvTexts = [];
-        opts.kvTexts.push("雷達參數設定");
-        opts.kvTexts.push("測試脈波設定");
-        opts.kvTexts.push("同步參數設定");
-        opts.kvTexts.push("GPS參數設定");
-        opts.kvTexts.push("下載記錄檔");
-        opts.kvTexts.push("系統重啟");
-        opts.kvTexts.push("主控同步控制器測試");
-        opts.kvTexts.push("副控1同步控制器測試");
-        opts.kvTexts.push("副控2同步控制器測試");
-        opts.kvTexts.push("副控發射機控制器測試");
-
-
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-            if (iobj.selectInx === 0) {
-                var opts = {};
-                opts.paraSet = gr.paraSet;
-                opts.title = iobj.selectText;
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
-                    var fileName = "paraSet";
-                    var content = JSON.stringify(gr.paraSet);
-                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
-                };
-                opts.setNames = [];
-                /*
-                 var keys = Object.keys(gr.paraSet);
-                 for (var i = 0; i < keys.length; i++) {
-                 var strA = keys[i].split("~");
-                 if (strA[0] === "dsc")
-                 continue;
-                 opts.setNames.push(keys[i]);
-                 }
-                 */
-                if (gr.appId === 0) {
-                    opts.setNames.push("mastPulseSource");
-                    opts.setNames.push("mastToSub1CommType");
-                    opts.setNames.push("mastToSub2CommType");
-                    opts.setNames.push("mastToSub1SpeechEnable");
-                    opts.setNames.push("mastToSub2SpeechEnable");
-                    opts.setNames.push("sub1ChCommSet");
-                    opts.setNames.push("sub2ChCommSet");
-                    opts.setNames.push("sub1ChRfTxCh");
-                    opts.setNames.push("sub1ChRfRxCh");
-                    opts.setNames.push("sub2ChRfTxCh");
-                    opts.setNames.push("sub2ChRfRxCh");
-                    opts.setNames.push("pulseWidthMax");
-                    opts.setNames.push("pulseWidthMin");
-                    opts.setNames.push("pulseDutyMax");
-                    opts.setNames.push("pulseDutyMin");
-                    opts.setNames.push("pulseFreqMax");
-                    opts.setNames.push("pulseFreqMin");
-                    opts.setNames.push("radarStartAngle");
-                    opts.setNames.push("radarEndAngle");
-                    opts.setNames.push("radarScanRpm");
-                    opts.setNames.push("radarFadeTime");
-
-                }
-
-
-                box.paraEditBox(opts);
-                return;
-            }
-            if (iobj.selectInx === 1) {
-                var opts = {};
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
-                    var fileName = "paraSet";
-                    var content = JSON.stringify(gr.paraSet);
-                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
-                };
-                var op = {};
-                //======
-                var opts = {};
-                opts.title = iobj.selectText;
-                var pulsePara = gr.paraSet["localPulseGenParas"];
-                opts.ksObjWs = ["0.5rw", 9999];
-                opts.ksObjss = [];
-                opts.xm = 20;
-                opts.eh = 50;
-                opts.etm = 0;
-                opts.headTitles = ["名稱", "波寬(us)", "工作比(%)", "頻率(G)", "次數"];
-                opts.headTitleXArr = [240, 9999, 106, 80, 64];
-                opts.headTitleHeight = 24;
-                var ksObjs = [];
-                for (var i = 0; i < pulsePara.length; i++) {
-                    var strA = pulsePara[i].split(" ");
-                    if ((i % 2) === 0) {
-                        var ksObjs = [];
-                    }
-                    var ksObj = {};
-                    ksObj.name = "setLine#" + ((i / 2) | 0) + "." + (i % 2);
-                    ksObj.type = "Model~MdaSetLine~base.sys0";
-                    var kopts = ksObj.opts = {};
-                    var setOpts = kopts.setOpts = sopt.getButtonActs();
-                    if (strA[0] === "1")
-                        setOpts.checked_f = 1;
-                    setOpts.enum = [strA[1], strA[2], strA[3], strA[4]];
-                    setOpts.value = 0;
-                    setOpts.id = "" + i;
-                    setOpts.titleWidth = 200;
-                    setOpts.titleFontSize = 20;
-                    setOpts.checkWidth = 40;
-                    setOpts.title = "脈波 " + (i + 1);
-                    setOpts.xArr = [9999, 100, 80, 60];
-                    setOpts.fontSize = 24;
-                    ksObjs.push(ksObj);
-                    if (i % 2)
-                        opts.ksObjss.push(ksObjs);
-                }
-
-
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    if (iobj.act === "actButtonClick") {
-                        var setLineObj = iobj.kvObj;
-                        if (iobj.buttonInx === 0) {
-                            var setOpts = sopt.getOptsFloat();
-                            setOpts.min = gr.paraSet.pulseWidthMin;
-                            setOpts.max = gr.paraSet.pulseWidthMax;
-                        }
-                        if (iobj.buttonInx === 1) {
-                            var setOpts = sopt.getOptsFloat();
-                            setOpts.min = gr.paraSet.pulseDutyMin;
-                            setOpts.max = gr.paraSet.pulseDutyMax;
-                        }
-                        if (iobj.buttonInx === 2) {
-                            var setOpts = sopt.getOptsFloat();
-                            setOpts.min = gr.paraSet.pulseFreqMin;
-                            setOpts.max = gr.paraSet.pulseFreqMax;
-                        }
-                        if (iobj.buttonInx === 3) {
-                            var setOpts = sopt.getOptsNature();
-                            setOpts.min = 1;
-                            setOpts.max = 99;
-                        }
-                        var butInx = iobj.buttonInx;
-                        setOpts.value = KvLib.toNumber(setLineObj.opts.setOpts.enum[iobj.buttonInx], 0);
-                        var opts = {};
-                        opts.setOpts = setOpts;
-                        opts.actionFunc = function (iobj) {
-                            console.log(iobj);
-                            if (iobj.act === "padEnter") {
-                                setLineObj.opts.setOpts.enum[butInx] = iobj.inputText;
-                                setLineObj.reCreate();
-                            }
-                        };
-                        box.intPadBox(opts);
-                        return;
-                    }
-
-
-                    if (iobj.act === "mouseClick" && iobj.buttonId === "ok") {
-                        console.log(iobj);
-                        var mdaBox = iobj.sender;
-                        var container = mdaBox.blockRefs["mainMd"];
-                        var ksObjss = container.opts.ksObjss;
-                        var inx = 0;
-                        var strA = [];
-                        for (var i = 0; i < ksObjss.length; i++) {
-                            var ksObjs = ksObjss[i];
-                            for (var j = 0; j < ksObjs.length; j++) {
-                                var setOpts = ksObjs[j].opts.setOpts;
-                                var str = "";
-                                if (setOpts.checked_f)
-                                    str += "1";
-                                else
-                                    str += "0";
-                                for (var k = 0; k < setOpts.enum.length; k++) {
-                                    str += " ";
-                                    str += setOpts.enum[k];
-                                }
-                                strA.push(str);
-                            }
-                        }
-                        gr.paraSet["localPulseGenParas"] = strA;
-                        var fileName = "paraSet";
-                        var content = JSON.stringify(gr.paraSet);
-                        sv.saveStringToFile("responseDialogError", "null", fileName, content);
-                    }
-                };
-                box.setLineBox(opts);
-                return;
-            }
-            if (iobj.selectInx === 2) {
-                var opts = {};
-                opts.paraSet = gr.paraSet;
-                opts.title = iobj.selectText;
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
-                    var fileName = "paraSet";
-                    var content = JSON.stringify(gr.paraSet);
-                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
-                };
-                opts.setNames = [];
-                if (gr.appId === 0) {
-                    opts.setNames.push("commTestPacks");
-                    opts.setNames.push("vgTimeDelay");
-                    opts.setNames.push("sub1ChTimeFineTune");
-                    opts.setNames.push("sub2ChTimeFineTune");
-                    opts.setNames.push("sub1ChSyncType");
-                    opts.setNames.push("sub2ChSyncType");
-                    opts.setNames.push("sub1ChFiberDelay");
-                    opts.setNames.push("sub1ChRfDelay");
-                    opts.setNames.push("sub2ChFiberDelay");
-                    opts.setNames.push("sub2ChRfDelay");
-
-
-                }
-                box.paraEditBox(opts);
-                return;
-            }
-            if (iobj.selectInx === 3) {
-                var opts = {};
-                opts.paraSet = gr.paraSet;
-                opts.title = iobj.selectText;
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    KvLib.deepCoverObject(gr.paraSet, iobj.paraSet);
-                    var fileName = "paraSet";
-                    var content = JSON.stringify(gr.paraSet);
-                    sv.saveStringToFile("responseDialogError", "null", fileName, content);
-                };
-                opts.setNames = [];
-                if (gr.appId === 0) {
-                    opts.setNames.push("locationFromSource");
-                    opts.setNames.push("mastLatitude");
-                    opts.setNames.push("mastLongitude");
-                    opts.setNames.push("mastAttitude");
-                    opts.setNames.push("sub1Latitude");
-                    opts.setNames.push("sub1Longitude");
-                    opts.setNames.push("sub1Attitude");
-                    opts.setNames.push("sub2Latitude");
-                    opts.setNames.push("sub2Longitude");
-                    opts.setNames.push("sub2Attitude");
-
-                }
-                box.paraEditBox(opts);
-                return;
-            }
-
-            if (iobj.selectInx === 6) {
-                gr.appId = 0;
-                gr.appType = "Model~DummyTargetMaster~base.sys0";
-                sys.dispWebPage(gr.appType);
-                return;
-            }
-            if (iobj.selectInx === 7) {
-                gr.appId = 1;
-                gr.appType = "Model~DummyTargetSub~base.sys0";
-                sys.dispWebPage(gr.appType);
-                return;
-            }
-            if (iobj.selectInx === 8) {
-                gr.appId = 2;
-                gr.appType = "Model~DummyTargetSub~base.sys0";
-                sys.dispWebPage(gr.appType);
-                return;
-            }
-            if (iobj.selectInx === 9) {
-                gr.appId = 0;
-                gr.appType = "Model~DummyTargetMaster~base.sys0";
-                sys.dispWebPage(gr.appType);
-                return;
-            }
-
-
-
-
-        };
-        box.selectBox(opts);
     }
 
     initOpts(md) {
@@ -542,8 +550,8 @@ class DummyTargetMaster {
         //==============================
         var cname = lyMaps["mainBody"] + "~" + 1;
         var opts = {};
-        opts.buttons = ["佈署", "自測", "同步", "波形", "通話", "設定"];
-        opts.buttonIds = ["location", "selfTest", "sync", "wave", "call", "setting"];
+        opts.buttons = ["自測", "佈署", "同步", "波形", "通話", "設定"];
+        opts.buttonIds = ["selfTest", "location", "sync", "wave", "call", "setting"];
         opts.actionFunc = function (iobj) {
             console.log(iobj);
             if (iobj.buttonId === "location") {
@@ -1202,7 +1210,7 @@ class MasterRadarPane {
             }
 
             setOpts.titleWidth = 0;
-            setOpts.baseColor = "#008";
+            setOpts.baseColor = "#002";
             setOpts.borderWidth = 0;
             opts.setOptss.push(setOpts);
             opts.actionFunc = actionPrg;
@@ -1455,8 +1463,9 @@ class DummyTargetSub {
         //==============================
         var cname = lyMaps["mainBody"] + "~" + 1;
         var opts = {};
-        opts.buttons = ["佈署", "自測", "同步", "波形", "通話", "設定"];
-        opts.buttonIds = ["location", "selfTest", "sync", "wave", "call", "setting"];
+        opts.buttons = ["自測", "佈署", "同步", "波形", "通話", "設定"];
+        opts.buttonIds = ["selfTest", "location", "sync", "wave", "call", "setting"];
+
         opts.actionFunc = function (iobj) {
             console.log(iobj);
             if (iobj.buttonId === "location") {
@@ -1774,7 +1783,7 @@ class SubRadarPane {
             }
 
             setOpts.titleWidth = 0;
-            setOpts.baseColor = "#008";
+            setOpts.baseColor = "#002";
             setOpts.borderWidth = 0;
             opts.setOptss.push(setOpts);
             opts.actionFunc = actionPrg;
@@ -1959,55 +1968,48 @@ class DummyTargetCtr {
         //==============================
         var cname = lyMaps["mainBody"] + "~" + 0;
         var opts = {};
-        opts.innerText = "副控雷達 " + gr.appId + " 同步控制器";
+        opts.innerText = "雷達中央控制器";
         blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
         //==============================
         var cname = lyMaps["mainBody"] + "~" + 1;
         var opts = {};
-        opts.buttons = ["佈署", "自測", "同步", "波形", "通話", "設定"];
-        opts.buttonIds = ["location", "selfTest", "sync", "wave", "call", "setting"];
+        opts.buttons = ["自測", "發射機狀態", "電源狀態", "放大器狀態", "波形", "設定"];
+        opts.buttonIds = ["selfTest", "radarStatus", "powerStatus", "sspaStatus", "wave", "setting"];
+        opts.fontSize = "0.5rh";
+        opts.xm = 4;
+
+
         opts.actionFunc = function (iobj) {
             console.log(iobj);
-            if (iobj.buttonId === "location") {
+            var escPrg = function (iobj) {
+                console.log(iobj);
+                if (iobj.act === "esc")
+                    MdaPopWin.popOff(2);
+            };
+            if (iobj.buttonId === "radarStatus") {
                 var opts = {};
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    if (iobj.act === "esc")
-                        MdaPopWin.popOff(2);
-                };
-                var kvObj = new Block("location", "Model~LocationTarget~base.sys0", opts);
+                opts.actionFunc = escPrg;
+                var kvObj = new Block("location", "Model~CtrRadarStatus~base.sys0", opts);
                 var mesObj = mda.popObj(0, 0, kvObj);
                 return;
             }
             if (iobj.buttonId === "selfTest") {
                 var opts = {};
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    if (iobj.act === "esc")
-                        MdaPopWin.popOff(2);
-                };
+                opts.actionFunc = escPrg;
                 var kvObj = new Block("selfTest", "Model~SelfTest~base.sys0", opts);
                 var mesObj = mda.popObj(0, 0, kvObj);
                 return;
             }
-            if (iobj.buttonId === "sync") {
+            if (iobj.buttonId === "powerStatus") {
                 var opts = {};
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    if (iobj.act === "esc")
-                        MdaPopWin.popOff(2);
-                };
-                var kvObj = new Block("syncTest", "Model~SyncTest~base.sys0", opts);
+                opts.actionFunc = escPrg;
+                var kvObj = new Block("location", "Model~CtrPowerStatus~base.sys0", opts);
                 var mesObj = mda.popObj(0, 0, kvObj);
                 return;
             }
             if (iobj.buttonId === "wave") {
                 var opts = {};
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    if (iobj.act === "esc")
-                        MdaPopWin.popOff(2);
-                };
+                opts.actionFunc = escPrg;
                 var kvObj = new Block("scope", "Model~MyNewScope~base.sys0", opts);
                 var mesObj = mda.popObj(0, 0, kvObj);
                 return;
@@ -2044,11 +2046,7 @@ class DummyTargetCtr {
 
             if (iobj.buttonId === "call") {
                 var opts = {};
-                opts.actionFunc = function (iobj) {
-                    console.log(iobj);
-                    if (iobj.act === "esc")
-                        MdaPopWin.popOff(2);
-                };
+                opts.actionFunc = escPrg;
                 var kvObj = new Block("syncTest", "Model~PhoneBox~base.sys0", opts);
                 var mesObj = mda.popObj(0, 0, kvObj);
                 return;
@@ -2081,7 +2079,7 @@ class DummyTargetCtr {
         opts.title = "";
         opts.actionFunc = self.actionFunc;
         opts.baseColor = "#222";
-        blocks[cname] = {name: "sub1RadarPane", type: "Model~SubRadarPane~base.sys0", opts: opts};
+        blocks[cname] = {name: "sub1RadarPane", type: "Model~CtrRadarPane~base.sys0", opts: opts};
         //==============================
 
 
@@ -2172,12 +2170,18 @@ class CtrRadarPane {
         opts.margin = 6;
         opts.xm = 10;
         opts.ym = 4;
-        opts.yArr = [0, 85, 85, 85, 60, 9999];
+        opts.yArr = [0, 120, 90, 100, 100, 9999, 20];
+        var rw0 = (1 / 6).toFixed(3) + "rw";
+        var rw1 = (1 / 4).toFixed(3) + "rw";
+        var rw2 = (1 / 3).toFixed(3) + "rw";
         opts.xyArr = [
             [9999],
-            ["0.196rw", "0.3rw", 9999],
-            ["0.5rw", 9999],
-            ["0.3rw", "0.3rw", 9999],
+            [rw1, rw1, rw1, rw1],
+            [rw0, rw0, rw0, rw0, rw0, rw0],
+            [rw1, rw1, rw1, rw1],
+            [rw1, rw1, rw1, rw1],
+            [9999, 140],
+            [9999],
             ["0.1rw", 9999],
             [9999]
         ];
@@ -2195,47 +2199,101 @@ class CtrRadarPane {
             console.log(iobj);
         };
 
+        var preText = "sub1";
         if (gr.appId === 1)
             var preText = "sub1";
         if (gr.appId === 2)
             var preText = "sub2";
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 18; i++) {
             var cname = lyMaps["mainBody"] + "~" + lyInx++;
             var opts = {};
             opts.setOptss = [];
-            if (i === 0) {
-                opts.title = "主雷達脈波信號";
-                var setOpts = opts.setOpts = sopt.getOptsPara("ledView");
-                setOpts.value = "無信號";//
+            var inx = 0;
+            if (i === inx++) {
+                opts.title = "輸入功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
             }
-            if (i === 1) {
-                opts.title = "雷達狀態";
-                var setOpts = opts.setOpts = sopt.getOptsPara("ledView");
-                setOpts.value = "備便";//
+            if (i === inx++) {
+                opts.title = "順向輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
             }
-            if (i === 2) {
+            if (i === inx++) {
+                opts.title = "反向輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+                setOpts.editTextColor = "#0f0";
+            }
+            if (i === inx++) {
+                opts.title = "輸出電流";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+            }
+            if (i === inx++) {
+                opts.title = "系統狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "脈波輸入狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
 
+
+            if (i === inx++) {
+                opts.title = "環控狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "固態放大器電源";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "固態放大器狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "脈波輸出狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (gr.appId === 3)
+                preText = "sub1";
+            if (gr.appId === 4)
+                preText = "sub2";
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
+                var para = sopt.getParaSetOpts({paraSetName: preText + "PulseSource", titleWidth: 0, titleFontSize: "0.5rh"});
+                opts.title = "脈波來源";
+                setOpts.fontSize = "0.5rh";
+                setOpts.enum = para.enum;
+                setOpts.value = para.value;
+            }
+            if (i === inx++) {
                 var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
                 var para = sopt.getParaSetOpts({paraSetName: preText + "Remote", titleWidth: 0, titleFontSize: "0.5rh"});
                 opts.title = "遠端遙控";
                 setOpts.enum = para.enum;
                 setOpts.value = para.value;
             }
-            if (i === 3) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
-                var para = sopt.getParaSetOpts({paraSetName: preText + "PulseSource", titleWidth: 0, titleFontSize: "0.5rh"});
-                opts.title = "脈波來源";
-                setOpts.enum = para.enum;
-                setOpts.value = para.value;
-            }
-            if (i === 4) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
-                var para = sopt.getParaSetOpts({paraSetName: preText + "CommType", titleWidth: 0, titleFontSize: "0.5rh"});
-                opts.title = "連線方式";
-                setOpts.enum = para.enum;
-                setOpts.value = para.value;
-            }
-            if (i === 5) {
+            if (i === inx++) {
                 var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
                 var para = sopt.getParaSetOpts({paraSetName: preText + "TxLoad", titleWidth: 0, titleFontSize: "0.5rh"});
                 opts.title = "輸出裝置";
@@ -2243,7 +2301,7 @@ class CtrRadarPane {
                 setOpts.enumColors = ["#eef", "#ffc"];
                 setOpts.value = para.value;
             }
-            if (i === 6) {
+            if (i === inx++) {
                 var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
                 var para = sopt.getParaSetOpts({paraSetName: preText + "BatShort", titleWidth: 0, titleFontSize: "0.5rh"});
                 opts.title = "戰備短路";
@@ -2251,97 +2309,69 @@ class CtrRadarPane {
                 setOpts.enumColors = ["#eef", "#ffc"];
                 setOpts.value = para.value;
             }
-
-            if (i === 7) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
                 opts.title = "固態放大器電源";
                 setOpts.enum = ["關閉", "開啟"];
-                setOpts.enumColors = ["#eef", "#ffc"];
-                setOpts.value = 0;
+                setOpts.enumIds = ["close", "open"];
             }
-
-            if (i === 8) {
-                opts.backgroundInx = 0;
-                //var watchReg = "self.fatherMd.stas.radarStatusColor[" + 4 + "]";
-                //md.setInputWatch(opts, "directName", watchReg, "backgroundInx", 1);
-                blocks[cname] = {name: "startLed", type: "Component~Cp_base~icons.led", opts: opts};
-                continue;
-                //===
-            }
-
-            if (i === 9) {
+            if (i === inx++) {
                 var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
-                setOpts.titleWidth = 0;
-                setOpts.enum = ["脈波啟動", "脈波停止", "緊急停止"];
-                setOpts.value = para.value;
-                setOpts.baseColor = "#222";
-                setOpts.borderWidth = 0;
-                setOpts.fontSize = "0.6rh";
-                blocks[cname] = {name: "control", type: "Model~MdaSetLine~base.sys0", opts: opts};
-                continue;
-
+                opts.title = "本機脈波輸出";
+                setOpts.enum = ["關閉", "開啟"];
+                setOpts.enumIds = ["close", "open"];
             }
-
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
+                opts.title = "脈波輸出致能";
+                setOpts.enum = ["關閉", "開啟"];
+                setOpts.enumIds = ["close", "open"];
+            }
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
+                opts.title = "系統控制";
+                setOpts.enum = ["緊急停止"];
+                setOpts.enumIds = ["closeAll"];
+            }
             setOpts.titleWidth = 0;
-            setOpts.baseColor = "#008";
+            setOpts.baseColor = "#002";
             setOpts.borderWidth = 0;
             opts.setOptss.push(setOpts);
             opts.actionFunc = actionPrg;
             blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
         }
-
-
         //==============================================
         var cname = lyMaps["mainBody"] + "~" + lyInx++;
         var opts = {};
-        opts.ym = 2;
-        opts.yArr = [9999, 40];
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["rightDownBody"] = cname;
-        //===================================
-        var cname = lyMaps["rightDownBody"] + "~" + 0;
-        var opts = {};
         blocks[cname] = {name: "editor", type: "Component~Cp_base~editor.sys0", opts: opts};
-        //==
-        var cname = lyMaps["rightDownBody"] + "~" + 1;
-        var opts = {};
-        opts.xm = 2;
-        opts.xArr = [9999, 60, 60, 60];
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["barBody"] = cname;
-        //===================================
-        var cname = lyMaps["barBody"] + "~" + 0;
-        var opts = {};
-        opts.innerText = ""; //"無線"|光纖;
-        opts.baseColor = "#ccc";
-        opts.textAlign = "left";
-        opts.fontSize = 14;
-        opts.lpd = 4;
-        var watchReg = "self.fatherMd.stas.connectCnt";
-        md.setInputWatch(opts, "directName", watchReg, "innerText", 1);
-        blocks[cname] = {name: "messageLabel", type: "Component~Cp_base~label.sys0", opts: opts};
+        //==============================================
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
 
-        var cname = lyMaps["barBody"] + "~" + 1;
         var opts = {};
-        opts.innerText = '<i class="gf">&#xe316;</i>';
-        opts.baseColor = "#ccf";
-        opts.actionFunc = actionPrg;
-        blocks[cname] = {name: "upButton", type: "Component~Cp_base~button.sys0", opts: opts};
-        //==============================
-        var cname = lyMaps["barBody"] + "~" + 2;
-        var opts = {};
-        opts.innerText = '<i class="gf">&#xe313;</i>';
-        opts.baseColor = "#ccf";
-        opts.actionFunc = actionPrg;
-        blocks[cname] = {name: "downButton", type: "Component~Cp_base~button.sys0", opts: opts};
-        //==============================
-        var cname = lyMaps["barBody"] + "~" + 3;
-        var opts = {};
-        opts.innerText = 'clr';
-        opts.baseColor = "#ccf";
-        opts.actionFunc = actionPrg;
-        blocks[cname] = {name: "clrButton", type: "Component~Cp_base~button.sys0", opts: opts};
-        //==============================
+        opts.buttons = ["上一頁", "下一頁", "清除"];
+        opts.buttonAmt = 6;
+        opts.buttonIds = ["upPage", "downPage", "clear"];
+        opts.layoutType = "collum";
+        opts.margin = 4;
+        opts.fontSize = "0.5rh";
+        opts.xm = 4;
+        opts.ym = 10;
+        opts.baseColor = "#444";
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            if (iobj.buttonId === "clear") {
+                var kvObj = md.blockRefs["editor"];
+                var editor = kvObj.objs["editor"];
+                KvLib.clearEditorMaker(editor);
+                editor.getSession().setValue("");
+                return;
+            }
+        };
+        blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
+        //==============================================
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        mac.setFootBar(md, cname);
+        return;
     }
 }
 
@@ -4175,4 +4205,561 @@ class PhoneBox {
         }
 
     }
+}
+
+
+
+class CtrRadarStatus {
+    constructor() {
+    }
+    initOpts(md) {
+        var self = this;
+        var opts = {};
+        Block.setBaseOpts(opts);
+        this.subTypeOpts(opts);
+        opts.title = "title";
+        opts.buttonColor = "#ccf";
+        opts.buttons = ["button1", "button2", "button3"];
+        opts.layoutType = "row"; //row,collum,array
+        opts.buttonIds = [];
+        opts.iw = 9999;
+        opts.ih = 9999;
+        opts.borderWidth = 1;
+        opts.xm = 30;
+        opts.baseColor = "#222";
+        return opts;
+    }
+    subTypeOpts(opts) {
+        if (this.md.subType === "base.sys0") {
+        }
+    }
+
+    chkWatch() {
+        var self = this;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+
+    }
+
+    afterCreate() {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var iobj = {};
+        iobj.act = "afterCreate";
+        iobj.sender = md;
+        KvLib.exe(op.actionFunc, iobj);
+    }
+    build() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        var lyMaps = md.lyMaps;
+        var blocks = op.blocks;
+        var layouts = op.layouts;
+        //======================================    
+        var escPrg = function (iobj) {
+            console.log(iobj);
+            if (iobj.buttonId === "esc")
+                MdaPopWin.popOff(2);
+
+        };
+
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+            if (iobj.kvObj.name === "clrButton") {
+                var kvObj = md.blockRefs["editor"];
+                if (!kvObj)
+                    return;
+                var editor = kvObj.objs["editor"];
+                KvLib.clearEditorMaker(editor);
+                editor.getSession().setValue("");
+                return;
+            }
+
+            iobj.sender = md;
+            iobj.keyId = md.name + iobj.kvObj.name;
+            KvLib.exe(op.actionFunc, iobj);
+        };
+        //======================================    
+        var cname = "c";
+        var opts = {};
+        md.setPns(opts);
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["body"] = cname;
+        //======================================    
+        var opts = {};
+        md.setPns(opts);
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
+        //======================================    
+        var cname = lyMaps["body"] + "~" + 0;
+        var opts = {};
+        opts.margin = 6;
+        opts.xm = 10;
+        opts.ym = 4;
+        opts.yArr = [50, 120, 120, 90, 90, 9999];
+        var rw0 = (1 / 6).toFixed(3) + "rw";
+        var rw1 = (1 / 4).toFixed(3) + "rw";
+        var rw2 = (1 / 3).toFixed(3) + "rw";
+        opts.xyArr = [
+            [9999],
+            [rw2, rw2, rw2],
+            [rw1, rw1, rw1, rw1],
+            ["0.3rw", 9999, "0.15rw"],
+            [9999, "0.4rw"],
+            ["0.5rw", 9999],
+
+            [rw0, rw0, rw0, rw0, rw0, rw0],
+            [rw1, rw1, rw1, rw1],
+            [rw2, rw2, rw2],
+            [9999, 140],
+            [9999],
+            ["0.1rw", 9999],
+            [9999]
+        ];
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["mainBody"] = cname;
+        //===================================
+        var lyInx = 0;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        mac.setHeadTitleBar(md, cname, "發射機狀態", escPrg);
+        //==============================
+
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+        };
+
+        var preText = "sub1";
+        if (gr.appId === 1)
+            var preText = "sub1";
+        if (gr.appId === 2)
+            var preText = "sub2";
+        for (var i = 0; i < 14; i++) {
+            var cname = lyMaps["mainBody"] + "~" + lyInx++;
+            var opts = {};
+            opts.setOptss = [];
+            var inx = 0;
+            if (i === inx++) {
+                opts.title = "順向輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+            }
+            if (i === inx++) {
+                opts.title = "反向輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+                setOpts.editTextColor = "#0f0";
+            }
+            if (i === inx++) {
+                opts.title = "輸出電流";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+            }
+            if (i === inx++) {
+                opts.title = "本機輸入功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+            }
+            if (i === inx++) {
+                opts.title = "遙控輸入功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+            }
+            if (i === inx++) {
+                opts.title = "前置放大器輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+                setOpts.editTextColor = "#0f0";
+            }
+            if (i === inx++) {
+                opts.title = "驅動放大器輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "123.4";//
+            }
+
+
+
+
+            if (i === inx++) {
+                opts.title = "環控氣流";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["AF左", "AF中", "AF右"];
+                setOpts.value = [0, 1, 2];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            if (i === inx++) {
+                opts.title = "環控水流";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["WF1", "WF2", "WF3", "WF4", "WF5", "WF6"];
+                setOpts.value = [0, 1, 2, 3, 4, 0];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "環控水溫";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["WT"];
+                setOpts.value = [0];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            if (i === inx++) {
+                opts.title = "脈波狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["脈波輸入", "週期過大", "脈波過寬"];
+                setOpts.value = [0, 1, 2];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            if (i === inx++) {
+                opts.title = "固態放大器狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["放大器電源", "放大器模組"];
+                setOpts.value = [0, 1];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            //=======================================================================
+            var ser = 0;
+            if (i === inx++) {
+                opts.title = "放大器電源狀態";
+                var rh = (1 / 10).toFixed(3) + "rh";
+                var rw = (1 / 4).toFixed(3) + "rw";
+                opts.yArr = [];
+                opts.xyArr = [];
+                opts.ym = 0;
+                for (var j = 0; j < 10; j++) {
+                    opts.yArr.push(rh);
+                    opts.xyArr.push([rw, rw, rw, rw]);
+                }
+                for (var j = 0; j < 40; j++) {
+                    var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                    if (j === 0 || j === 3 || j === 36 || j === 39) {
+                        opts.setOptss.push(null);
+                        continue;
+                    }
+                    var str1 = "" + (((j / 4) | 0) + 1);
+                    var str2 = "-" + ((j % 4) + 1);
+                    setOpts.enum = [str1 + str2];
+                    setOpts.value = [0];
+                    opts.setOptss.push(setOpts);
+                }
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            var ser = 0;
+            if (i === inx++) {
+                opts.title = "放大器模組狀態";
+                var rh = (1 / 10).toFixed(3) + "rh";
+                var rw = (1 / 4).toFixed(3) + "rw";
+                opts.yArr = [];
+                opts.xyArr = [];
+                opts.ym = 0;
+                for (var j = 0; j < 10; j++) {
+                    opts.yArr.push(rh);
+                    opts.xyArr.push([rw, rw, rw, rw]);
+                }
+                for (var j = 0; j < 40; j++) {
+                    var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                    if (j === 0 || j === 3 || j === 36 || j === 39) {
+                        opts.setOptss.push(null);
+                        continue;
+                    }
+                    var str1 = "" + (((j / 4) | 0) + 1);
+                    var str2 = "-" + ((j % 4) + 1);
+                    setOpts.enum = [str1 + str2];
+                    setOpts.value = [0];
+                    opts.setOptss.push(setOpts);
+                }
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            setOpts.titleWidth = 0;
+            setOpts.baseColor = "#002";
+            setOpts.borderWidth = 0;
+            opts.setOptss.push(setOpts);
+            opts.actionFunc = actionPrg;
+            blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+        }
+
+    }
+}
+
+
+
+class CtrPowerStatus {
+    constructor() {
+    }
+    initOpts(md) {
+        var self = this;
+        var opts = {};
+        Block.setBaseOpts(opts);
+        this.subTypeOpts(opts);
+        opts.title = "title";
+        opts.buttonColor = "#ccf";
+        opts.buttons = ["button1", "button2", "button3"];
+        opts.layoutType = "row"; //row,collum,array
+        opts.buttonIds = [];
+        opts.iw = 9999;
+        opts.ih = 9999;
+        opts.borderWidth = 1;
+        opts.xm = 30;
+        opts.baseColor = "#222";
+        return opts;
+    }
+    subTypeOpts(opts) {
+        if (this.md.subType === "base.sys0") {
+        }
+    }
+
+    chkWatch() {
+        var self = this;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+
+    }
+
+    afterCreate() {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var iobj = {};
+        iobj.act = "afterCreate";
+        iobj.sender = md;
+        KvLib.exe(op.actionFunc, iobj);
+    }
+    build() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        var lyMaps = md.lyMaps;
+        var blocks = op.blocks;
+        var layouts = op.layouts;
+        //======================================    
+        var escPrg = function (iobj) {
+            console.log(iobj);
+            if (iobj.buttonId === "esc")
+                MdaPopWin.popOff(2);
+
+        };
+
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+            if (iobj.kvObj.name === "clrButton") {
+                var kvObj = md.blockRefs["editor"];
+                if (!kvObj)
+                    return;
+                var editor = kvObj.objs["editor"];
+                KvLib.clearEditorMaker(editor);
+                editor.getSession().setValue("");
+                return;
+            }
+
+            iobj.sender = md;
+            iobj.keyId = md.name + iobj.kvObj.name;
+            KvLib.exe(op.actionFunc, iobj);
+        };
+        //======================================    
+        var cname = "c";
+        var opts = {};
+        md.setPns(opts);
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["body"] = cname;
+        //======================================    
+        var opts = {};
+        md.setPns(opts);
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
+        //======================================    
+        var cname = lyMaps["body"] + "~" + 0;
+        var opts = {};
+        opts.margin = 6;
+        opts.xm = 10;
+        opts.ym = 4;
+        opts.yArr = [50,9999];
+        var rw0 = (1 / 6).toFixed(3) + "rw";
+        var rw1 = (1 / 4).toFixed(3) + "rw";
+        var rw2 = (1 / 3).toFixed(3) + "rw";
+        opts.xyArr = [
+            [9999],
+            [9999],
+            [9999]
+        ];
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["mainBody"] = cname;
+        //===================================
+        var lyInx = 0;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        mac.setHeadTitleBar(md, cname, "放大器電源狀態", escPrg);
+        //=====================
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        var opts = {};
+        opts.xm = 10;
+        opts.ym = 2;
+        opts.ksObjWs = ["0.5rw","0.5rw"];
+        opts.etm=4;
+        opts.eh=45;
+        opts.ebm=4;
+
+        opts.ksObjss=[];
+        var colorInx=1;
+        for (var i = 0; i < 19; i++) {
+            var cInx=(i%4);
+            if(cInx<2)
+                var color="#ccc";
+            else
+                var color="#aaa";
+            if(i===0)
+                var color="#aaa";
+            
+            var ksObjs = [];
+            for (var j = 0; j < 2; j++) {
+                var ksObj = {};
+                ksObj.name = "name#" + i + "." + j;
+                ksObj.type = "Model~StatusBar~base.sys0";
+                ksObj.opts = {};
+                ksObj.opts.baseColor=color;
+                if(i===0)
+                    ksObj.opts.headBar_f=1;
+                else
+                    ksObj.opts.headBar_f=0;
+                ksObjs.push(ksObj);
+            }
+            opts.ksObjss.push(ksObjs);
+        }
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+        };
+
+        blocks[cname] = {name: cname, type:  "Model~MdaContainer~base.page", opts: opts};
+        //==============================
+    }    
+}
+
+
+
+class StatusBar {
+    constructor() {
+    }
+    initOpts(md) {
+        var self = this;
+        var opts = {};
+        Block.setBaseOpts(opts);
+        this.subTypeOpts(opts);
+        opts.title = "title";
+        opts.borderWidth = 1;
+        opts.xm = 30;
+        opts.baseColor = "#ccc";
+        opts.headBar_f=0;
+        opts.xArr=[50,40,40,40,58,58,58,58,58,58,9999];
+        opts.itemTypes=["label","led","led","led","view","view","view","view","view","view","button"];
+        opts.itemValues=["1-1",0,0,0,"123","4.6","1.2","30","19","28","控制"];
+        opts.itemTitles=["編號","故障","50V","32V","50V<br>電壓","50V<br>電流","50V<br>溫度","32V<br>電壓","32V<br>電流","32V<br>溫度","" ];
+        
+        return opts;
+    }
+    subTypeOpts(opts) {
+        if (this.md.subType === "base.sys0") {
+        }
+    }
+
+    chkWatch() {
+        var self = this;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+
+    }
+
+    afterCreate() {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var iobj = {};
+        iobj.act = "afterCreate";
+        iobj.sender = md;
+        KvLib.exe(op.actionFunc, iobj);
+    }
+    build() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        var lyMaps = md.lyMaps;
+        var blocks = op.blocks;
+        var layouts = op.layouts;
+        //======================================    
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+        };
+        //======================================    
+        var cname = "c";
+        var opts = {};
+        md.setPns(opts);
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["body"] = cname;
+        //======================================    
+        var opts = {};
+        md.setPns(opts);
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
+        //======================================    
+        var cname = lyMaps["body"] + "~" + 0;
+        var opts = {};
+        opts.xArr=op.xArr;
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["mainBody"] = cname;
+        
+        for(var i=0;i<op.itemTypes.length;i++){
+            var cname = lyMaps["mainBody"] + "~" + i;
+            var opts={};
+            if(op.headBar_f){
+                opts.innerText=op.itemTitles[i];
+                opts.fontSize=14;
+                opts.tpd=4;
+                opts.bpd=4;
+                opts.baseColor=op.baseColor;
+                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~label.sys0", opts: opts};
+                continue;
+            }
+            if(op.itemTypes[i]==="label"){
+                opts.innerText=op.itemValues[i];
+                opts.fontSize="0.5rh";
+                opts.baseColor=op.baseColor;
+                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~label.sys0", opts: opts};
+            }
+            if(op.itemTypes[i]==="button"){
+                opts.innerText=op.itemValues[i];
+                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~button.sys0", opts: opts};
+            }
+            if(op.itemTypes[i]==="led"){
+                opts.fontSize="0.5rh";
+                opts.iw=30;
+                opts.ih=30;
+                opts.blackgroundInx=op.itemValues[i];
+                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~icons.led", opts: opts};
+            }
+            if(op.itemTypes[i]==="view"){
+                opts.innerText=op.itemValues[i];
+                opts.fontSize="0.5rh";
+                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~label.view", opts: opts};
+            }
+            
+        }
+        
+        //==============================
+    }    
 }

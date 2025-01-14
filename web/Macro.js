@@ -99,7 +99,10 @@ class Macro {
         var cname = lyMaps["headTitleBar"] + "~" + 1;
         var opts = {};
         opts.innerText = "ESC";
-        opts.actionFunc = actionPrg;
+        opts.actionFunc = function(iobj){
+            iobj.buttonId="esc";
+            actionPrg(iobj);
+        };
         blocks[cname] = {name: "status0", type: "Component~Cp_base~button.sys0", opts: opts};
         //============
     }
@@ -628,8 +631,14 @@ class KvSetOpts {
                 return sopt.getOptsLabelViews();
             case "view":
                 return sopt.getOptsView();
+            case "led":
+                return sopt.getOptsLed();
             case "ledView":
                 return sopt.getOptsLedView();
+            case "leds":
+                return sopt.getOptsLeds();
+            case "lcdView":
+                return sopt.getOptsLcdView();
             default:
                 return sopt.getOptsStr();
         }
@@ -915,10 +924,10 @@ class KvSetOpts {
         var setOpts = {};
         setOpts.setType = "buttonActs";
         setOpts.enum = ["button1", "button2", "button3"];
-        setOpts.xm = 4;
+        setOpts.xm = 10;
         setOpts.lm = 0;
-        setOpts.fontSize = 14;
-        setOpts.titleFontSize = 20;
+        setOpts.fontSize = "0.6rh";;
+        setOpts.titleFontSize = "0.4rh";
         setOpts.titleWidth = 200;
         setOpts.title = "buttonActs";
         if (op) {
@@ -934,7 +943,8 @@ class KvSetOpts {
         setOpts.enum = ["button1", "button2", "button3"];
         setOpts.onColor = "#fff";
         setOpts.offColor= "#aaa";
-        setOpts.xm = 4;
+        setOpts.baseColor = "#002";
+        setOpts.xm = 10;
         setOpts.lm = 0;
         setOpts.fontSize = "0.6rh";
         setOpts.titleFontSize = 20;
@@ -1164,6 +1174,59 @@ class KvSetOpts {
         }
         return setOpts;
     }
+    
+    getOptsLcdView(op) {
+        var setOpts = {};
+        setOpts.setType = "lcdView";
+        setOpts.dataType = "str";
+        setOpts.checkType = "str";
+        setOpts.value = "";
+        setOpts.titleFontSize = "0.5rh";
+        setOpts.actButtons = [];
+        setOpts.readOnly_f = 1;
+        setOpts.editBaseColor = "#eeeeff";
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+
+    getOptsLed(op) {
+        var setOpts = {};
+        setOpts.setType = "led";
+        setOpts.dataType = "nature";
+        setOpts.checkType = "nature";
+        setOpts.value = 0;
+        setOpts.max=4;
+        setOpts.baseColor = "#002";
+        setOpts.actButtons = [];
+        setOpts.borderWidth=0;
+        setOpts.value=0;
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+
+    getOptsLeds(op) {
+        var setOpts = {};
+        setOpts.setType = "leds";
+        setOpts.dataType = "natureA";
+        setOpts.checkType = "natureA";
+        setOpts.enum=["Led1","Led2","Led3"];
+        setOpts.value = [0,1,2];
+        setOpts.max=4;
+        setOpts.baseColor = "#002";
+        setOpts.actButtons = [];
+        setOpts.borderWidth=0;
+        setOpts.editTextColor="#fff";
+        setOpts.fontSize="0.5rh";
+        if (op) {
+            KvLib.deepCoverObject(setOpts, op);
+        }
+        return setOpts;
+    }
+    
     
     
 
