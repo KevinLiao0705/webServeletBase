@@ -20,19 +20,23 @@ class Macro {
         opts["outName"] = outName;
         sv.callServer(JSON.stringify(obj));
     }
-
-    setXyArr(opts, rowCount,col) {
+    saveParaSet() {
+        var fileName = "paraSet";
+        var content = JSON.stringify(gr.paraSet);
+        sv.saveStringToFile("responseDialogError", "null", fileName, content);
+    }
+    setXyArr(opts, rowCount, col) {
         var yr = (1 / rowCount).toFixed(3);
         opts.yArr = [];
         opts.xyArr = [];
         for (var i = 0; i < rowCount; i++) {
             opts.yArr.push(yr + "rh");
-            if(!col)
+            if (!col)
                 opts.xyArr.push([9999]);
-            else{
+            else {
                 var xr = (1 / col).toFixed(3);
-                var arr=[];
-                for(var j=0;j<col;j++){
+                var arr = [];
+                for (var j = 0; j < col; j++) {
                     arr.push(xr + "rw");
                 }
                 opts.xyArr.push(arr);
@@ -79,13 +83,19 @@ class Macro {
         blocks[cname] = {name: "footBarStatus2", type: "Component~Cp_base~label.sys0", opts: opts};
     }
 
-    setHeadTitleBar(md, cname, title, actionPrg) {
+    setHeadTitleBar(md, cname, title, actionPrg, buttons) {
         var lyMaps = md.lyMaps;
         var blocks = md.opts.blocks;
         var layouts = md.opts.layouts;
         //======================
+        if (!buttons)
+            var buttons = ["esc"];
         var opts = {};
-        opts.xArr = [9999, 200];
+        opts.xArr = [9999];
+        for (var i = 0; i < buttons.length; i++) {
+            opts.xArr.push(100);
+        }
+        opts.xm = 10;
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["headTitleBar"] = cname;
         //============
@@ -96,14 +106,17 @@ class Macro {
         opts.lpd = 10;
         blocks[cname] = {name: "headTitleBarTitle", type: "Component~Cp_base~label.title", opts: opts};
         //============
-        var cname = lyMaps["headTitleBar"] + "~" + 1;
-        var opts = {};
-        opts.innerText = "ESC";
-        opts.actionFunc = function(iobj){
-            iobj.buttonId="esc";
-            actionPrg(iobj);
-        };
-        blocks[cname] = {name: "status0", type: "Component~Cp_base~button.sys0", opts: opts};
+        for (var i = 0; i < buttons.length; i++) {
+            var cname = lyMaps["headTitleBar"] + "~" + (1 + i);
+            var opts = {};
+            if (buttons[i] === "esc")
+                opts.innerText = "ESC";
+            if (buttons[i] === "set")
+                opts.innerText = '<i class="gf">&#xe8b8;</i>';
+            opts.itemId = buttons[i];
+            opts.actionFunc = actionPrg;
+            blocks[cname] = {name: "buttn#" + i, type: "Component~Cp_base~button.sys0", opts: opts};
+        }
         //============
     }
 
@@ -655,7 +668,7 @@ class KvSetOpts {
         }
         return setOpts;
     }
-    
+
     getOptsLabelViews(op) {
         var setOpts = {};
         setOpts.setType = "labelViews";
@@ -672,7 +685,6 @@ class KvSetOpts {
         }
         return setOpts;
     }
-    
 
     getLabelViews(op) {
         var setOpts = {};
@@ -894,17 +906,14 @@ class KvSetOpts {
         opts.enum = [123, 456];
         return opts;
     }
-    
-    
+
     getOptsIncEnum() {
         var opts = sopt.getOptsNature();
-        opts.setType="incEnum";
-        opts.actButtons = ["inc","dec"];
+        opts.setType = "incEnum";
+        opts.actButtons = ["inc", "dec"];
         opts.enum = ["xxx", "string2", "string3", "string4", "string5"];
         return opts;
     }
-    
-    
 
     getOptsButtonRadio() {
         var setOpts = {};
@@ -926,7 +935,8 @@ class KvSetOpts {
         setOpts.enum = ["button1", "button2", "button3"];
         setOpts.xm = 10;
         setOpts.lm = 0;
-        setOpts.fontSize = "0.6rh";;
+        setOpts.fontSize = "0.6rh";
+        ;
         setOpts.titleFontSize = "0.4rh";
         setOpts.titleWidth = 200;
         setOpts.title = "buttonActs";
@@ -936,13 +946,12 @@ class KvSetOpts {
         return setOpts;
     }
 
-
     getOptsButtonSelect(op) {
         var setOpts = {};
         setOpts.setType = "buttonSelect";
         setOpts.enum = ["button1", "button2", "button3"];
         setOpts.onColor = "#fff";
-        setOpts.offColor= "#aaa";
+        setOpts.offColor = "#aaa";
         setOpts.baseColor = "#002";
         setOpts.xm = 10;
         setOpts.lm = 0;
@@ -950,13 +959,12 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonSelect";
-        setOpts.value=0;
+        setOpts.value = 0;
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
     }
-
 
     getOptsButtonOnOffs(op) {
         var setOpts = {};
@@ -969,14 +977,13 @@ class KvSetOpts {
         setOpts.titleFontSize = 20;
         setOpts.titleWidth = 200;
         setOpts.title = "buttonSelect";
-        setOpts.onColor="#cfc";
-        setOpts.value=0;
+        setOpts.onColor = "#cfc";
+        setOpts.value = 0;
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
     }
-
 
     //====================================
 
@@ -1141,7 +1148,7 @@ class KvSetOpts {
         }
         return setOpts;
     }
-    
+
     getOptsView(op) {
         var setOpts = {};
         setOpts.setType = "inputText";
@@ -1174,7 +1181,7 @@ class KvSetOpts {
         }
         return setOpts;
     }
-    
+
     getOptsLcdView(op) {
         var setOpts = {};
         setOpts.setType = "lcdView";
@@ -1197,11 +1204,11 @@ class KvSetOpts {
         setOpts.dataType = "nature";
         setOpts.checkType = "nature";
         setOpts.value = 0;
-        setOpts.max=4;
+        setOpts.max = 4;
         setOpts.baseColor = "#002";
         setOpts.actButtons = [];
-        setOpts.borderWidth=0;
-        setOpts.value=0;
+        setOpts.borderWidth = 0;
+        setOpts.value = 0;
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
@@ -1213,22 +1220,19 @@ class KvSetOpts {
         setOpts.setType = "leds";
         setOpts.dataType = "natureA";
         setOpts.checkType = "natureA";
-        setOpts.enum=["Led1","Led2","Led3"];
-        setOpts.value = [0,1,2];
-        setOpts.max=4;
+        setOpts.enum = ["Led1", "Led2", "Led3"];
+        setOpts.value = [0, 1, 2];
+        setOpts.max = 4;
         setOpts.baseColor = "#002";
         setOpts.actButtons = [];
-        setOpts.borderWidth=0;
-        setOpts.editTextColor="#fff";
-        setOpts.fontSize="0.5rh";
+        setOpts.borderWidth = 0;
+        setOpts.editTextColor = "#fff";
+        setOpts.fontSize = "0.5rh";
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
         return setOpts;
     }
-    
-    
-    
 
     getTextArea(op) {
         var opts = {};

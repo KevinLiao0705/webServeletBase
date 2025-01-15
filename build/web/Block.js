@@ -945,11 +945,38 @@ class Block {
             if (ipObj.cnt < ipObj.period)
                 continue;
             ipObj.cnt = 0;
-            if (ipObj.type === "directName") {
-                if (ipObj.inputName === "self.fatherMd.fatherMd.fatherMd.stas.signalButtonColors[3]") {
-                    var obj = self.fatherMd.opts.hecButColor;
-                    var uu = 0;
+            var value;
+            if (ipObj.inputName === "self.fatherMd.fatherMd.fatherMd.stas.watchObj.connectA[" + 0 + "]") {
+                var obj = self.fatherMd.fatherMd.fatherMd.stas.watchObj.connectA[0];
+                var uu = 0;
+            }
+            if (ipObj.type === "directReg") {
+                try {
+                    var strA = ipObj.inputName.split('#');
+                    var strB = strA[0].split('.');
+                    if (strB[0] === "self") {
+                        var reg = self;
+                    } else {
+                        var reg = window[strB[0]];
+                    }
+                    for (var j = 1; j < strB.length; j++) {
+                        var reg = reg[strB[j]];
+                    }
+                    if (strA.length === 1)
+                        var value = reg;
+                    if (strA.length === 2)
+                        var value = reg[parseInt(strA[1])];
+                    if (strA.length === 3) {
+                        var reg = reg[parseInt(strA[1])];
+                        var value = reg[parseInt(strA[2])];
+                    }
+                } catch (except) {
+                    continue;
                 }
+            }
+
+
+            if (ipObj.type === "directName") {
                 var value;
                 var str = "value=" + ipObj.inputName;
                 try {
@@ -957,22 +984,27 @@ class Block {
                 } catch (except) {
                     continue;
                 }
-                if (Array.isArray(value)) {
-                    if (value.length === self.opts[ipObj.optName].length) {
-                        for (var j = 0; j < value.length; j++) {
-                            if (self.opts[ipObj.optName][j] !== value[j]) {
-                                self.setWatch(self, ipObj.optName, value, ipObj.redraw_f);
-                                break;
-                            }
+            }
+
+
+
+            if (value === undefined)
+                continue;
+            if (Array.isArray(value)) {
+                if (value.length === self.opts[ipObj.optName].length) {
+                    for (var j = 0; j < value.length; j++) {
+                        if (self.opts[ipObj.optName][j] !== value[j]) {
+                            self.setWatch(self, ipObj.optName, value, ipObj.redraw_f);
+                            break;
                         }
                     }
-                } else {
-                    if (self.opts[ipObj.optName] !== value) {
-                        self.setWatch(self, ipObj.optName, value, ipObj.redraw_f);
-                    }
                 }
-                continue;
+            } else {
+                if (self.opts[ipObj.optName] !== value) {
+                    self.setWatch(self, ipObj.optName, value, ipObj.redraw_f);
+                }
             }
+
         }
     }
 
@@ -1374,16 +1406,15 @@ class Block {
             if (fatherMd) {
                 fatherMd.blocks[cname] = newMd;
                 fatherMd.blockRefs[name] = newMd;
-                if(posObj)
+                if (posObj)
                     newMd.create(posObj.fhid, posObj.x, posObj.y, posObj.w, posObj.h);
-                else{
-                    var ii=0;
+                else {
+                    var ii = 0;
                 }
-            }
-            else{
+            } else {
                 newMd.create(posObj.fhid, posObj.x, posObj.y, posObj.w, posObj.h);
-                if(posObj.fhid==="rootBody")
-                    gr.mdMain=newMd;
+                if (posObj.fhid === "rootBody")
+                    gr.mdMain = newMd;
             }
             return newMd;
         }
@@ -1527,6 +1558,8 @@ class Cp_base {
         if (!st.checkBoxWidth)
             return;
         md.checkBoxClick = function () {
+            if(op.readOnly_f)
+                return;
             var checkElem = md.elems["checkBox"];
             if (md.opts.radioName) {
                 checkElem.checked = true;
@@ -1563,6 +1596,7 @@ class Cp_base {
         sonElem.style.height = (st.fontSizeObj.h - 5) + "px";
         sonElem.style.backgroundColor = "rgba(0,0,0,0)";
         sonElem.style.pointerEvents = "none";
+        
         if (op.checked_f)
             sonElem.checked = true;
         sonElem.md = md;
@@ -2085,7 +2119,7 @@ class Ly_base {
             st.layoutAmt = 0;
             var hs = KvLib.getAllUnit(yArr, 0, st.ch, st.ym);
             for (var i = 0; i < hs.length; i++) {
-                if(!xyArr[i])
+                if (!xyArr[i])
                     continue;
                 var nowX = st.cx;
                 var ws = KvLib.getAllUnit(xyArr[i], 0, st.cw, st.xm);
