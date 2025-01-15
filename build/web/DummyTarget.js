@@ -2,11 +2,89 @@ class DummyTargetMaster {
     constructor() {
     }
     static globleTime() {
+        if (!gr.appFirstEntry_f) {
+            gr.appFirstEntry_f = 1;
+            var syncData = gr.syncData = {};
+            var location = syncData.location = {};
+            syncData.connectTime = 0;
+            syncData.connectCnt = 0;
+            syncData.slotStatus = [0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            syncData.slotIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 0, 0, 0];
+            location.mastGpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+            location.sub1GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+            location.sub2GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+
+            var radarStatus = syncData.radarStatus = {};
+            /*
+             SP雷達信號     0.0: 無信號, 0.1: 信號備便
+             脈波來源       1.0: 主雷同步, 1.1: 本機脈波
+             與副控1連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
+             與副控2連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
+             */
+            radarStatus.mastStatus = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            /*
+             雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中, 0.5:異常          
+             環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
+             SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
+             SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
+             SSPA功率    4.0: 未連線, 3.1:良好, 4.2: 異常 
+             戰備狀態    5.0: 未連線, 5.1:關閉, 5.2: 開啟 
+             遠端遙控    6.0: 未連線, 6.1:關閉, 6.2: 開啟 
+             脈波來源    7.0: 未連線, 7.1: 主雷同步, 7.2: 本機脈波
+             輸出裝置    8.0: 未連線, 8.1: 天線, 8.2:假負載 
+             連線方式    9.0: 未連線, 9.1: 光纖, 9.2:無線, 9.3:自動 
+             0.1
+             */
+            radarStatus.sub1Status = [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            radarStatus.sub2Status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+            //0 光纖連線狀態 0:未連線, 1:未連線 
+            //1 RF連線狀態 0:未連線, 1:未連線 
+            //2 1588修正時間  
+            //3 封包發送數  
+            //4 正確率
+            //5 主控RF接收能量
+            //6 副控RF接收能量
+            syncData.sub1CommDatas = [0, 1, 3, 4, 1200, 10, 20];
+            syncData.sub2CommDatas = [1, 0, 7, 8, 1201, 11, 22];
+            for (var j = 0; j < 2; j++) {
+                if (j === 0)
+                    var subPowerStatus = syncData.sub1PowerStatus = {};
+                if (j === 1)
+                    var subPowerStatus = syncData.sub2PowerStatus = {};
+                subPowerStatus.connectA = [];
+                subPowerStatus.faultA = [];
+                subPowerStatus.v50enA = [];
+                subPowerStatus.v32enA = [];
+                subPowerStatus.v50vA = [];
+                subPowerStatus.v50iA = [];
+                subPowerStatus.v50tA = [];
+                subPowerStatus.v32vA = [];
+                subPowerStatus.v32iA = [];
+                subPowerStatus.v32tA = [];
+                for (var i = 0; i < 36; i++) {
+                    subPowerStatus.connectA.push(0);
+                    subPowerStatus.faultA.push(0);
+                    subPowerStatus.v50enA.push(0);
+                    subPowerStatus.v32enA.push(0);
+                    subPowerStatus.v50vA.push(0);
+                    subPowerStatus.v50iA.push(0);
+                    subPowerStatus.v50tA.push(0);
+                    subPowerStatus.v32vA.push(0);
+                    subPowerStatus.v32iA.push(0);
+                    subPowerStatus.v32tA.push(0);
+                }
+            }
+            syncData.sub1PowerStatus.connectA[0]=1;
+
+        }
+
         gr.syncData.connectTime++;
         if (gr.syncData.connectTime >= 6) {
             gr.syncData.connectTime = 0;
             gr.syncData.connectCnt++;
         }
+
     }
 
     static paraSetPrg() {
@@ -332,55 +410,6 @@ class DummyTargetMaster {
         var self = this;
         var opts = {};
         Block.setBaseOpts(opts);
-        if (!gr.appFirstEntry_f) {
-            gr.appFirstEntry_f = 1;
-            var syncData = gr.syncData = {};
-            var location = syncData.location = {};
-            syncData.connectTime = 0;
-            syncData.connectCnt = 0;
-            syncData.slotStatus = [0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            syncData.slotIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 0, 0, 0];
-            location.mastGpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-            location.sub1GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-            location.sub2GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-
-            var radarStatus = syncData.radarStatus = {};
-            /*
-             SP雷達信號     0.0: 無信號, 0.1: 信號備便
-             脈波來源       1.0: 主雷同步, 1.1: 本機脈波
-             與副控1連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-             與副控2連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-             */
-            radarStatus.mastStatus = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            /*
-             雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中, 0.5:異常          
-             環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
-             SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
-             SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
-             SSPA功率    4.0: 未連線, 3.1:良好, 4.2: 異常 
-             戰備狀態    5.0: 未連線, 5.1:關閉, 5.2: 開啟 
-             遠端遙控    6.0: 未連線, 6.1:關閉, 6.2: 開啟 
-             脈波來源    7.0: 未連線, 7.1: 主雷同步, 7.2: 本機脈波
-             輸出裝置    8.0: 未連線, 8.1: 天線, 8.2:假負載 
-             連線方式    9.0: 未連線, 9.1: 光纖, 9.2:無線, 9.3:自動 
-             0.1
-             */
-            radarStatus.sub1Status = [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            radarStatus.sub2Status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-            //0 光纖連線狀態 0:未連線, 1:未連線 
-            //1 RF連線狀態 0:未連線, 1:未連線 
-            //2 1588修正時間  
-            //3 封包發送數  
-            //4 正確率
-            //5 主控RF接收能量
-            //6 副控RF接收能量
-            syncData.sub1CommDatas = [0, 1, 3, 4, 1200, 10, 20];
-            syncData.sub2CommDatas = [1, 0, 7, 8, 1201, 11, 22];
-
-
-
-        }
         return opts;
     }
 
@@ -4590,7 +4619,7 @@ class CtrPowerStatus {
         opts.margin = 6;
         opts.xm = 10;
         opts.ym = 4;
-        opts.yArr = [50,9999];
+        opts.yArr = [50, 9999];
         var rw0 = (1 / 6).toFixed(3) + "rw";
         var rw1 = (1 / 4).toFixed(3) + "rw";
         var rw2 = (1 / 3).toFixed(3) + "rw";
@@ -4610,33 +4639,59 @@ class CtrPowerStatus {
         var opts = {};
         opts.xm = 10;
         opts.ym = 2;
-        opts.ksObjWs = ["0.5rw","0.5rw"];
-        opts.etm=4;
-        opts.eh=45;
-        opts.ebm=4;
+        opts.ksObjWs = ["0.5rw", "0.5rw"];
+        opts.etm = 4;
+        opts.eh = 44;
+        opts.ebm = 4;
 
-        opts.ksObjss=[];
-        var colorInx=1;
+        opts.ksObjss = [];
+        var colorInx = 1;
+        var noInx = 2;
+        var itemInx = 0;
         for (var i = 0; i < 19; i++) {
-            var cInx=(i%4);
-            if(cInx<2)
-                var color="#ccc";
+            var cInx = (i % 4);
+            if (cInx < 2)
+                var color = "#ccc";
             else
-                var color="#aaa";
-            if(i===0)
-                var color="#aaa";
-            
+                var color = "#aaa";
+            if (i === 0)
+                var color = "#aaa";
+
             var ksObjs = [];
             for (var j = 0; j < 2; j++) {
                 var ksObj = {};
                 ksObj.name = "name#" + i + "." + j;
                 ksObj.type = "Model~StatusBar~base.sys0";
-                ksObj.opts = {};
-                ksObj.opts.baseColor=color;
-                if(i===0)
-                    ksObj.opts.headBar_f=1;
+                var kopt = ksObj.opts = {};
+                kopt.baseColor = color;
+                if (i === 0)
+                    kopt.headBar_f = 1;
                 else
-                    ksObj.opts.headBar_f=0;
+                    kopt.headBar_f = 0;
+                var itemNo = "";
+                if (!kopt.headBar_f) {
+                    var str1 = "" + (((noInx / 4) | 0) + 1);
+                    if (i === 1)
+                        var str2 = "-" + ((noInx % 2) + 1);
+                    else
+                        var str2 = "-" + ((noInx % 4) + 1);
+                    itemNo = str1 + str2;
+                    noInx++;
+
+                    kopt.itemWatchss = [];
+                    for (var k = 0; k < 11; k++) {
+                        var watchs = ["null"];
+                        if (k === 1) {
+                            watchs = ["self.fatherMd.fatherMd.stas.connectA[" + itemInx + "]"];
+                        }
+                    }
+                    itemInx++;
+                }
+                kopt.xArr = [50, 40, 40, 40, 58, 58, 58, 58, 58, 58, 9999];
+                kopt.itemTypes = ["label", "led", "led", "led", "view", "view", "view", "view", "view", "view", "button"];
+                kopt.itemValues = [itemNo, 0, 0, 0, "123", "4.6", "1.2", "30", "19", "28", '<i class="gf">&#xe8b8;</i>'];
+                kopt.itemTitles = ["編號", "故障", "50V", "32V", "50V<br>電壓", "50V<br>電流", "50V<br>溫度", "32V<br>電壓", "32V<br>電流", "32V<br>溫度", "設定"];
+
                 ksObjs.push(ksObj);
             }
             opts.ksObjss.push(ksObjs);
@@ -4645,9 +4700,9 @@ class CtrPowerStatus {
             console.log(iobj);
         };
 
-        blocks[cname] = {name: cname, type:  "Model~MdaContainer~base.page", opts: opts};
+        blocks[cname] = {name: cname, type: "Model~MdaContainer~base.page", opts: opts};
         //==============================
-    }    
+    }
 }
 
 
@@ -4664,12 +4719,12 @@ class StatusBar {
         opts.borderWidth = 1;
         opts.xm = 30;
         opts.baseColor = "#ccc";
-        opts.headBar_f=0;
-        opts.xArr=[50,40,40,40,58,58,58,58,58,58,9999];
-        opts.itemTypes=["label","led","led","led","view","view","view","view","view","view","button"];
-        opts.itemValues=["1-1",0,0,0,"123","4.6","1.2","30","19","28","控制"];
-        opts.itemTitles=["編號","故障","50V","32V","50V<br>電壓","50V<br>電流","50V<br>溫度","32V<br>電壓","32V<br>電流","32V<br>溫度","" ];
-        
+        opts.headBar_f = 0;
+        opts.itemTypes = ["label", "led", "led", "led", "view", "view", "view", "view", "view", "view", "button"];
+        opts.xArr = [50, 40, 40, 40, 58, 58, 58, 58, 58, 58, 9999];
+        opts.itemValues = ["1-1", 0, 0, 0, "123", "4.6", "1.2", "30", "19", "28", '<i class="gf">&#xe8b8;</i>'];
+        opts.itemTitles = ["編號", "故障", "50V", "32V", "50V<br>電壓", "50V<br>電流", "50V<br>溫度", "32V<br>電壓", "32V<br>電流", "32V<br>溫度", "設定"];
+        opts.itemWatchss = [];
         return opts;
     }
     subTypeOpts(opts) {
@@ -4682,6 +4737,35 @@ class StatusBar {
         var md = this.md;
         var op = md.opts;
         var st = md.stas;
+
+        if (gr.appId === 3)
+            var subPowerStatus = gr.syncData.sub1PowerStatus;
+        if (gr.appId === 4)
+            var subPowerStatus = gr.syncData.sub2PowerStatus;
+        var watchObj=st.watchObj={};
+        watchObj.connectA = [];
+        watchObj.faultA = [];
+        watchObj.v50enA = [];
+        watchObj.v32enA = [];
+        watchObj.v50vA = [];
+        watchObj.v50iA = [];
+        watchObj.v50tA = [];
+        watchObj.v32vA = [];
+        watchObj.v32iA = [];
+        watchObj.v32tA = [];
+        for (var i = 0; i < 36; i++) {
+            watchObj.connectA.push([subPowerStatus.connectA[i]]);
+            watchObj.faultA.push([subPowerStatus.connectA[i]]);
+            watchObj.v50enA.push([subPowerStatus.connectA[i]]);
+            watchObj.v32enA.push([subPowerStatus.connectA[i]]);
+            watchObj.v50vA.push([subPowerStatus.connectA[i]]);
+            watchObj.v50iA.push([subPowerStatus.connectA[i]]);
+            watchObj.v50tA.push([subPowerStatus.connectA[i]]);
+            watchObj.v32vA.push([subPowerStatus.connectA[i]]);
+            watchObj.v32iA.push([subPowerStatus.connectA[i]]);
+            watchObj.v32tA.push([subPowerStatus.connectA[i]]);
+        }
+
 
     }
 
@@ -4719,47 +4803,57 @@ class StatusBar {
         //======================================    
         var cname = lyMaps["body"] + "~" + 0;
         var opts = {};
-        opts.xArr=op.xArr;
+        opts.xArr = op.xArr;
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
         lyMaps["mainBody"] = cname;
-        
-        for(var i=0;i<op.itemTypes.length;i++){
+
+        for (var i = 0; i < op.itemTypes.length; i++) {
             var cname = lyMaps["mainBody"] + "~" + i;
-            var opts={};
-            if(op.headBar_f){
-                opts.innerText=op.itemTitles[i];
-                opts.fontSize=14;
-                opts.tpd=4;
-                opts.bpd=4;
-                opts.baseColor=op.baseColor;
-                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~label.sys0", opts: opts};
+            var opts = {};
+            if (op.headBar_f) {
+                opts.innerText = op.itemTitles[i];
+                opts.fontSize = 16;
+                opts.tpd = 4;
+                opts.bpd = 2;
+                opts.baseColor = op.baseColor;
+                blocks[cname] = {name: "item#" + i, type: "Component~Cp_base~label.sys0", opts: opts};
                 continue;
             }
-            if(op.itemTypes[i]==="label"){
-                opts.innerText=op.itemValues[i];
-                opts.fontSize="0.5rh";
-                opts.baseColor=op.baseColor;
-                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~label.sys0", opts: opts};
+            if (op.itemTypes[i] === "label") {
+                opts.innerText = op.itemValues[i];
+                opts.fontSize = "0.5rh";
+                opts.baseColor = op.baseColor;
+                blocks[cname] = {name: "item#" + i, type: "Component~Cp_base~label.sys0", opts: opts};
             }
-            if(op.itemTypes[i]==="button"){
-                opts.innerText=op.itemValues[i];
-                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~button.sys0", opts: opts};
+            if (op.itemTypes[i] === "button") {
+                opts.innerText = op.itemValues[i];
+                blocks[cname] = {name: "item#" + i, type: "Component~Cp_base~button.sys0", opts: opts};
             }
-            if(op.itemTypes[i]==="led"){
-                opts.fontSize="0.5rh";
-                opts.iw=30;
-                opts.ih=30;
-                opts.blackgroundInx=op.itemValues[i];
-                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~icons.led", opts: opts};
+            if (op.itemTypes[i] === "led") {
+                opts.fontSize = "0.5rh";
+                opts.iw = 30;
+                opts.ih = 30;
+                opts.blackgroundInx = op.itemValues[i];
+                if (op.itemWatchss[i]) {
+                    var watchReg = op.itemWatchs[i][0];
+                    md.setInputWatch(opts, "directName", watchReg, "blackgroundInx", 1);
+                }
+                blocks[cname] = {name: "item#" + i, type: "Component~Cp_base~icons.led", opts: opts};
             }
-            if(op.itemTypes[i]==="view"){
-                opts.innerText=op.itemValues[i];
-                opts.fontSize="0.5rh";
-                blocks[cname] = {name: "item#"+i, type: "Component~Cp_base~label.view", opts: opts};
+            if (op.itemTypes[i] === "view") {
+                opts.innerText = op.itemValues[i];
+                opts.fontSize = "0.5rh";
+                if (op.itemWatchss[i]) {
+                    var watchReg = op.itemWatchss[i][0];
+                    md.setInputWatch(opts, "directName", watchReg, "innerText", 1);
+                    var watchReg = op.itemWatchss[i][1];
+                    md.setInputWatch(opts, "directName", watchReg, "innerText", 1);
+                }
+                blocks[cname] = {name: "item#" + i, type: "Component~Cp_base~label.view", opts: opts};
             }
-            
+
         }
-        
+
         //==============================
-    }    
+    }
 }

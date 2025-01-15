@@ -3,6 +3,8 @@ class GlobalRes {
         //this.appName="webBuilder";
         this.appName="sync";
         this.appId=3;
+        this.globleTime="DummyTargetMaster.globleTime()";
+
         //=========
         if(this.appId===0)
             this.appType="Model~DummyTargetMaster~base.sys0";

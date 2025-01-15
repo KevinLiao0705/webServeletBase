@@ -230,24 +230,21 @@ class MySystem {
         if (deltaTime > 30)
             console.log("baseTimer Over 30ms: " + deltaTime.toFixed(2));
         //=================
-        
-        if(gr.footBarMessageTime){
+
+        if (gr.footBarMessageTime) {
             gr.footBarMessageTime--;
-            if(gr.footBarMessageTime===0){
-                gr.footBarMessageText="";
+            if (gr.footBarMessageTime === 0) {
+                gr.footBarMessageText = "";
             }
         }
 
 
         self.repaint(0);
-        var strA = gr.appType.split("~");
-        if (strA.length === 3) {
-            var str = strA[1] + ".globleTime()";
-            try {
-                eval(str);
-            } catch (except) {
-            }
-
+        var str = gr.globleTime;
+        try {
+            eval(str);
+        } catch (ex) {
+            console.log(ex);
         }
         if (gr.mdMain) {
             gr.mdMain.chkWatch();
