@@ -20,7 +20,10 @@ class Macro {
         opts["outName"] = outName;
         sv.callServer(JSON.stringify(obj));
     }
-    saveParaSet() {
+    saveParaSet(name,value) {
+        if(name){
+            gr.paraSet[name]=value;
+        }
         var fileName = "paraSet";
         var content = JSON.stringify(gr.paraSet);
         sv.saveStringToFile("responseDialogError", "null", fileName, content);
@@ -951,7 +954,7 @@ class KvSetOpts {
         setOpts.setType = "buttonSelect";
         setOpts.enum = ["button1", "button2", "button3"];
         setOpts.onColor = "#fff";
-        setOpts.offColor = "#aaa";
+        setOpts.offColor = "#666";
         setOpts.baseColor = "#002";
         setOpts.xm = 10;
         setOpts.lm = 0;

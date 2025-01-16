@@ -4094,6 +4094,12 @@ class MdaSetLine {
         if (setOpts.setType === "led") {
             var opts = {};
             opts.backgroundInx = setOpts.value;
+            if (setOpts.watchDatas) {
+                for (var i = 0; i < setOpts.watchDatas.length; i++) {
+                    var items = setOpts.watchDatas[i];
+                    md.setInputWatch(opts, items[0], items[1], items[2], items[3]);
+                }
+            }
             md.newBlock(cname, opts, "Component~Cp_base~icons.led", "labelMain#" + i);
             return;
         }
@@ -4149,6 +4155,14 @@ class MdaSetLine {
             opts.innerTextColor = setOpts.editTextColor;
             if (setOpts.fontSize)
                 opts.fontSize = setOpts.fontSize;
+            if (setOpts.watchDatas) {
+                for (var i = 0; i < setOpts.watchDatas.length; i++) {
+                    var items = setOpts.watchDatas[i];
+                    md.setInputWatch(opts, items[0], items[1], items[2], items[3]);
+                }
+            }
+            
+            
             md.newBlock(cname, opts, "Component~Cp_base~images.lcd", "labelMain#" + i);
             return;
         }

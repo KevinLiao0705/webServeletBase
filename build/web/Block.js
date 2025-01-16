@@ -946,8 +946,7 @@ class Block {
                 continue;
             ipObj.cnt = 0;
             var value;
-            if (ipObj.inputName === "self.fatherMd.fatherMd.fatherMd.stas.watchObj.connectA[" + 0 + "]") {
-                var obj = self.fatherMd.fatherMd.fatherMd.stas.watchObj.connectA[0];
+            if (ipObj.inputName === "self.fatherMd.fatherMd.fatherMd.stas.meterStatusA#4") {
                 var uu = 0;
             }
             if (ipObj.type === "directReg") {
@@ -1746,7 +1745,7 @@ class Cp_base {
                 theme: "ace/theme/monokai", // 默认设置的主题
                 mode: mode, // 默认设置的语言模式
                 //value: data.toString(),
-                wrap: 100, //op.wrapLine,
+                wrap: 90, //op.wrapLine,
                 //useWrapMode: true,   // wrap text to view
                 indentedSoftWrap: true,
                 behavioursEnabled: false, // disable autopairing of brackets and tags
@@ -1782,7 +1781,7 @@ class Cp_base {
         if (op.urls)
             KvLib.getTextFileFromServer(op.urls[op.urlsInx], retFunc);
         else {
-            retFunc("md.opts.editValue");
+            retFunc(op.editValue);
         }
 
     }

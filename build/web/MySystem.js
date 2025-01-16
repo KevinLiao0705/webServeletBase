@@ -240,12 +240,9 @@ class MySystem {
 
 
         self.repaint(0);
-        var str = gr.globleTime;
-        try {
-            eval(str);
-        } catch (ex) {
-            console.log(ex);
-        }
+        
+        gr.gbcs.timer();
+        
         if (gr.mdMain) {
             gr.mdMain.chkWatch();
         }

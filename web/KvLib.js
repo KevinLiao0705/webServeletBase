@@ -183,6 +183,38 @@ class KvLib {
             return str;
         }
     }
+    static lineMoveEditor(kvObj, line) {
+        if (!kvObj)
+            return;
+        var editor = kvObj.objs["editor"];
+        if (!editor)
+            return;
+        var cur = editor.selection.getCursor();
+        var rowAll = editor.session.getLength();
+        cur.row += line;
+        if (cur.row >= rowAll)
+            cur.row = rowAll;
+        if (cur.row < 0)
+            cur.row = 0;
+        var column = editor.session.getLine(cur.row).length;
+        editor.gotoLine(cur.row + 1, column);
+    }
+
+    static endInputEditor(kvObj, text, color) {
+        if (!kvObj)
+            return;
+        var editor = kvObj.objs["editor"];
+        if (!editor)
+            return;
+        var row = editor.session.getLength() - 1;
+        var column = editor.session.getLine(row).length; // or simply Infinity
+        editor.gotoLine(row + 1, column);
+        editor.insert(text);
+        if (color) {
+            KvLib.setEditorMaker(editor, color);
+        }
+
+    }
 
     static setEditorMaker(editor, color) {
         var row = editor.session.getLength() - 1;
@@ -491,16 +523,15 @@ class KvLib {
         return JSON.parse(JSON.stringify(outObj));
     }
 
-    static deleteStringArray(myArray,name){
-        for(var i=0;i<myArray.length;i++){
-            if(myArray[i]===name){
-                myArray.splice(0, 1);        
+    static deleteStringArray(myArray, name) {
+        for (var i = 0; i < myArray.length; i++) {
+            if (myArray[i] === name) {
+                myArray.splice(0, 1);
                 return;
             }
         }
     }
-    
-    
+
     static getFunc(func) {
         if (typeof func === 'function') {
             return func;
@@ -2012,14 +2043,14 @@ class KvLib {
         return outObj;
     }
 
-    static setStrA(orgStr,inx,value){
-        var strA=orgStr.split(/[ ,]+/);
-        strA[inx]=value;
-        var retStr="";
-        for(var i=0;i<strA.length;i++){
-            if(i>=1)
-                retStr+=" ";
-            retStr+=strA[i];
+    static setStrA(orgStr, inx, value) {
+        var strA = orgStr.split(/[ ,]+/);
+        strA[inx] = value;
+        var retStr = "";
+        for (var i = 0; i < strA.length; i++) {
+            if (i >= 1)
+                retStr += " ";
+            retStr += strA[i];
         }
         return retStr;
     }

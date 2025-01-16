@@ -397,6 +397,7 @@ class SubOpts {
             opts.fontSize=20;
             opts.readOnly_f=0;
             opts.innerTextColor="#0f0";
+            opts.editValue="";
             //=================
         }
         

@@ -2,175 +2,6 @@ class DummyTargetMaster {
     constructor() {
     }
 
-    static syncCommand(iobj) {
-        console.log(iobj);
-        if (gr.appId === 1 || gr.appId === 3)
-            var preText = "sub1";
-        if (gr.appId === 2 || gr.appId === 4)
-            var preText = "sub2";
-        if (iobj.act === "closePowerModule") {
-            return;
-        }
-        if (iobj.act === "openPowerModule") {
-            return;
-        }
-        
-        
-        if (iobj.act === "insertPowerModule") {
-            gr.paraSet[preText + "PowerExistA"][iobj.index] = 1;
-            mac.saveParaSet();
-            return;
-        }
-        if (iobj.act === "removePowerModule") {
-            gr.paraSet[preText + "PowerExistA"][iobj.index] = 0;
-            mac.saveParaSet();
-            return;
-        }
-        if (iobj.act === "insertSspaModule") {
-            gr.paraSet[preText + "SspaExistA"][iobj.index] = 1;
-            mac.saveParaSet();
-            return;
-        }
-        if (iobj.act === "removeSspaModule") {
-            gr.paraSet[preText + "SspaExistA"][iobj.index] = 0;
-            mac.saveParaSet();
-            return;
-        }
-        if (iobj.act === "insertAllSspaModule") {
-            for (var i = 0; i < 36; i++)
-                gr.paraSet[preText + "SspaExistA"][i] = 1;
-            mac.saveParaSet();
-            return;
-        }
-        if (iobj.act === "removeAllSspaModule") {
-            for (var i = 0; i < 36; i++)
-                gr.paraSet[preText + "SspaExistA"][i] = 0;
-            mac.saveParaSet();
-            return;
-        }
-        if (iobj.act === "insertAllPowerModule") {
-            for (var i = 0; i < 36; i++)
-                gr.paraSet[preText + "PowerExistA"][i] = 1;
-            mac.saveParaSet();
-            return;
-        }
-        if (iobj.act === "removeAllPowerModule") {
-            for (var i = 0; i < 36; i++)
-                gr.paraSet[preText + "PowerExistA"][i] = 0;
-            mac.saveParaSet();
-            return;
-        }
-    }
-    static globleTime() {
-        if (!gr.appFirstEntry_f) {
-            gr.appFirstEntry_f = 1;
-            gr.syncCommand = {};
-
-
-            var syncData = gr.syncData = {};
-            var location = syncData.location = {};
-            syncData.connectTime = 0;
-            syncData.connectCnt = 0;
-            syncData.slotStatus = [0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            syncData.slotIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 0, 0, 0];
-            location.mastGpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-            location.sub1GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-            location.sub2GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-
-            var radarStatus = syncData.radarStatus = {};
-            /*
-             SP雷達信號     0.0: 無信號, 0.1: 信號備便
-             脈波來源       1.0: 主雷同步, 1.1: 本機脈波
-             與副控1連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-             與副控2連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-             */
-            radarStatus.mastStatus = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            /*
-             雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中, 0.5:異常          
-             環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
-             SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
-             SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
-             SSPA功率    4.0: 未連線, 3.1:良好, 4.2: 異常 
-             戰備狀態    5.0: 未連線, 5.1:關閉, 5.2: 開啟 
-             遠端遙控    6.0: 未連線, 6.1:關閉, 6.2: 開啟 
-             脈波來源    7.0: 未連線, 7.1: 主雷同步, 7.2: 本機脈波
-             輸出裝置    8.0: 未連線, 8.1: 天線, 8.2:假負載 
-             連線方式    9.0: 未連線, 9.1: 光纖, 9.2:無線, 9.3:自動 
-             0.1
-             */
-            radarStatus.sub1Status = [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            radarStatus.sub2Status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-            //0 光纖連線狀態 0:未連線, 1:未連線 
-            //1 RF連線狀態 0:未連線, 1:未連線 
-            //2 1588修正時間  
-            //3 封包發送數  
-            //4 正確率
-            //5 主控RF接收能量
-            //6 副控RF接收能量
-
-            syncData.sub1CommDatas = [0, 1, 3, 4, 1200, 10, 20];
-            syncData.sub2CommDatas = [1, 0, 7, 8, 1201, 11, 22];
-
-
-            for (var j = 0; j < 2; j++) {
-                if (j === 0)
-                    var subPowerStatus = syncData.sub1PowerStatus = {};
-                if (j === 1)
-                    var subPowerStatus = syncData.sub2PowerStatus = {};
-                subPowerStatus.connectA = [];
-                subPowerStatus.faultA = [];
-                subPowerStatus.v50enA = [];
-                subPowerStatus.v32enA = [];
-                subPowerStatus.v50vA = [];
-                subPowerStatus.v50iA = [];
-                subPowerStatus.v50tA = [];
-                subPowerStatus.v32vA = [];
-                subPowerStatus.v32iA = [];
-                subPowerStatus.v32tA = [];
-                for (var i = 0; i < 36; i++) {
-                    subPowerStatus.connectA.push(0);
-                    subPowerStatus.faultA.push(0);
-                    subPowerStatus.v50enA.push(0);
-                    subPowerStatus.v32enA.push(0);
-                    subPowerStatus.v50vA.push(50);
-                    subPowerStatus.v50iA.push(15);
-                    subPowerStatus.v50tA.push(25);
-                    subPowerStatus.v32vA.push(32);
-                    subPowerStatus.v32iA.push(15);
-                    subPowerStatus.v32tA.push(32);
-                }
-                for (var i = 0; i < 36; i++) {
-                    subPowerStatus.connectA[i] = 0;
-                    subPowerStatus.faultA[i] = 1;
-                    subPowerStatus.v50enA[i] = 1;
-                    subPowerStatus.v32enA[i] = 1;
-                }
-            }
-            /*
-             0:connect, 1 保護觸發, 2:工作比過高, 3:脈寬過高, 4:溫度過高, 5:反射過高, 6:RF輸出, 7:溫度
-             */
-            for (var j = 0; j < 2; j++) {
-                if (j === 0)
-                    var subSspaStatusA = syncData.sub1SspaStatusA = [];
-                if (j === 1)
-                    var subSspaStatusA = syncData.sub2SspaStatusA = [];
-                for (var i = 0; i < 36; i++) {
-                    subSspaStatusA.push([1, 0, 0, 0, 0, 0, 45.3, 32]);
-                }
-            }
-
-
-        }
-
-        gr.syncData.connectTime++;
-        if (gr.syncData.connectTime >= 6) {
-            gr.syncData.connectTime = 0;
-            gr.syncData.connectCnt++;
-        }
-
-    }
-
     static paraSetPrg() {
 
         var setPrg = function () {
@@ -1402,6 +1233,7 @@ class MasterRadarPane {
         //===================================
         var cname = lyMaps["rightDownBody"] + "~" + 0;
         var opts = {};
+        opts.readOnly_f = 1;
         blocks[cname] = {name: "editor", type: "Component~Cp_base~editor.sys0", opts: opts};
         //==
         var cname = lyMaps["rightDownBody"] + "~" + 1;
@@ -1450,7 +1282,7 @@ class MasterRadarPane {
         //==============================
     }
 }
-//==================================
+
 class DummyTargetSub {
     constructor() {
     }
@@ -1465,55 +1297,6 @@ class DummyTargetSub {
         var self = this;
         var opts = {};
         Block.setBaseOpts(opts);
-        if (!gr.appFirstEntry_f) {
-            gr.appFirstEntry_f = 1;
-            var syncData = gr.syncData = {};
-            var location = syncData.location = {};
-            syncData.connectTime = 0;
-            syncData.connectCnt = 0;
-            syncData.slotStatus = [0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            syncData.slotIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 0, 0, 0];
-            location.mastGpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-            location.sub1GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-            location.sub2GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-
-            var radarStatus = syncData.radarStatus = {};
-            /*
-             SP雷達信號     0.0: 無信號, 0.1: 信號備便
-             脈波來源       1.0: 主雷同步, 1.1: 本機脈波
-             與副控1連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-             與副控2連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-             */
-            radarStatus.mastStatus = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            /*
-             雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中, 0.5:異常          
-             環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
-             SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
-             SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
-             SSPA功率    4.0: 未連線, 3.1:良好, 4.2: 異常 
-             戰備狀態    5.0: 未連線, 5.1:關閉, 5.2: 開啟 
-             遠端遙控    6.0: 未連線, 6.1:關閉, 6.2: 開啟 
-             脈波來源    7.0: 未連線, 7.1: 主雷同步, 7.2: 本機脈波
-             輸出裝置    8.0: 未連線, 8.1: 天線, 8.2:假負載 
-             連線方式    9.0: 未連線, 9.1: 光纖, 9.2:無線, 9.3:自動 
-             0.1
-             */
-            radarStatus.sub1Status = [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            radarStatus.sub2Status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-            //0 光纖連線狀態 0:未連線, 1:未連線 
-            //1 RF連線狀態 0:未連線, 1:未連線 
-            //2 1588修正時間  
-            //3 封包發送數  
-            //4 正確率
-            //5 主控RF接收能量
-            //6 副控RF接收能量
-            syncData.sub1CommDatas = [0, 1, 3, 4, 1200, 10, 20];
-            syncData.sub2CommDatas = [1, 0, 7, 8, 1201, 11, 22];
-
-
-
-        }
         return opts;
     }
 
@@ -1914,6 +1697,7 @@ class SubRadarPane {
         //===================================
         var cname = lyMaps["rightDownBody"] + "~" + 0;
         var opts = {};
+        opts.readOnly_f = 1;
         blocks[cname] = {name: "editor", type: "Component~Cp_base~editor.sys0", opts: opts};
         //==
         var cname = lyMaps["rightDownBody"] + "~" + 1;
@@ -1955,545 +1739,6 @@ class SubRadarPane {
         opts.actionFunc = actionPrg;
         blocks[cname] = {name: "clrButton", type: "Component~Cp_base~button.sys0", opts: opts};
         //==============================
-    }
-}
-
-
-
-//==================================
-class DummyTargetCtr {
-    constructor() {
-    }
-    static globleTime() {
-        gr.syncData.connectTime++;
-        if (gr.syncData.connectTime >= 6) {
-            gr.syncData.connectTime = 0;
-            gr.syncData.connectCnt++;
-        }
-    }
-    initOpts(md) {
-        var self = this;
-        var opts = {};
-        Block.setBaseOpts(opts);
-        if (!gr.appFirstEntry_f) {
-            gr.appFirstEntry_f = 1;
-            var syncData = gr.syncData = {};
-            var location = syncData.location = {};
-            syncData.connectTime = 0;
-            syncData.connectCnt = 0;
-            syncData.slotStatus = [0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            syncData.slotIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 0, 0, 0];
-            location.mastGpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-            location.sub1GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-            location.sub2GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
-
-            var radarStatus = syncData.radarStatus = {};
-            /*
-             SP雷達信號     0.0: 無信號, 0.1: 信號備便
-             脈波來源       1.0: 主雷同步, 1.1: 本機脈波
-             與副控1連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-             與副控2連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-             */
-            radarStatus.mastStatus = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            /*
-             雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中, 0.5:異常          
-             環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
-             SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
-             SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
-             SSPA功率    4.0: 未連線, 3.1:良好, 4.2: 異常 
-             戰備狀態    5.0: 未連線, 5.1:關閉, 5.2: 開啟 
-             遠端遙控    6.0: 未連線, 6.1:關閉, 6.2: 開啟 
-             脈波來源    7.0: 未連線, 7.1: 主雷同步, 7.2: 本機脈波
-             輸出裝置    8.0: 未連線, 8.1: 天線, 8.2:假負載 
-             連線方式    9.0: 未連線, 9.1: 光纖, 9.2:無線, 9.3:自動 
-             0.1
-             */
-            radarStatus.sub1Status = [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            radarStatus.sub2Status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-            //0 光纖連線狀態 0:未連線, 1:未連線 
-            //1 RF連線狀態 0:未連線, 1:未連線 
-            //2 1588修正時間  
-            //3 封包發送數  
-            //4 正確率
-            //5 主控RF接收能量
-            //6 副控RF接收能量
-            syncData.sub1CommDatas = [0, 1, 3, 4, 1200, 10, 20];
-            syncData.sub2CommDatas = [1, 0, 7, 8, 1201, 11, 22];
-
-
-
-        }
-        return opts;
-    }
-
-    chkWatch() {
-        var self = this;
-        var md = this.md;
-        var op = md.opts;
-        var st = md.stas;
-        return;
-        st.radarStatusText = [];
-        st.radarStatusColor = [];
-
-        /*
-         SP雷達信號     0.0: 無信號, 0.1: 信號備便
-         脈波來源       1.0: 主雷同步, 1.1: 本機脈波
-         與副控1連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-         與副控2連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
-         */
-
-
-
-    }
-
-    actionFunc(iobj) {
-        console.log(iobj);
-        if (iobj.act === "mouseClick") {
-
-        }
-
-    }
-
-    build() {
-        var self = this;
-        var md = self.md;
-        var op = md.opts;
-        var lyMaps = md.lyMaps;
-        var blocks = op.blocks;
-        var layouts = op.layouts;
-        //======================================    
-        var cname = "c";
-        var opts = {};
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
-        lyMaps["body"] = cname;
-        var opts = {};
-        md.setPns(opts);
-        opts.mouseClick_f = 1;
-        opts.baseColor = "#222";
-        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.none", opts: opts};
-        //======================================    
-        var cname = lyMaps["body"] + "~" + 0;
-        var opts = {};
-        opts.yArr = [50, 70, 9999];
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["mainBody"] = cname;
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + 0;
-        var opts = {};
-        opts.innerText = "雷達中央控制器";
-        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + 1;
-        var opts = {};
-        opts.buttons = ["自測", "發射機狀態", "電源狀態", "放大器狀態", "波形", "設定"];
-        opts.buttonIds = ["selfTest", "radarStatus", "powerStatus", "sspaStatus", "wave", "setting"];
-        opts.fontSize = "0.5rh";
-        opts.xm = 4;
-
-
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-            var escPrg = function (iobj) {
-                console.log(iobj);
-                if (iobj.act === "esc")
-                    MdaPopWin.popOff(2);
-            };
-            if (iobj.buttonId === "radarStatus") {
-                var opts = {};
-                opts.actionFunc = escPrg;
-                var kvObj = new Block("location", "Model~CtrRadarStatus~base.sys0", opts);
-                var mesObj = mda.popObj(0, 0, kvObj);
-                return;
-            }
-            if (iobj.buttonId === "selfTest") {
-                var opts = {};
-                opts.actionFunc = escPrg;
-                var kvObj = new Block("selfTest", "Model~SelfTest~base.sys0", opts);
-                var mesObj = mda.popObj(0, 0, kvObj);
-                return;
-            }
-            if (iobj.buttonId === "powerStatus") {
-                var opts = {};
-                opts.actionFunc = escPrg;
-                var kvObj = new Block("location", "Model~CtrPowerStatus~base.sys0", opts);
-                var mesObj = mda.popObj(0, 0, kvObj);
-                return;
-            }
-            if (iobj.buttonId === "sspaStatus") {
-                var opts = {};
-                opts.actionFunc = escPrg;
-                var kvObj = new Block("location", "Model~CtrSspaStatus~base.sys0", opts);
-                var mesObj = mda.popObj(0, 0, kvObj);
-                return;
-            }
-
-
-            if (iobj.buttonId === "wave") {
-                var opts = {};
-                opts.actionFunc = escPrg;
-                var kvObj = new Block("scope", "Model~MyNewScope~base.sys0", opts);
-                var mesObj = mda.popObj(0, 0, kvObj);
-                return;
-            }
-
-            if (iobj.buttonId === "setting") {
-                DummyTargetMaster.paraSetPrg();
-                return;
-                var opts = {};
-                opts.title = "輸入密碼";
-                opts.setOpts = sopt.getIntPassword({});
-                opts.actionFunc = function (iobj) {
-
-                    var yes_f = 0;
-                    if (iobj.inputText === "16020039") {
-                        yes_f = 1;
-                    }
-                    if (iobj.inputText === gr.paraSet.paraSetPassword) {
-                        yes_f = 1;
-                    }
-                    yes_f = 1;
-                    if (!yes_f) {
-                        console.log(iobj);
-                        var opts = {};
-                        opts.kvTexts = ["密碼錯誤"];
-                        box.errorBox(opts);
-                        return;
-                    }
-                    MdaPopWin.popOff(2);
-                    DummyTargetMaster.paraSetPrg();
-                };
-                box.intPadBox(opts);
-            }
-
-            if (iobj.buttonId === "call") {
-                var opts = {};
-                opts.actionFunc = escPrg;
-                var kvObj = new Block("syncTest", "Model~PhoneBox~base.sys0", opts);
-                var mesObj = mda.popObj(0, 0, kvObj);
-                return;
-            }
-
-
-        };
-        opts.buttonAmt = 6;
-        blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
-        //==============================
-        var cname = lyMaps["mainBody"] + "~" + 2;
-        var opts = {};
-        opts.xArr = [0, 9999];
-        opts.xm = 0;
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["downBody"] = cname;
-        //==============================
-        var cname = lyMaps["downBody"] + "~" + 0;
-        var opts = {};
-        opts.yc = 2;
-        opts.ym = 10;
-        opts.margin = 0;
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
-        lyMaps["leftBody"] = cname;
-        //==============================
-        //==============================
-        //==============================
-        var cname = lyMaps["downBody"] + "~" + 1;
-        var opts = {};
-        opts.title = "";
-        opts.actionFunc = self.actionFunc;
-        opts.baseColor = "#222";
-        blocks[cname] = {name: "sub1RadarPane", type: "Model~CtrRadarPane~base.sys0", opts: opts};
-        //==============================
-
-
-
-    }
-}
-
-class CtrRadarPane {
-    constructor() {
-    }
-    initOpts(md) {
-        var self = this;
-        var opts = {};
-        Block.setBaseOpts(opts);
-        this.subTypeOpts(opts);
-        opts.title = "title";
-        opts.buttonColor = "#ccf";
-        opts.buttons = ["button1", "button2", "button3"];
-        opts.layoutType = "row"; //row,collum,array
-        opts.buttonIds = [];
-        opts.iw = 9999;
-        opts.ih = 9999;
-        opts.borderWidth = 1;
-        opts.xm = 30;
-        opts.baseColor = "#222";
-        return opts;
-    }
-    subTypeOpts(opts) {
-        if (this.md.subType === "base.sys0") {
-        }
-    }
-
-    chkWatch() {
-        var self = this;
-        var md = this.md;
-        var op = md.opts;
-        var st = md.stas;
-
-    }
-
-    afterCreate() {
-        var md = this.md;
-        var op = md.opts;
-        var st = md.stas;
-        var iobj = {};
-        iobj.act = "afterCreate";
-        iobj.sender = md;
-        KvLib.exe(op.actionFunc, iobj);
-    }
-    build() {
-        var self = this;
-        var md = self.md;
-        var op = md.opts;
-        var st = md.stas;
-        var lyMaps = md.lyMaps;
-        var blocks = op.blocks;
-        var layouts = op.layouts;
-        //======================================    
-        var actionPrg = function (iobj) {
-            console.log(iobj);
-            if (iobj.kvObj.name === "clrButton") {
-                var kvObj = md.blockRefs["editor"];
-                if (!kvObj)
-                    return;
-                var editor = kvObj.objs["editor"];
-                KvLib.clearEditorMaker(editor);
-                editor.getSession().setValue("");
-                return;
-            }
-
-            iobj.sender = md;
-            iobj.keyId = md.name + iobj.kvObj.name;
-            KvLib.exe(op.actionFunc, iobj);
-        };
-        //======================================    
-        var cname = "c";
-        var opts = {};
-        md.setPns(opts);
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
-        lyMaps["body"] = cname;
-        //======================================    
-        var opts = {};
-        md.setPns(opts);
-        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
-        //======================================    
-        var cname = lyMaps["body"] + "~" + 0;
-        var opts = {};
-        opts.margin = 6;
-        opts.xm = 10;
-        opts.ym = 4;
-        opts.yArr = [0, 120, 90, 100, 100, 9999, 20];
-        var rw0 = (1 / 6).toFixed(3) + "rw";
-        var rw1 = (1 / 4).toFixed(3) + "rw";
-        var rw2 = (1 / 3).toFixed(3) + "rw";
-        opts.xyArr = [
-            [9999],
-            [rw1, rw1, rw1, rw1],
-            [rw0, rw0, rw0, rw0, rw0, rw0],
-            [rw1, rw1, rw1, rw1],
-            [rw1, rw1, rw1, rw1],
-            [9999, 140],
-            [9999],
-            ["0.1rw", 9999],
-            [9999]
-        ];
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["mainBody"] = cname;
-        //===================================
-        var lyInx = 0;
-        //var opts = {};
-        //opts.innerText = op.title;
-        //blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
-        lyInx++;
-        //==============================
-
-        var actionPrg = function (iobj) {
-            console.log(iobj);
-        };
-
-        var preText = "sub1";
-        if (gr.appId === 1)
-            var preText = "sub1";
-        if (gr.appId === 2)
-            var preText = "sub2";
-        for (var i = 0; i < 18; i++) {
-            var cname = lyMaps["mainBody"] + "~" + lyInx++;
-            var opts = {};
-            opts.setOptss = [];
-            var inx = 0;
-            if (i === inx++) {
-                opts.title = "輸入功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-            }
-            if (i === inx++) {
-                opts.title = "順向輸出功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-            }
-            if (i === inx++) {
-                opts.title = "反向輸出功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-                setOpts.editTextColor = "#44a";
-            }
-            if (i === inx++) {
-                opts.title = "輸出電流";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-            }
-            if (i === inx++) {
-                opts.title = "系統狀態";
-                var setOpts = opts.setOpts = sopt.getOptsPara("led");
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-            if (i === inx++) {
-                opts.title = "脈波輸入狀態";
-                var setOpts = opts.setOpts = sopt.getOptsPara("led");
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-
-
-            if (i === inx++) {
-                opts.title = "環控狀態";
-                var setOpts = opts.setOpts = sopt.getOptsPara("led");
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-            if (i === inx++) {
-                opts.title = "固態放大器電源";
-                var setOpts = opts.setOpts = sopt.getOptsPara("led");
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-            if (i === inx++) {
-                opts.title = "固態放大器狀態";
-                var setOpts = opts.setOpts = sopt.getOptsPara("led");
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-            if (i === inx++) {
-                opts.title = "脈波輸出狀態";
-                var setOpts = opts.setOpts = sopt.getOptsPara("led");
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-            if (gr.appId === 3)
-                preText = "sub1";
-            if (gr.appId === 4)
-                preText = "sub2";
-            if (i === inx++) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
-                var para = sopt.getParaSetOpts({paraSetName: preText + "PulseSource", titleWidth: 0, titleFontSize: "0.5rh"});
-                opts.title = "脈波來源";
-                setOpts.fontSize = "0.5rh";
-                setOpts.enum = para.enum;
-                setOpts.value = para.value;
-            }
-            if (i === inx++) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
-                var para = sopt.getParaSetOpts({paraSetName: preText + "Remote", titleWidth: 0, titleFontSize: "0.5rh"});
-                opts.title = "遠端遙控";
-                setOpts.enum = para.enum;
-                setOpts.value = para.value;
-            }
-            if (i === inx++) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
-                var para = sopt.getParaSetOpts({paraSetName: preText + "TxLoad", titleWidth: 0, titleFontSize: "0.5rh"});
-                opts.title = "輸出裝置";
-                setOpts.enum = para.enum;
-                setOpts.enumColors = ["#eef", "#ffc"];
-                setOpts.value = para.value;
-            }
-            if (i === inx++) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
-                var para = sopt.getParaSetOpts({paraSetName: preText + "BatShort", titleWidth: 0, titleFontSize: "0.5rh"});
-                opts.title = "戰備短路";
-                setOpts.enum = para.enum;
-                setOpts.enumColors = ["#eef", "#ffc"];
-                setOpts.value = para.value;
-            }
-            if (i === inx++) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
-                opts.title = "固態放大器電源";
-                setOpts.enum = ["關閉", "開啟"];
-                setOpts.enumIds = ["close", "open"];
-            }
-            if (i === inx++) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
-                opts.title = "本機脈波輸出";
-                setOpts.enum = ["關閉", "開啟"];
-                setOpts.enumIds = ["close", "open"];
-            }
-            if (i === inx++) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
-                opts.title = "脈波輸出致能";
-                setOpts.enum = ["關閉", "開啟"];
-                setOpts.enumIds = ["close", "open"];
-            }
-            if (i === inx++) {
-                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
-                opts.title = "系統控制";
-                setOpts.enum = ["緊急停止"];
-                setOpts.enumIds = ["closeAll"];
-            }
-            setOpts.titleWidth = 0;
-            setOpts.baseColor = "#002";
-            setOpts.borderWidth = 0;
-            opts.setOptss.push(setOpts);
-            opts.actionFunc = actionPrg;
-            blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
-        }
-        //==============================================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        var opts = {};
-        blocks[cname] = {name: "editor", type: "Component~Cp_base~editor.sys0", opts: opts};
-        //==============================================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-
-        var opts = {};
-        opts.buttons = ["上一頁", "下一頁", "清除"];
-        opts.buttonAmt = 6;
-        opts.buttonIds = ["upPage", "downPage", "clear"];
-        opts.layoutType = "collum";
-        opts.margin = 4;
-        opts.fontSize = "0.5rh";
-        opts.xm = 4;
-        opts.ym = 10;
-        opts.baseColor = "#444";
-        opts.actionFunc = function (iobj) {
-            console.log(iobj);
-            if (iobj.buttonId === "clear") {
-                var kvObj = md.blockRefs["editor"];
-                var editor = kvObj.objs["editor"];
-                KvLib.clearEditorMaker(editor);
-                editor.getSession().setValue("");
-                return;
-            }
-        };
-        blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
-        //==============================================
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        mac.setFootBar(md, cname);
-        return;
     }
 }
 
@@ -3766,6 +3011,7 @@ class SelfTest {
         lyMaps["footBody"] = cname;
         var cname = lyMaps["footBody"] + "~" + 0;
         var opts = {};
+        opts.readOnly_f = 1;
         blocks[cname] = {name: "editor", type: "Component~Cp_base~editor.sys0", opts: opts};
         var cname = lyMaps["footBody"] + "~" + 1;
         var opts = {};
@@ -4144,7 +3390,6 @@ class SyncTest {
     }
 }
 
-
 class PhoneBox {
     constructor() {
     }
@@ -4330,303 +3575,6 @@ class PhoneBox {
 }
 
 
-
-class CtrRadarStatus {
-    constructor() {
-    }
-    initOpts(md) {
-        var self = this;
-        var opts = {};
-        Block.setBaseOpts(opts);
-        this.subTypeOpts(opts);
-        opts.title = "title";
-        opts.buttonColor = "#ccf";
-        opts.buttons = ["button1", "button2", "button3"];
-        opts.layoutType = "row"; //row,collum,array
-        opts.buttonIds = [];
-        opts.iw = 9999;
-        opts.ih = 9999;
-        opts.borderWidth = 1;
-        opts.xm = 30;
-        opts.baseColor = "#222";
-        return opts;
-    }
-    subTypeOpts(opts) {
-        if (this.md.subType === "base.sys0") {
-        }
-    }
-
-    chkWatch() {
-        var self = this;
-        var md = this.md;
-        var op = md.opts;
-        var st = md.stas;
-
-    }
-
-    afterCreate() {
-        var md = this.md;
-        var op = md.opts;
-        var st = md.stas;
-        var iobj = {};
-        iobj.act = "afterCreate";
-        iobj.sender = md;
-        KvLib.exe(op.actionFunc, iobj);
-    }
-    build() {
-        var self = this;
-        var md = self.md;
-        var op = md.opts;
-        var st = md.stas;
-        var lyMaps = md.lyMaps;
-        var blocks = op.blocks;
-        var layouts = op.layouts;
-        //======================================    
-        var escPrg = function (iobj) {
-            console.log(iobj);
-            if (iobj.act === "mouseClick") {
-                if (iobj.kvObj.opts.itemId === "esc") {
-                    MdaPopWin.popOff(2);
-                    return;
-                }
-            }    
-            
-
-        };
-
-        var actionPrg = function (iobj) {
-            console.log(iobj);
-            if (iobj.kvObj.name === "clrButton") {
-                var kvObj = md.blockRefs["editor"];
-                if (!kvObj)
-                    return;
-                var editor = kvObj.objs["editor"];
-                KvLib.clearEditorMaker(editor);
-                editor.getSession().setValue("");
-                return;
-            }
-
-            iobj.sender = md;
-            iobj.keyId = md.name + iobj.kvObj.name;
-            KvLib.exe(op.actionFunc, iobj);
-        };
-        //======================================    
-        var cname = "c";
-        var opts = {};
-        md.setPns(opts);
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
-        lyMaps["body"] = cname;
-        //======================================    
-        var opts = {};
-        md.setPns(opts);
-        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
-        //======================================    
-        var cname = lyMaps["body"] + "~" + 0;
-        var opts = {};
-        opts.margin = 6;
-        opts.xm = 10;
-        opts.ym = 4;
-        opts.yArr = [50, 120, 120, 90, 90, 9999];
-        var rw0 = (1 / 6).toFixed(3) + "rw";
-        var rw1 = (1 / 4).toFixed(3) + "rw";
-        var rw2 = (1 / 3).toFixed(3) + "rw";
-        opts.xyArr = [
-            [9999],
-            [rw2, rw2, rw2],
-            [rw1, rw1, rw1, rw1],
-            ["0.3rw", 9999, "0.15rw"],
-            [9999, "0.4rw"],
-            ["0.5rw", 9999],
-
-            [rw0, rw0, rw0, rw0, rw0, rw0],
-            [rw1, rw1, rw1, rw1],
-            [rw2, rw2, rw2],
-            [9999, 140],
-            [9999],
-            ["0.1rw", 9999],
-            [9999]
-        ];
-        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
-        lyMaps["mainBody"] = cname;
-        //===================================
-        var lyInx = 0;
-        var cname = lyMaps["mainBody"] + "~" + lyInx++;
-        mac.setHeadTitleBar(md, cname, "發射機狀態", escPrg);
-        //==============================
-
-        var actionPrg = function (iobj) {
-            console.log(iobj);
-        };
-
-        var preText = "sub1";
-        if (gr.appId === 1)
-            var preText = "sub1";
-        if (gr.appId === 2)
-            var preText = "sub2";
-        for (var i = 0; i < 14; i++) {
-            var cname = lyMaps["mainBody"] + "~" + lyInx++;
-            var opts = {};
-            opts.setOptss = [];
-            var inx = 0;
-            if (i === inx++) {
-                opts.title = "順向輸出功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-            }
-            if (i === inx++) {
-                opts.title = "反向輸出功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-                setOpts.editTextColor = "#000";
-            }
-            if (i === inx++) {
-                opts.title = "輸出電流";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-            }
-            if (i === inx++) {
-                opts.title = "本機輸入功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-            }
-            if (i === inx++) {
-                opts.title = "遙控輸入功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-            }
-            if (i === inx++) {
-                opts.title = "前置放大器輸出功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-                setOpts.editTextColor = "#0f0";
-            }
-            if (i === inx++) {
-                opts.title = "驅動放大器輸出功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "123.4";//
-            }
-
-
-
-
-            if (i === inx++) {
-                opts.title = "環控氣流";
-                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                setOpts.enum = ["AF左", "AF中", "AF右"];
-                setOpts.value = [0, 1, 2];
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-
-            if (i === inx++) {
-                opts.title = "環控水流";
-                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                setOpts.enum = ["WF1", "WF2", "WF3", "WF4", "WF5", "WF6"];
-                setOpts.value = [0, 1, 2, 3, 4, 0];
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-            if (i === inx++) {
-                opts.title = "環控水溫";
-                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                setOpts.enum = ["WT"];
-                setOpts.value = [0];
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-
-            if (i === inx++) {
-                opts.title = "脈波狀態";
-                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                setOpts.enum = ["脈波輸入", "週期過大", "脈波過寬"];
-                setOpts.value = [0, 1, 2];
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-
-            if (i === inx++) {
-                opts.title = "固態放大器狀態";
-                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                setOpts.enum = ["放大器電源", "放大器模組"];
-                setOpts.value = [0, 1];
-                opts.setOptss.push(setOpts);
-                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-
-            //=======================================================================
-            var ser = 0;
-            if (i === inx++) {
-                opts.title = "放大器電源狀態";
-                var rh = (1 / 10).toFixed(3) + "rh";
-                var rw = (1 / 4).toFixed(3) + "rw";
-                opts.yArr = [];
-                opts.xyArr = [];
-                opts.ym = 0;
-                for (var j = 0; j < 10; j++) {
-                    opts.yArr.push(rh);
-                    opts.xyArr.push([rw, rw, rw, rw]);
-                }
-                for (var j = 0; j < 40; j++) {
-                    var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                    if (j === 0 || j === 3 || j === 36 || j === 39) {
-                        opts.setOptss.push(null);
-                        continue;
-                    }
-                    var str1 = "" + (((j / 4) | 0) + 1);
-                    var str2 = "-" + ((j % 4) + 1);
-                    setOpts.enum = [str1 + str2];
-                    setOpts.value = [0];
-                    opts.setOptss.push(setOpts);
-                }
-                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-
-            var ser = 0;
-            if (i === inx++) {
-                opts.title = "放大器模組狀態";
-                var rh = (1 / 10).toFixed(3) + "rh";
-                var rw = (1 / 4).toFixed(3) + "rw";
-                opts.yArr = [];
-                opts.xyArr = [];
-                opts.ym = 0;
-                for (var j = 0; j < 10; j++) {
-                    opts.yArr.push(rh);
-                    opts.xyArr.push([rw, rw, rw, rw]);
-                }
-                for (var j = 0; j < 40; j++) {
-                    var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                    if (j === 0 || j === 3 || j === 36 || j === 39) {
-                        opts.setOptss.push(null);
-                        continue;
-                    }
-                    var str1 = "" + (((j / 4) | 0) + 1);
-                    var str2 = "-" + ((j % 4) + 1);
-                    setOpts.enum = [str1 + str2];
-                    setOpts.value = [0];
-                    opts.setOptss.push(setOpts);
-                }
-                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
-                continue;
-            }
-            setOpts.titleWidth = 0;
-            setOpts.baseColor = "#002";
-            setOpts.borderWidth = 0;
-            opts.setOptss.push(setOpts);
-            opts.actionFunc = actionPrg;
-            blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
-        }
-
-    }
-}
-
-
-
 class CtrPowerStatus {
     constructor() {
     }
@@ -4659,12 +3607,12 @@ class CtrPowerStatus {
         var st = md.stas;
 
         if (gr.appId === 3) {
-            var subPowerStatus = gr.syncData.sub1PowerStatus;
-            var preText = "sub1";
+            var subPowerStatus = gr.syncData.ctr1PowerStatus;
+            var preText = "ctr1";
         }
         if (gr.appId === 4) {
-            var subPowerStatus = gr.syncData.sub2PowerStatus;
-            var preText = "sub2";
+            var subPowerStatus = gr.syncData.ctr2PowerStatus;
+            var preText = "ctr2";
         }
         var watchObj = st.watchObj = {};
 
@@ -4687,9 +3635,9 @@ class CtrPowerStatus {
         watchObj.v32iColorA = [];
         watchObj.v32tColorA = [];
         if (gr.appId === 3)
-            var preText = "sub1";
+            var preText = "ctr1";
         if (gr.appId === 4)
-            var preText = "sub2";
+            var preText = "ctr2";
         for (var i = 0; i < 36; i++) {
             watchObj.existA.push(gr.paraSet[preText + "PowerExistA"][i]);
             if (!subPowerStatus.connectA[i]) {
@@ -4777,21 +3725,25 @@ class CtrPowerStatus {
                     opts.actionFunc = function (iobj) {
                         console.log(iobj);
                         MdaPopWin.popOff(2);
+                        if (gr.appId === 3)
+                            var preText = "ctr1";
+                        if (gr.appId === 4)
+                            var preText = "ctr2";
                         switch (iobj.selectInx) {
                             case 0:
-                                DummyTargetMaster.syncCommand({'act': "closeAllPowerModule"});
+                                gr.gbcs.command({'act': preText + "CloseAllPowerModule"});
                                 break;
                             case 1:
-                                DummyTargetMaster.syncCommand({'act': "openAllPowerModule"});
+                                gr.gbcs.command({'act': preText + "OpenAllPowerModule"});
                                 break;
                             case 2:
-                                DummyTargetMaster.syncCommand({'act': "resetAllPowerModule"});
+                                gr.gbcs.command({'act': preText + "ResetAllPowerModule"});
                                 break;
                             case 3:
-                                DummyTargetMaster.syncCommand({'act': "removeAllPowerModule"});
+                                gr.gbcs.command({'act': preText + "RemoveAllPowerModule"});
                                 break;
                             case 4:
-                                DummyTargetMaster.syncCommand({'act': "insertAllPowerModule"});
+                                gr.gbcs.command({'act': preText + "InsertAllPowerModule"});
                                 break;
 
                         }
@@ -4922,21 +3874,25 @@ class CtrPowerStatus {
                     opts.actionFunc = function (iobj) {
                         console.log(iobj);
                         MdaPopWin.popOff(2);
+                        if (gr.appId === 3)
+                            var preText = "ctr1";
+                        if (gr.appId === 4)
+                            var preText = "ctr2";
                         switch (iobj.selectInx) {
                             case 0:
-                                DummyTargetMaster.syncCommand({'act': "closePowerModule", "index": barInx});
+                                gr.gbcs.command({'act': preText + "ClosePowerModule", "index": barInx});
                                 break;
                             case 1:
-                                DummyTargetMaster.syncCommand({'act': "openPowerModule", "index": barInx});
+                                gr.gbcs.command({'act': preText + "OpenPowerModule", "index": barInx});
                                 break;
                             case 2:
-                                DummyTargetMaster.syncCommand({'act': "resetPowerModule", "index": barInx});
+                                gr.gbcs.command({'act': preText + "ResetPowerModule", "index": barInx});
                                 break;
                             case 3:
-                                DummyTargetMaster.syncCommand({'act': "removePowerModule", "index": barInx});
+                                gr.gbcs.command({'act': preText + "RemovePowerModule", "index": barInx});
                                 break;
                             case 4:
-                                DummyTargetMaster.syncCommand({'act': "insertPowerModule", "index": barInx});
+                                gr.gbcs.command({'act': preText + "InsertPowerModule", "index": barInx});
                                 break;
 
                         }
@@ -4950,8 +3906,6 @@ class CtrPowerStatus {
         //==============================
     }
 }
-
-
 
 class StatusBar {
     constructor() {
@@ -5070,8 +4024,6 @@ class StatusBar {
     }
 }
 
-
-
 class CtrSspaStatus {
     constructor() {
     }
@@ -5153,7 +4105,7 @@ class CtrSspaStatus {
                 var color = "#f00";
             arr.push(color);
             wSstatusA.push(arr);
-            
+
         }
     }
 
@@ -5195,12 +4147,16 @@ class CtrSspaStatus {
                     opts.actionFunc = function (iobj) {
                         console.log(iobj);
                         MdaPopWin.popOff(2);
+                        if (gr.appId === 3)
+                            var preText = "ctr1";
+                        if (gr.appId === 4)
+                            var preText = "ctr2";
                         switch (iobj.selectInx) {
                             case 0:
-                                DummyTargetMaster.syncCommand({'act': "removeAllSspaModule"});
+                                gr.gbcs.command({'act': preText + "RemoveAllSspaModule"});
                                 break;
                             case 1:
-                                DummyTargetMaster.syncCommand({'act': "insertAllSspaModule"});
+                                gr.gbcs.command({'act': preText + "InsertAllSspaModule"});
                                 break;
 
                         }
@@ -5324,10 +4280,10 @@ class CtrSspaStatus {
                         MdaPopWin.popOff(2);
                         switch (iobj.selectInx) {
                             case 0:
-                                DummyTargetMaster.syncCommand({'act': "removeSspaModule", "index": barInx});
+                                gr.gbcs.command({'act': "removeSspaModule", "index": barInx});
                                 break;
                             case 1:
-                                DummyTargetMaster.syncCommand({'act': "insertSspaModule", "index": barInx});
+                                gr.gbcs.command({'act': "insertSspaModule", "index": barInx});
                                 break;
 
                         }
@@ -5341,3 +4297,1200 @@ class CtrSspaStatus {
         //==============================
     }
 }
+
+
+
+class DummyTargetCtr {
+    constructor() {
+    }
+    static globleTime() {
+        gr.syncData.connectTime++;
+        if (gr.syncData.connectTime >= 6) {
+            gr.syncData.connectTime = 0;
+            gr.syncData.connectCnt++;
+        }
+    }
+    initOpts(md) {
+        var self = this;
+        var opts = {};
+        Block.setBaseOpts(opts);
+        return opts;
+    }
+
+    chkWatch() {
+        var self = this;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        return;
+        st.radarStatusText = [];
+        st.radarStatusColor = [];
+
+        /*
+         SP雷達信號     0.0: 無信號, 0.1: 信號備便
+         脈波來源       1.0: 主雷同步, 1.1: 本機脈波
+         與副控1連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
+         與副控2連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
+         */
+
+
+
+    }
+
+    actionFunc(iobj) {
+        console.log(iobj);
+        if (iobj.act === "mouseClick") {
+
+        }
+
+    }
+
+    build() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var lyMaps = md.lyMaps;
+        var blocks = op.blocks;
+        var layouts = op.layouts;
+        //======================================    
+        var cname = "c";
+        var opts = {};
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["body"] = cname;
+        var opts = {};
+        md.setPns(opts);
+        opts.mouseClick_f = 1;
+        opts.baseColor = "#222";
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.none", opts: opts};
+        //======================================    
+        var cname = lyMaps["body"] + "~" + 0;
+        var opts = {};
+        opts.yArr = [50, 70, 9999];
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["mainBody"] = cname;
+        //==============================
+        var cname = lyMaps["mainBody"] + "~" + 0;
+        var opts = {};
+        opts.innerText = "雷達中央控制器";
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
+        //==============================
+        var cname = lyMaps["mainBody"] + "~" + 1;
+        var opts = {};
+        opts.buttons = ["自測", "發射機狀態", "電源狀態", "放大器狀態", "波形", "設定"];
+        opts.buttonIds = ["selfTest", "radarStatus", "powerStatus", "sspaStatus", "wave", "setting"];
+        opts.fontSize = "0.5rh";
+        opts.xm = 4;
+
+
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            var escPrg = function (iobj) {
+                console.log(iobj);
+                if (iobj.act === "esc")
+                    MdaPopWin.popOff(2);
+            };
+            if (iobj.buttonId === "radarStatus") {
+                var opts = {};
+                opts.actionFunc = escPrg;
+                var kvObj = new Block("location", "Model~CtrRadarStatus~base.sys0", opts);
+                var mesObj = mda.popObj(0, 0, kvObj);
+                return;
+            }
+            if (iobj.buttonId === "selfTest") {
+                var opts = {};
+                opts.actionFunc = escPrg;
+                var kvObj = new Block("selfTest", "Model~SelfTest~base.sys0", opts);
+                var mesObj = mda.popObj(0, 0, kvObj);
+                return;
+            }
+            if (iobj.buttonId === "powerStatus") {
+                var opts = {};
+                opts.actionFunc = escPrg;
+                var kvObj = new Block("location", "Model~CtrPowerStatus~base.sys0", opts);
+                var mesObj = mda.popObj(0, 0, kvObj);
+                return;
+            }
+            if (iobj.buttonId === "sspaStatus") {
+                var opts = {};
+                opts.actionFunc = escPrg;
+                var kvObj = new Block("location", "Model~CtrSspaStatus~base.sys0", opts);
+                var mesObj = mda.popObj(0, 0, kvObj);
+                return;
+            }
+
+
+            if (iobj.buttonId === "wave") {
+                var opts = {};
+                opts.actionFunc = escPrg;
+                var kvObj = new Block("scope", "Model~MyNewScope~base.sys0", opts);
+                var mesObj = mda.popObj(0, 0, kvObj);
+                return;
+            }
+
+            if (iobj.buttonId === "setting") {
+                DummyTargetMaster.paraSetPrg();
+                return;
+                var opts = {};
+                opts.title = "輸入密碼";
+                opts.setOpts = sopt.getIntPassword({});
+                opts.actionFunc = function (iobj) {
+
+                    var yes_f = 0;
+                    if (iobj.inputText === "16020039") {
+                        yes_f = 1;
+                    }
+                    if (iobj.inputText === gr.paraSet.paraSetPassword) {
+                        yes_f = 1;
+                    }
+                    yes_f = 1;
+                    if (!yes_f) {
+                        console.log(iobj);
+                        var opts = {};
+                        opts.kvTexts = ["密碼錯誤"];
+                        box.errorBox(opts);
+                        return;
+                    }
+                    MdaPopWin.popOff(2);
+                    DummyTargetMaster.paraSetPrg();
+                };
+                box.intPadBox(opts);
+            }
+
+            if (iobj.buttonId === "call") {
+                var opts = {};
+                opts.actionFunc = escPrg;
+                var kvObj = new Block("syncTest", "Model~PhoneBox~base.sys0", opts);
+                var mesObj = mda.popObj(0, 0, kvObj);
+                return;
+            }
+
+
+        };
+        opts.buttonAmt = 6;
+        blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
+        //==============================
+        var cname = lyMaps["mainBody"] + "~" + 2;
+        var opts = {};
+        opts.xArr = [0, 9999];
+        opts.xm = 0;
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["downBody"] = cname;
+        //==============================
+        var cname = lyMaps["downBody"] + "~" + 0;
+        var opts = {};
+        opts.yc = 2;
+        opts.ym = 10;
+        opts.margin = 0;
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["leftBody"] = cname;
+        //==============================
+        //==============================
+        //==============================
+        var cname = lyMaps["downBody"] + "~" + 1;
+        var opts = {};
+        opts.title = "";
+        opts.actionFunc = self.actionFunc;
+        opts.baseColor = "#222";
+        blocks[cname] = {name: "subRadarPane", type: "Model~CtrRadarPane~base.sys0", opts: opts};
+        //==============================
+
+
+
+    }
+}
+
+
+class CtrRadarStatus {
+    constructor() {
+    }
+    initOpts(md) {
+        var self = this;
+        var opts = {};
+        Block.setBaseOpts(opts);
+        this.subTypeOpts(opts);
+        opts.title = "title";
+        opts.buttonColor = "#ccf";
+        opts.buttons = ["button1", "button2", "button3"];
+        opts.layoutType = "row"; //row,collum,array
+        opts.buttonIds = [];
+        opts.iw = 9999;
+        opts.ih = 9999;
+        opts.borderWidth = 1;
+        opts.xm = 30;
+        opts.baseColor = "#222";
+        return opts;
+    }
+    subTypeOpts(opts) {
+        if (this.md.subType === "base.sys0") {
+        }
+    }
+
+    chkWatch() {
+        var self = this;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var wa = md.stas.meterStatusA = [];
+        var wb = md.stas.ledStatusA = [];
+        if (gr.appId === 3)
+            var preText = "ctr1";
+        if (gr.appId === 4)
+            var preText = "ctr2";
+        var da = gr.syncData[preText + "MeterStatusA"];
+        var value = (da[0] - gr.paraSet[preText + "RemoteInRfpowOffs"]) * gr.paraSet[preText + "RemoteInRfpowGain"];
+        wa[0] = "" + value.toFixed(1);
+        var value = (da[1] - gr.paraSet[preText + "LocalInRfpowOffs"]) * gr.paraSet[preText + "LocalInRfpowGain"];
+        wa[1] = "" + value.toFixed(1);
+        var value = (da[2] - gr.paraSet[preText + "PreAmpOutRfpowOffs"]) * gr.paraSet[preText + "PreAmpOutRfpowGain"];
+        wa[2] = "" + value.toFixed(1);
+        var value = (da[3] - gr.paraSet[preText + "DriverAmpOutRfpowOffs"]) * gr.paraSet[preText + "DriverAmpOutRfpowGain"];
+        wa[3] = "" + value.toFixed(1);
+        var value = (da[4] - gr.paraSet[preText + "CwAmpOutRfpowOffs"]) * gr.paraSet[preText + "CwAmpOutRfpowGain"];
+        wa[4] = "" + value.toFixed(1);
+        var value = (da[5] - gr.paraSet[preText + "CcwAmpOutRfpowOffs"]) * gr.paraSet[preText + "CcwAmpOutRfpowGain"];
+        wa[5] = "" + value.toFixed(1);
+
+    }
+
+    afterCreate() {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var iobj = {};
+        iobj.act = "afterCreate";
+        iobj.sender = md;
+        KvLib.exe(op.actionFunc, iobj);
+    }
+    build() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        var lyMaps = md.lyMaps;
+        var blocks = op.blocks;
+        var layouts = op.layouts;
+        //======================================    
+        var escPrg = function (iobj) {
+            console.log(iobj);
+            if (iobj.act === "mouseClick") {
+                if (iobj.kvObj.opts.itemId === "esc") {
+                    MdaPopWin.popOff(2);
+                    return;
+                }
+            }
+
+
+        };
+
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+            if (iobj.kvObj.name === "clrButton") {
+                var kvObj = md.blockRefs["editor"];
+                if (!kvObj)
+                    return;
+                var editor = kvObj.objs["editor"];
+                KvLib.clearEditorMaker(editor);
+                editor.getSession().setValue("");
+                return;
+            }
+
+            iobj.sender = md;
+            iobj.keyId = md.name + iobj.kvObj.name;
+            KvLib.exe(op.actionFunc, iobj);
+        };
+        //======================================    
+        var cname = "c";
+        var opts = {};
+        md.setPns(opts);
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["body"] = cname;
+        //======================================    
+        var opts = {};
+        md.setPns(opts);
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
+        //======================================    
+        var cname = lyMaps["body"] + "~" + 0;
+        var opts = {};
+        opts.margin = 6;
+        opts.xm = 10;
+        opts.ym = 4;
+        opts.yArr = [50, 120, 120, 90, 90, 9999];
+        var rw0 = (1 / 6).toFixed(3) + "rw";
+        var rw1 = (1 / 4).toFixed(3) + "rw";
+        var rw2 = (1 / 3).toFixed(3) + "rw";
+        opts.xyArr = [
+            [9999],
+            [rw2, rw2, rw2],
+            [rw1, rw1, rw1, rw1],
+            ["0.3rw", 9999, "0.15rw"],
+            [9999, "0.4rw"],
+            ["0.5rw", 9999],
+
+            [rw0, rw0, rw0, rw0, rw0, rw0],
+            [rw1, rw1, rw1, rw1],
+            [rw2, rw2, rw2],
+            [9999, 140],
+            [9999],
+            ["0.1rw", 9999],
+            [9999]
+        ];
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["mainBody"] = cname;
+        //===================================
+        var lyInx = 0;
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        mac.setHeadTitleBar(md, cname, "發射機狀態", escPrg);
+        //==============================
+
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+        };
+
+        var preText = "ctr1";
+        if (gr.appId === 3)
+            var preText = "ctr1";
+        if (gr.appId === 4)
+            var preText = "ctr2";
+        var regName = "self.fatherMd.fatherMd.fatherMd.stas.meterStatus";
+
+        for (var i = 0; i < 14; i++) {
+            var cname = lyMaps["mainBody"] + "~" + lyInx++;
+            var opts = {};
+            opts.setOptss = [];
+            var inx = 0;
+            if (i === inx++) {
+                opts.title = "順向輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#4", "editValue", 1]);
+            }
+            if (i === inx++) {
+                opts.title = "反向輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+                setOpts.editTextColor = "#000";
+            }
+            if (i === inx++) {
+                opts.title = "輸出電流";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+            }
+            if (i === inx++) {
+                opts.title = "本機輸入功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+            }
+            if (i === inx++) {
+                opts.title = "遙控輸入功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+            }
+            if (i === inx++) {
+                opts.title = "前置放大器輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+                setOpts.editTextColor = "#0f0";
+            }
+            if (i === inx++) {
+                opts.title = "驅動放大器輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+            }
+
+
+
+
+            if (i === inx++) {
+                opts.title = "環控氣流";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["AF左", "AF中", "AF右"];
+                setOpts.value = [0, 1, 2];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            if (i === inx++) {
+                opts.title = "環控水流";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["WF1", "WF2", "WF3", "WF4", "WF5", "WF6"];
+                setOpts.value = [0, 1, 2, 3, 4, 0];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "環控水溫";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["WT"];
+                setOpts.value = [0];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            if (i === inx++) {
+                opts.title = "脈波狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["脈波輸入", "週期過大", "脈波過寬"];
+                setOpts.value = [0, 1, 2];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            if (i === inx++) {
+                opts.title = "固態放大器狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                setOpts.enum = ["放大器電源", "放大器模組"];
+                setOpts.value = [0, 1];
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            //=======================================================================
+            var ser = 0;
+            if (i === inx++) {
+                opts.title = "放大器電源狀態";
+                var rh = (1 / 10).toFixed(3) + "rh";
+                var rw = (1 / 4).toFixed(3) + "rw";
+                opts.yArr = [];
+                opts.xyArr = [];
+                opts.ym = 0;
+                for (var j = 0; j < 10; j++) {
+                    opts.yArr.push(rh);
+                    opts.xyArr.push([rw, rw, rw, rw]);
+                }
+                for (var j = 0; j < 40; j++) {
+                    var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                    if (j === 0 || j === 3 || j === 36 || j === 39) {
+                        opts.setOptss.push(null);
+                        continue;
+                    }
+                    var str1 = "" + (((j / 4) | 0) + 1);
+                    var str2 = "-" + ((j % 4) + 1);
+                    setOpts.enum = [str1 + str2];
+                    setOpts.value = [0];
+                    opts.setOptss.push(setOpts);
+                }
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            var ser = 0;
+            if (i === inx++) {
+                opts.title = "放大器模組狀態";
+                var rh = (1 / 10).toFixed(3) + "rh";
+                var rw = (1 / 4).toFixed(3) + "rw";
+                opts.yArr = [];
+                opts.xyArr = [];
+                opts.ym = 0;
+                for (var j = 0; j < 10; j++) {
+                    opts.yArr.push(rh);
+                    opts.xyArr.push([rw, rw, rw, rw]);
+                }
+                for (var j = 0; j < 40; j++) {
+                    var setOpts = opts.setOpts = sopt.getOptsPara("leds");
+                    if (j === 0 || j === 3 || j === 36 || j === 39) {
+                        opts.setOptss.push(null);
+                        continue;
+                    }
+                    var str1 = "" + (((j / 4) | 0) + 1);
+                    var str2 = "-" + ((j % 4) + 1);
+                    setOpts.enum = [str1 + str2];
+                    setOpts.value = [0];
+                    opts.setOptss.push(setOpts);
+                }
+                blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            setOpts.titleWidth = 0;
+            setOpts.baseColor = "#002";
+            setOpts.borderWidth = 0;
+            opts.setOptss.push(setOpts);
+            opts.actionFunc = actionPrg;
+            blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+        }
+
+    }
+}
+
+
+
+class CtrRadarPane {
+    constructor() {
+    }
+    initOpts(md) {
+        var self = this;
+        var opts = {};
+        Block.setBaseOpts(opts);
+        this.subTypeOpts(opts);
+        opts.title = "title";
+        opts.buttonColor = "#ccf";
+        opts.buttons = ["button1", "button2", "button3"];
+        opts.layoutType = "row"; //row,collum,array
+        opts.buttonIds = [];
+        opts.iw = 9999;
+        opts.ih = 9999;
+        opts.borderWidth = 1;
+        opts.xm = 30;
+        opts.baseColor = "#222";
+        return opts;
+    }
+    subTypeOpts(opts) {
+        if (this.md.subType === "base.sys0") {
+        }
+    }
+
+    chkWatch() {
+        var self = this;
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var wa = md.stas.meterStatusA = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
+        var wb = md.stas.ledStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        if (gr.appId === 3)
+            var preText = "ctr1";
+        if (gr.appId === 4)
+            var preText = "ctr2";
+        var da = gr.syncData[preText + "MeterStatusA"];
+
+
+        var value = (da[0] - gr.paraSet[preText + "RemoteInRfpowOffs"]) * gr.paraSet[preText + "RemoteInRfpowGain"];
+        wa[0] = "" + value.toFixed(1);
+        var value = (da[1] - gr.paraSet[preText + "LocalInRfpowOffs"]) * gr.paraSet[preText + "LocalInRfpowGain"];
+        wa[1] = "" + value.toFixed(1);
+        var value = (da[2] - gr.paraSet[preText + "PreAmpOutRfpowOffs"]) * gr.paraSet[preText + "PreAmpOutRfpowGain"];
+        wa[2] = "" + value.toFixed(1);
+        var value = (da[3] - gr.paraSet[preText + "DriverAmpOutRfpowOffs"]) * gr.paraSet[preText + "DriverAmpOutRfpowGain"];
+        wa[3] = "" + value.toFixed(1);
+        var value = (da[4] - gr.paraSet[preText + "CwAmpOutRfpowOffs"]) * gr.paraSet[preText + "CwAmpOutRfpowGain"];
+        wa[4] = "" + value.toFixed(1);
+        var value = (da[5] - gr.paraSet[preText + "CcwAmpOutRfpowOffs"]) * gr.paraSet[preText + "CcwAmpOutRfpowGain"];
+        wa[5] = "" + value.toFixed(1);
+        if (!gr.paraSet[preText + "PulseSource"])
+            wa[8] = wa[0];
+        else
+            wa[8] = wa[1];
+        var cur = 0;
+        for (var i = 0; i < 36; i++)
+            cur += gr.syncData[preText + "PowerStatus"].v32iA[i];
+        wa[9] = "" + cur.toFixed(1);
+
+
+
+        if (gr.appId === 3)
+            var preText = "ctr1";
+        if (gr.appId === 4)
+            var preText = "ctr2";
+        var da = gr.syncData[preText + "SystemStatusA"];
+        wb[0] = 0;
+        if (da[0] === 1)//system warn up
+            wb[0] = 3;
+        if (da[0] === 2)//system ready
+            wb[0] = 1;
+        if (da[0] === 3)//system error
+            wb[0] = 2;
+        //=====================================
+        wb[1] = da[1];//pulse input ok
+        wb[2] = da[2];//envi status
+        wb[3] = da[3];//power status
+        wb[4] = da[4];//sspa status
+        wb[5] = da[5];//pulse output status
+        //=====================================
+        
+        if(st.messageCnt===undefined)
+            st.messageCnt=gr.logMessage.messages.length;        
+        for(;;){
+            if(st.messageCnt>=gr.logMessage.messages.length)
+                break;
+            var kvObj = md.blockRefs["editor"];
+            var mes=gr.logMessage.messages[st.messageCnt];
+            if(st.messageCnt===0)
+                var str=mes.type+" : "+mes.text;
+            else
+                var str="\n"+mes.type+" : "+mes.text;
+            KvLib.endInputEditor(kvObj,str);
+            st.messageCnt++;
+        }    
+            
+        
+        
+    }
+
+    afterCreate() {
+        var md = this.md;
+        var op = md.opts;
+        var st = md.stas;
+        var iobj = {};
+        iobj.act = "afterCreate";
+        iobj.sender = md;
+        KvLib.exe(op.actionFunc, iobj);
+    }
+    build() {
+        var self = this;
+        var md = self.md;
+        var op = md.opts;
+        var st = md.stas;
+        var lyMaps = md.lyMaps;
+        var blocks = op.blocks;
+        var layouts = op.layouts;
+        //======================================    
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+            if (iobj.kvObj.name === "clrButton") {
+                var kvObj = md.blockRefs["editor"];
+                if (!kvObj)
+                    return;
+                var editor = kvObj.objs["editor"];
+                KvLib.clearEditorMaker(editor);
+                editor.getSession().setValue("");
+                return;
+            }
+
+            iobj.sender = md;
+            iobj.keyId = md.name + iobj.kvObj.name;
+            KvLib.exe(op.actionFunc, iobj);
+        };
+        //======================================    
+        var cname = "c";
+        var opts = {};
+        md.setPns(opts);
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~array.sys0", opts: opts};
+        lyMaps["body"] = cname;
+        //======================================    
+        var opts = {};
+        md.setPns(opts);
+        blocks[cname] = {name: "basePanel", type: "Component~Cp_base~plate.sys0", opts: opts};
+        //======================================    
+        var cname = lyMaps["body"] + "~" + 0;
+        var opts = {};
+        opts.margin = 6;
+        opts.xm = 10;
+        opts.ym = 4;
+        opts.yArr = [0, 120, 90, 100, 100, 9999, 20];
+        var rw0 = (1 / 6).toFixed(3) + "rw";
+        var rw1 = (1 / 4).toFixed(3) + "rw";
+        var rw2 = (1 / 3).toFixed(3) + "rw";
+        opts.xyArr = [
+            [9999],
+            [rw1, rw1, rw1, rw1],
+            [rw0, rw0, rw0, rw0, rw0, rw0],
+            [rw1, rw1, rw1, rw1],
+            [rw1, rw1, rw1, rw1],
+            [9999, 140],
+            [9999],
+            ["0.1rw", 9999],
+            [9999]
+        ];
+        layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
+        lyMaps["mainBody"] = cname;
+        //===================================
+        var lyInx = 0;
+        //var opts = {};
+        //opts.innerText = op.title;
+        //blocks[cname] = {name: "basePanel", type: "Component~Cp_base~label.title", opts: opts};
+        lyInx++;
+        //==============================
+
+        var actionPrg = function (iobj) {
+            console.log(iobj);
+            if (gr.appId === 3)
+                var preText = "ctr1";
+            if (gr.appId === 4)
+                var preText = "ctr2";
+            if (iobj.act === "actButtonClick") {
+                var inx = KvLib.toInt(iobj.sender.name.split('#')[1], -1);
+                if (inx === 14) {
+                    if(iobj.buttonInx===0)
+                        gr.gbcs.command({'act': preText + "CloseAllPowerModule"});
+                    if(iobj.buttonInx===1)
+                        gr.gbcs.command({'act': preText + "OpenAllPowerModule"});
+                    return;
+                }
+                if (inx === 15) {
+                    gr.gbcs.command({'act': preText + "LocalPulseOne"});
+                    return;
+                }
+                if (inx === 16) {
+                    gr.gbcs.command({'act': preText + "EnableAllSspa"});
+                    return;
+                }
+                if (inx === 17) {
+                    gr.gbcs.command({'act': preText + "EmergencyStop"});
+                    var kvObj = md.blockRefs["editor"];
+                    KvLib.endInputEditor(kvObj, "\n12345", "red");
+
+
+                    return;
+                }
+
+                return;
+            }
+            if (iobj.act === "mouseClick") {
+                var inx = KvLib.toInt(iobj.sender.name.split('#')[1], -1);
+                if (inx === 10) {
+                    mac.saveParaSet(preText + "PulseSource", iobj.buttonInx);
+                    return;
+                }
+                if (inx === 11) {
+                    mac.saveParaSet(preText + "Remote", iobj.buttonInx);
+                    return;
+                }
+                if (inx === 12) {
+                    mac.saveParaSet(preText + "TxLoad", iobj.buttonInx);
+                    return;
+                }
+                if (inx === 13) {
+                    mac.saveParaSet(preText + "BatShort", iobj.buttonInx);
+                    return;
+                }
+                return;
+            }
+
+        };
+
+        var preText = "ctr1";
+        if (gr.appId === 3)
+            var preText = "ctr1";
+        if (gr.appId === 4)
+            var preText = "ctr1";
+        for (var i = 0; i < 18; i++) {
+            var cname = lyMaps["mainBody"] + "~" + lyInx++;
+            var opts = {};
+            opts.setOptss = [];
+            var inx = 0;
+            var regName = "self.fatherMd.fatherMd.fatherMd.stas.meterStatusA";
+            if (i === inx++) {
+                opts.title = "輸入功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#8", "innerText", 1]);
+            }
+            if (i === inx++) {
+                opts.title = "順向輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#4", "innerText", 1]);
+            }
+            if (i === inx++) {
+                opts.title = "反向輸出功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#5", "innerText", 1]);
+            }
+            if (i === inx++) {
+                opts.title = "輸出電流";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#9", "innerText", 1]);
+            }
+            var regName = "self.fatherMd.fatherMd.fatherMd.stas.ledStatusA";
+            if (i === inx++) {
+                opts.title = "系統狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#0", "backgroundInx", 1]);
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "脈波輸入狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#1", "backgroundInx", 1]);
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+
+            if (i === inx++) {
+                opts.title = "環控狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#2", "backgroundInx", 1]);
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "固態放大器電源";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#3", "backgroundInx", 1]);
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "固態放大器狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#4", "backgroundInx", 1]);
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (i === inx++) {
+                opts.title = "脈波輸出狀態";
+                var setOpts = opts.setOpts = sopt.getOptsPara("led");
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#5", "backgroundInx", 1]);
+                opts.setOptss.push(setOpts);
+                blocks[cname] = {name: "positionPanel", type: "Model~MdaSetGroup~base.sys0", opts: opts};
+                continue;
+            }
+            if (gr.appId === 3)
+                preText = "ctr1";
+            if (gr.appId === 4)
+                preText = "ctr2";
+
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
+                var para = sopt.getParaSetOpts({paraSetName: preText + "PulseSource", titleWidth: 0, titleFontSize: "0.5rh"});
+                opts.title = "脈波來源";
+                setOpts.fontSize = "0.5rh";
+                setOpts.enum = para.enum;
+                setOpts.value = para.value;
+            }
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
+                var para = sopt.getParaSetOpts({paraSetName: preText + "Remote", titleWidth: 0, titleFontSize: "0.5rh"});
+                opts.title = "遠端遙控";
+                setOpts.enum = para.enum;
+                setOpts.value = para.value;
+            }
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
+                var para = sopt.getParaSetOpts({paraSetName: preText + "TxLoad", titleWidth: 0, titleFontSize: "0.5rh"});
+                opts.title = "輸出裝置";
+                setOpts.enum = para.enum;
+                setOpts.enumColors = ["#eef", "#ffc"];
+                setOpts.value = para.value;
+            }
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonSelect");
+                var para = sopt.getParaSetOpts({paraSetName: preText + "BatShort", titleWidth: 0, titleFontSize: "0.5rh"});
+                opts.title = "戰備短路";
+                setOpts.enum = para.enum;
+                setOpts.enumColors = ["#eef", "#ffc"];
+                setOpts.value = para.value;
+            }
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
+                opts.title = "固態放大器電源";
+                setOpts.enum = ["關閉", "開啟"];
+                setOpts.enumIds = ["close", "open"];
+            }
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
+                opts.title = "本機脈波輸出";
+                setOpts.enum = ["關閉", "開啟"];
+                setOpts.enumIds = ["close", "open"];
+            }
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
+                opts.title = "脈波輸出致能";
+                setOpts.enum = ["關閉", "開啟"];
+                setOpts.enumIds = ["close", "open"];
+            }
+            if (i === inx++) {
+                var setOpts = opts.setOpts = sopt.getOptsPara("buttonActs");
+                opts.title = "系統控制";
+                setOpts.enum = ["緊急停止"];
+                setOpts.enumIds = ["closeAll"];
+            }
+            setOpts.titleWidth = 0;
+            setOpts.baseColor = "#002";
+            setOpts.borderWidth = 0;
+            opts.setOptss.push(setOpts);
+            opts.actionFunc = actionPrg;
+            blocks[cname] = {name: "ctrElem#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
+        }
+        //==============================================
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        var opts = {};
+        opts.readOnly_f = 1;
+        blocks[cname] = {name: "editor", type: "Component~Cp_base~editor.sys0", opts: opts};
+        //==============================================
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+
+        var opts = {};
+        opts.buttons = ["上一頁", "下一頁", "清除"];
+        opts.buttonAmt = 6;
+        opts.buttonIds = ["upPage", "downPage", "clear"];
+        opts.layoutType = "collum";
+        opts.margin = 4;
+        opts.fontSize = "0.5rh";
+        opts.xm = 4;
+        opts.ym = 10;
+        opts.baseColor = "#444";
+        opts.actionFunc = function (iobj) {
+            console.log(iobj);
+            if (iobj.buttonId === "upPage") {
+                var kvObj = md.blockRefs["editor"];
+                KvLib.lineMoveEditor(kvObj, -12);
+                return;
+            }
+            if (iobj.buttonId === "downPage") {
+                var kvObj = md.blockRefs["editor"];
+                KvLib.lineMoveEditor(kvObj, 12);
+                return;
+            }
+            if (iobj.buttonId === "clear") {
+                var kvObj = md.blockRefs["editor"];
+                var editor = kvObj.objs["editor"];
+                KvLib.clearEditorMaker(editor);
+                editor.getSession().setValue("");
+                return;
+            }
+        };
+        blocks[cname] = {name: "headButtons", type: "Model~MdaButtons~base.sys0", opts: opts};
+        //==============================================
+        var cname = lyMaps["mainBody"] + "~" + lyInx++;
+        mac.setFootBar(md, cname);
+        return;
+    }
+}
+
+
+class SyncGloble {
+    constructor() {
+        gr.logMessage={inx:0,messages:[]};
+        
+        gr.syncCommand = {};
+        var syncData = gr.syncData = {};
+        /*
+         0 mainStatus 0:none, 1:warn up, 2:ready, 3:error
+         1 pulse in exist flag 0:none, 1:ok
+         2 envi status 0:none , 1:ok ,2:error 
+         3 sspa power status 0:none , 1:ok ,2:error 
+         4 sspa status 0:none , 1:ok ,2:error 
+         5 pulse out status 0:none , 1:ok ,2:error 
+         
+         *
+         *                                  */
+        syncData.mastSystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        syncData.sub1SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        syncData.sub2SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        syncData.ctr1SystemStatusA = [1, 1, 1, 1, 1, 1, 0, 0, 0, 0];
+        syncData.ctr2SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        syncData.drv1SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        syncData.drv2SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+
+        var location = syncData.location = {};
+        var radarStatus = syncData.radarStatus = {};
+        syncData.ctr1PowerStatus = {};
+        syncData.ctr2PowerStatus = {};
+        syncData.ctr1SspaStatusA = [];
+        syncData.ctr2SspaStatusA = [];
+
+
+        /*
+         0:remote input rf power
+         1:local input rf power
+         2:pre amp output rf power
+         3:driver amp output rf power
+         4:cw output rf power
+         5:ccw output rf power
+         
+         */
+        syncData.ctr1MeterStatusA = [0, 0, 0, 0, 0, 0];
+        syncData.ctr2MeterStatusA = [0, 0, 0, 0, 0, 0];
+
+
+
+
+        syncData.connectTime = 0;
+        syncData.connectCnt = 0;
+        syncData.slotStatus = [0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        syncData.slotIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 0, 0, 0, 0];
+        location.mastGpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+        location.sub1GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+        location.sub2GpsData = [22, 59, 59, 99, 122, 59, 59, 99, 123, 270, "GPS unavalible"];
+
+        /*
+         SP雷達信號     0.0: 無信號, 0.1: 信號備便
+         脈波來源       1.0: 主雷同步, 1.1: 本機脈波
+         與副控1連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
+         與副控2連線方式  2.0: 光纖, 2.1: 無線, 2.2: 自動 
+         */
+        radarStatus.mastStatus = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        /*
+         雷達狀態    0.0: 未連線, 0.1: 準備中, 0.2:本機備便, 0.3:發射備便, 0.4:發射中, 0.5:異常          
+         環控        1.0: 未連線, 1.1:良好, 1.2: 異常 
+         SSPA電源    2.0: 未連線, 2.1:良好, 2.2: 異常 
+         SSPA放大器  3.0: 未連線, 3.1:良好, 3.2: 異常 
+         SSPA功率    4.0: 未連線, 3.1:良好, 4.2: 異常 
+         戰備狀態    5.0: 未連線, 5.1:關閉, 5.2: 開啟 
+         遠端遙控    6.0: 未連線, 6.1:關閉, 6.2: 開啟 
+         脈波來源    7.0: 未連線, 7.1: 主雷同步, 7.2: 本機脈波
+         輸出裝置    8.0: 未連線, 8.1: 天線, 8.2:假負載 
+         連線方式    9.0: 未連線, 9.1: 光纖, 9.2:無線, 9.3:自動 
+         0.1
+         */
+        radarStatus.sub1Status = [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        radarStatus.sub2Status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        //0 光纖連線狀態 0:未連線, 1:未連線 
+        //1 RF連線狀態 0:未連線, 1:未連線 
+        //2 1588修正時間  
+        //3 封包發送數  
+        //4 正確率
+        //5 主控RF接收能量
+        //6 副控RF接收能量
+
+        syncData.sub1CommDatas = [0, 1, 3, 4, 1200, 10, 20];
+        syncData.sub2CommDatas = [1, 0, 7, 8, 1201, 11, 22];
+
+
+        for (var j = 0; j < 2; j++) {
+            if (j === 0)
+                var subPowerStatus = syncData.ctr1PowerStatus;
+            if (j === 1)
+                var subPowerStatus = syncData.ctr2PowerStatus;
+            subPowerStatus.connectA = [];
+            subPowerStatus.faultA = [];
+            subPowerStatus.v50enA = [];
+            subPowerStatus.v32enA = [];
+            subPowerStatus.v50vA = [];
+            subPowerStatus.v50iA = [];
+            subPowerStatus.v50tA = [];
+            subPowerStatus.v32vA = [];
+            subPowerStatus.v32iA = [];
+            subPowerStatus.v32tA = [];
+            for (var i = 0; i < 36; i++) {
+                subPowerStatus.connectA.push(0);
+                subPowerStatus.faultA.push(0);
+                subPowerStatus.v50enA.push(0);
+                subPowerStatus.v32enA.push(0);
+                subPowerStatus.v50vA.push(50);
+                subPowerStatus.v50iA.push(15);
+                subPowerStatus.v50tA.push(25);
+                subPowerStatus.v32vA.push(32);
+                subPowerStatus.v32iA.push(15);
+                subPowerStatus.v32tA.push(32);
+            }
+            for (var i = 0; i < 36; i++) {
+                subPowerStatus.connectA[i] = 0;
+                subPowerStatus.faultA[i] = 1;
+                subPowerStatus.v50enA[i] = 1;
+                subPowerStatus.v32enA[i] = 1;
+            }
+        }
+        /*
+         0:connect, 1 保護觸發, 2:工作比過高, 3:脈寬過高, 4:溫度過高, 5:反射過高, 6:RF輸出, 7:溫度
+         */
+        for (var j = 0; j < 2; j++) {
+            if (j === 0)
+                var subSspaStatusA = syncData.ctr1SspaStatusA;
+            if (j === 1)
+                var subSspaStatusA = syncData.ctr2SspaStatusA;
+            for (var i = 0; i < 36; i++) {
+                subSspaStatusA.push([1, 0, 0, 0, 0, 0, 45.3, 32]);
+            }
+        }
+    }
+
+    timer() {
+        if (!gr.appFirstEntry_f) {
+            gr.appFirstEntry_f = 1;
+
+
+        }
+
+        gr.syncData.connectTime++;
+        if (gr.syncData.connectTime >= 6) {
+            gr.syncData.connectTime = 0;
+            gr.syncData.connectCnt++;
+        }
+    }
+    command(iobj) {
+        console.log(iobj);
+        if (gr.appId === 1)
+            var preText = "sub1";
+        if (gr.appId === 2)
+            var preText = "sub2";
+        if (gr.appId === 3)
+            var preText = "ctr1";
+        if (gr.appId === 4)
+            var preText = "ctr2";
+        var messageId = iobj.act;
+        if (iobj.act === "ctr1ClosePowerModule") {
+            return;
+        }
+        if (iobj.act === "ctr1OpenPowerModule") {
+            var mes={};
+            mes.type="command";
+            mes.text=iobj.act;
+            gr.logMessage.messages.push(mes);
+            return;
+        }
+        if (iobj.act === "ctr1CloseAllPowerModule") {
+            return;
+        }
+        if (iobj.act === "ctr1OpenAllPowerModule") {
+            var mes={};
+            mes.type="command";
+            mes.text=iobj.act;
+            gr.logMessage.messages.push(mes);
+            return;
+        }
+
+
+        if (iobj.act === preText + "InsertPowerModule") {
+            gr.paraSet[preText + "PowerExistA"][iobj.index] = 1;
+            mac.saveParaSet();
+            return;
+        }
+        if (iobj.act === preText + "RemovePowerModule") {
+            gr.paraSet[preText + "PowerExistA"][iobj.index] = 0;
+            mac.saveParaSet();
+            return;
+        }
+        if (iobj.act === preText + "InsertSspaModule") {
+            gr.paraSet[preText + "SspaExistA"][iobj.index] = 1;
+            mac.saveParaSet();
+            return;
+        }
+        if (iobj.act === preText + "RemoveSspaModule") {
+            gr.paraSet[preText + "SspaExistA"][iobj.index] = 0;
+            mac.saveParaSet();
+            return;
+        }
+        if (iobj.act === preText + "InsertAllSspaModule") {
+            for (var i = 0; i < 36; i++)
+                gr.paraSet[preText + "SspaExistA"][i] = 1;
+            mac.saveParaSet();
+            return;
+        }
+        if (iobj.act === preText + "RemoveAllSspaModule") {
+            for (var i = 0; i < 36; i++)
+                gr.paraSet[preText + "SspaExistA"][i] = 0;
+            mac.saveParaSet();
+            return;
+        }
+        if (iobj.act === preText + "InsertAllPowerModule") {
+            for (var i = 0; i < 36; i++)
+                gr.paraSet[preText + "PowerExistA"][i] = 1;
+            mac.saveParaSet();
+            return;
+        }
+        if (iobj.act === preText + "RemoveAllPowerModule") {
+            for (var i = 0; i < 36; i++)
+                gr.paraSet[preText + "PowerExistA"][i] = 0;
+            mac.saveParaSet();
+            return;
+        }
+    }
+
+}
+gr.gbcs = new SyncGloble();
