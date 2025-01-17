@@ -209,7 +209,12 @@ class KvLib {
         var row = editor.session.getLength() - 1;
         var column = editor.session.getLine(row).length; // or simply Infinity
         editor.gotoLine(row + 1, column);
-        editor.insert(text);
+        if(row === 0 && column ===0){
+            editor.insert(text);
+        }    
+        else{
+            editor.insert("\n"+text);
+        }    
         if (color) {
             KvLib.setEditorMaker(editor, color);
         }

@@ -4135,7 +4135,13 @@ class MdaSetLine {
                 opts.imageUrls.push("systemResource/red_light.png");
                 opts.imageUrls.push("systemResource/yellow_light.png");
                 opts.imageUrls.push("systemResource/blue_light.png");
-                opts.backgroundInx=setOpts.value[i];
+                opts.backgroundInx = setOpts.value[i];
+                if (setOpts.watchDatas) {
+                    var items = setOpts.watchDatas[i];
+                    if (items)
+                        md.setInputWatch(opts, items[0], items[1], items[2], items[3]);
+                }
+                opts.textAlign="left";
                 md.newBlock(cname, opts, "Component~Cp_base~plate.none", "labelMain#" + i);
             }
             return;
@@ -4161,8 +4167,8 @@ class MdaSetLine {
                     md.setInputWatch(opts, items[0], items[1], items[2], items[3]);
                 }
             }
-            
-            
+
+
             md.newBlock(cname, opts, "Component~Cp_base~images.lcd", "labelMain#" + i);
             return;
         }
@@ -5908,6 +5914,7 @@ class MdaSetGroup {
         opts.tm = 30;
         opts.xm = op.xm;
         opts.ym = op.ym;
+        opts.lm=op.lm;
         opts.yArr = op.yArr;
         opts.xyArr = op.xyArr;
         layouts[cname] = {name: cname, type: "Layout~Ly_base~xyArray.sys0", opts: opts};
@@ -5917,7 +5924,7 @@ class MdaSetGroup {
             var cname = lyMaps["gridBody"] + "~" + i;
             var opts = {};
             opts.setOpts = op.setOptss[i];
-            if(!opts.setOpts)
+            if (!opts.setOpts)
                 continue;
             opts.titleBorderWidth = 1;
             if (opts.setOpts) {

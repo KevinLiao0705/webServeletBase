@@ -4530,8 +4530,23 @@ class CtrRadarStatus {
         var md = this.md;
         var op = md.opts;
         var st = md.stas;
-        var wa = md.stas.meterStatusA = [];
-        var wb = md.stas.ledStatusA = [];
+        var wa = md.stas.meterStatusA = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
+        var wb = md.stas.envLedStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var wc = md.stas.pulseStatusA = [0, 0, 0];
+        var wd = md.stas.sspaStatusA = [0, 0];
+        var we = md.stas.sspaPowerStatusA = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+        ];
+        var wf = md.stas.sspaModuleStatusA = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+        ];
+
         if (gr.appId === 3)
             var preText = "ctr1";
         if (gr.appId === 4)
@@ -4549,6 +4564,41 @@ class CtrRadarStatus {
         wa[4] = "" + value.toFixed(1);
         var value = (da[5] - gr.paraSet[preText + "CcwAmpOutRfpowOffs"]) * gr.paraSet[preText + "CcwAmpOutRfpowGain"];
         wa[5] = "" + value.toFixed(1);
+        if (!gr.paraSet[preText + "PulseSource"])
+            wa[8] = wa[0];
+        else
+            wa[8] = wa[1];
+        var cur = 0;
+        for (var i = 0; i < 36; i++)
+            cur += gr.syncData[preText + "PowerStatus"].v32iA[i];
+        wa[9] = "" + cur.toFixed(1);
+
+        var db = gr.syncData[preText + "EnvStatusA"];
+        for (var i = 0; i < 10; i++) {
+            if (db[i] === 2)
+                wb[i] = 2;
+        }
+
+        var dc = gr.syncData[preText + "PulseStatusA"];
+        for (var i = 0; i < 3; i++) {
+            if (dc[i] === 2) {
+                wc[i] = 2;
+                if (i === 0)
+                    wc[i] = 1;
+            }
+        }
+
+        var dd = gr.syncData[preText + "SystemStatusA"];
+        wd[0] = dd[3]; //all sspaPower status
+        wd[1] = dd[4]; //all sspaModule status
+
+        var de = gr.syncData[preText + "SspaPowerStatusA"];
+        for (var i = 0; i < 36; i++)
+            we[i] = de[i];
+        var df = gr.syncData[preText + "SspaModuleStatusA"];
+        for (var i = 0; i < 36; i++)
+            wf[i] = df[i];
+
 
     }
 
@@ -4658,54 +4708,66 @@ class CtrRadarStatus {
             var opts = {};
             opts.setOptss = [];
             var inx = 0;
+            var regName = "self.fatherMd.fatherMd.fatherMd.stas.meterStatusA";
             if (i === inx++) {
                 opts.title = "順向輸出功率";
                 var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
                 setOpts.value = "";//
                 var watchDatas = setOpts.watchDatas = [];
-                watchDatas.push(["directReg", regName + "#4", "editValue", 1]);
+                watchDatas.push(["directReg", regName + "#4", "innerText", 1]);
             }
             if (i === inx++) {
                 opts.title = "反向輸出功率";
                 var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
                 setOpts.value = "";//
-                setOpts.editTextColor = "#000";
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#5", "innerText", 1]);
             }
             if (i === inx++) {
                 opts.title = "輸出電流";
                 var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
                 setOpts.value = "";//
-            }
-            if (i === inx++) {
-                opts.title = "本機輸入功率";
-                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
-                setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#9", "innerText", 1]);
             }
             if (i === inx++) {
                 opts.title = "遙控輸入功率";
                 var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
                 setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#0", "innerText", 1]);
+            }
+            if (i === inx++) {
+                opts.title = "本機輸入功率";
+                var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
+                setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#1", "innerText", 1]);
             }
             if (i === inx++) {
                 opts.title = "前置放大器輸出功率";
                 var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
                 setOpts.value = "";//
-                setOpts.editTextColor = "#0f0";
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#2", "innerText", 1]);
             }
             if (i === inx++) {
                 opts.title = "驅動放大器輸出功率";
                 var setOpts = opts.setOpts = sopt.getOptsPara("lcdView");
                 setOpts.value = "";//
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#3", "innerText", 1]);
             }
-
-
-
-
+            var regName = "self.fatherMd.fatherMd.fatherMd.stas.envLedStatusA";
             if (i === inx++) {
                 opts.title = "環控氣流";
                 var setOpts = opts.setOpts = sopt.getOptsPara("leds");
                 setOpts.enum = ["AF左", "AF中", "AF右"];
-                setOpts.value = [0, 1, 2];
+                setOpts.value = [0, 0, 0];
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#0", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#1", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#2", "backgroundInx", 1]);
                 opts.setOptss.push(setOpts);
                 blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
                 continue;
@@ -4715,7 +4777,14 @@ class CtrRadarStatus {
                 opts.title = "環控水流";
                 var setOpts = opts.setOpts = sopt.getOptsPara("leds");
                 setOpts.enum = ["WF1", "WF2", "WF3", "WF4", "WF5", "WF6"];
-                setOpts.value = [0, 1, 2, 3, 4, 0];
+                setOpts.value = [0, 0, 0, 0, 0, 0];
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#3", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#4", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#5", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#6", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#7", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#8", "backgroundInx", 1]);
                 opts.setOptss.push(setOpts);
                 blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
                 continue;
@@ -4725,26 +4794,37 @@ class CtrRadarStatus {
                 var setOpts = opts.setOpts = sopt.getOptsPara("leds");
                 setOpts.enum = ["WT"];
                 setOpts.value = [0];
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#9", "backgroundInx", 1]);
                 opts.setOptss.push(setOpts);
                 blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
                 continue;
             }
 
+            var regName = "self.fatherMd.fatherMd.fatherMd.stas.pulseStatusA";
             if (i === inx++) {
                 opts.title = "脈波狀態";
                 var setOpts = opts.setOpts = sopt.getOptsPara("leds");
                 setOpts.enum = ["脈波輸入", "週期過大", "脈波過寬"];
-                setOpts.value = [0, 1, 2];
+                setOpts.value = [0, 0, 0];
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#0", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#1", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#2", "backgroundInx", 1]);
                 opts.setOptss.push(setOpts);
                 blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
                 continue;
             }
 
+            var regName = "self.fatherMd.fatherMd.fatherMd.stas.sspaStatusA";
             if (i === inx++) {
                 opts.title = "固態放大器狀態";
                 var setOpts = opts.setOpts = sopt.getOptsPara("leds");
                 setOpts.enum = ["放大器電源", "放大器模組"];
-                setOpts.value = [0, 1];
+                setOpts.value = [0, 0];
+                var watchDatas = setOpts.watchDatas = [];
+                watchDatas.push(["directReg", regName + "#0", "backgroundInx", 1]);
+                watchDatas.push(["directReg", regName + "#1", "backgroundInx", 1]);
                 opts.setOptss.push(setOpts);
                 blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
                 continue;
@@ -4759,13 +4839,16 @@ class CtrRadarStatus {
                 opts.yArr = [];
                 opts.xyArr = [];
                 opts.ym = 0;
+                opts.lm = 50;
                 for (var j = 0; j < 10; j++) {
                     opts.yArr.push(rh);
                     opts.xyArr.push([rw, rw, rw, rw]);
                 }
+                var regName = "self.fatherMd.fatherMd.fatherMd.stas.sspaPowerStatusA";
+                var itemInx = 0;
                 for (var j = 0; j < 40; j++) {
                     var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                    if (j === 0 || j === 3 || j === 36 || j === 39) {
+                    if (j === 2 || j === 3 || j === 38 || j === 39) {
                         opts.setOptss.push(null);
                         continue;
                     }
@@ -4773,7 +4856,10 @@ class CtrRadarStatus {
                     var str2 = "-" + ((j % 4) + 1);
                     setOpts.enum = [str1 + str2];
                     setOpts.value = [0];
+                    var watchDatas = setOpts.watchDatas = [];
+                    watchDatas.push(["directReg", regName + "#" + itemInx, "backgroundInx", 1]);
                     opts.setOptss.push(setOpts);
+                    itemInx++;
                 }
                 blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
                 continue;
@@ -4787,13 +4873,16 @@ class CtrRadarStatus {
                 opts.yArr = [];
                 opts.xyArr = [];
                 opts.ym = 0;
+                opts.lm = 50;
                 for (var j = 0; j < 10; j++) {
                     opts.yArr.push(rh);
                     opts.xyArr.push([rw, rw, rw, rw]);
                 }
+                var regName = "self.fatherMd.fatherMd.fatherMd.stas.sspaModuleStatusA";
+                var itemInx = 0;
                 for (var j = 0; j < 40; j++) {
                     var setOpts = opts.setOpts = sopt.getOptsPara("leds");
-                    if (j === 0 || j === 3 || j === 36 || j === 39) {
+                    if (j === 2 || j === 3 || j === 38 || j === 39) {
                         opts.setOptss.push(null);
                         continue;
                     }
@@ -4801,7 +4890,10 @@ class CtrRadarStatus {
                     var str2 = "-" + ((j % 4) + 1);
                     setOpts.enum = [str1 + str2];
                     setOpts.value = [0];
+                    var watchDatas = setOpts.watchDatas = [];
+                    watchDatas.push(["directReg", regName + "#" + itemInx, "backgroundInx", 1]);
                     opts.setOptss.push(setOpts);
+                    itemInx++;
                 }
                 blocks[cname] = {name: "groupPanel#" + i, type: "Model~MdaSetGroup~base.sys0", opts: opts};
                 continue;
@@ -4843,7 +4935,6 @@ class CtrRadarPane {
         if (this.md.subType === "base.sys0") {
         }
     }
-
     chkWatch() {
         var self = this;
         var md = this.md;
@@ -4856,8 +4947,6 @@ class CtrRadarPane {
         if (gr.appId === 4)
             var preText = "ctr2";
         var da = gr.syncData[preText + "MeterStatusA"];
-
-
         var value = (da[0] - gr.paraSet[preText + "RemoteInRfpowOffs"]) * gr.paraSet[preText + "RemoteInRfpowGain"];
         wa[0] = "" + value.toFixed(1);
         var value = (da[1] - gr.paraSet[preText + "LocalInRfpowOffs"]) * gr.paraSet[preText + "LocalInRfpowGain"];
@@ -4881,10 +4970,7 @@ class CtrRadarPane {
 
 
 
-        if (gr.appId === 3)
-            var preText = "ctr1";
-        if (gr.appId === 4)
-            var preText = "ctr2";
+
         var da = gr.syncData[preText + "SystemStatusA"];
         wb[0] = 0;
         if (da[0] === 1)//system warn up
@@ -4900,26 +4986,22 @@ class CtrRadarPane {
         wb[4] = da[4];//sspa status
         wb[5] = da[5];//pulse output status
         //=====================================
-        
-        if(st.messageCnt===undefined)
-            st.messageCnt=gr.logMessage.messages.length;        
-        for(;;){
-            if(st.messageCnt>=gr.logMessage.messages.length)
+
+        if (st.messageCnt === undefined)
+            st.messageCnt = gr.logMessage.messages.length;
+        for (; ; ) {
+            if (st.messageCnt >= gr.logMessage.messages.length)
                 break;
             var kvObj = md.blockRefs["editor"];
-            var mes=gr.logMessage.messages[st.messageCnt];
-            if(st.messageCnt===0)
-                var str=mes.type+" : "+mes.text;
-            else
-                var str="\n"+mes.type+" : "+mes.text;
-            KvLib.endInputEditor(kvObj,str);
+            var mes = gr.logMessage.messages[st.messageCnt];
+            var str = mes.type + " : " + mes.text;
+            KvLib.endInputEditor(kvObj, str);
             st.messageCnt++;
-        }    
-            
-        
-        
-    }
+        }
 
+
+
+    }
     afterCreate() {
         var md = this.md;
         var op = md.opts;
@@ -5004,26 +5086,29 @@ class CtrRadarPane {
             if (iobj.act === "actButtonClick") {
                 var inx = KvLib.toInt(iobj.sender.name.split('#')[1], -1);
                 if (inx === 14) {
-                    if(iobj.buttonInx===0)
+                    if (iobj.buttonInx === 0)
                         gr.gbcs.command({'act': preText + "CloseAllPowerModule"});
-                    if(iobj.buttonInx===1)
+                    if (iobj.buttonInx === 1)
                         gr.gbcs.command({'act': preText + "OpenAllPowerModule"});
                     return;
                 }
                 if (inx === 15) {
-                    gr.gbcs.command({'act': preText + "LocalPulseOne"});
+                    if (iobj.buttonInx === 0)
+                        gr.gbcs.command({'act': preText + "LocalPulseOff"});
+                    if (iobj.buttonInx === 1)
+                        gr.gbcs.command({'act': preText + "LocalPulseOn"});
                     return;
                 }
                 if (inx === 16) {
-                    gr.gbcs.command({'act': preText + "EnableAllSspa"});
+                    if (iobj.buttonInx === 0)
+                        gr.gbcs.command({'act': preText + "DisableAllSspa"});
+                    if (iobj.buttonInx === 1)
+                        gr.gbcs.command({'act': preText + "EnableAllSspa"});
                     return;
                 }
                 if (inx === 17) {
-                    gr.gbcs.command({'act': preText + "EmergencyStop"});
-                    var kvObj = md.blockRefs["editor"];
-                    KvLib.endInputEditor(kvObj, "\n12345", "red");
-
-
+                    if (iobj.buttonInx === 0)
+                        gr.gbcs.command({'act': preText + "EmergencyStop"});
                     return;
                 }
 
@@ -5263,8 +5348,8 @@ class CtrRadarPane {
 
 class SyncGloble {
     constructor() {
-        gr.logMessage={inx:0,messages:[]};
-        
+        gr.logMessage = {inx: 0, messages: []};
+
         gr.syncCommand = {};
         var syncData = gr.syncData = {};
         /*
@@ -5273,17 +5358,74 @@ class SyncGloble {
          2 envi status 0:none , 1:ok ,2:error 
          3 sspa power status 0:none , 1:ok ,2:error 
          4 sspa status 0:none , 1:ok ,2:error 
-         5 pulse out status 0:none , 1:ok ,2:error 
-         
-         *
-         *                                  */
+         5 pulse status 0:none , 1:ok ,2:error 
+         */
         syncData.mastSystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         syncData.sub1SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         syncData.sub2SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        syncData.ctr1SystemStatusA = [1, 1, 1, 1, 1, 1, 0, 0, 0, 0];
+        syncData.ctr1SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         syncData.ctr2SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         syncData.drv1SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         syncData.drv2SystemStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        /*
+         envirament status;
+         value 0:none, 1:ok, 2:error 
+         0 airFlow left
+         1 airFlow middle
+         2 airFlow right
+         3 waterFlow 1
+         4 waterFlow 2
+         5 waterFlow 3
+         6 waterFlow 4
+         7 waterFlow 5
+         8 waterFlow 6
+         9 waterFlow temperature
+         */
+
+        syncData.ctr1EnvStatusA = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0];
+        syncData.ctr2EnvStatusA = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        /*
+         pulse status         
+         value 0:none, 1:ok, 2:error 
+         0 pulse input exist    0:none, 1:no pulse, 2:exist 
+         1 over pulseDuty       0:none, 1:good, 2:over 
+         2 over pulseWidth      0:none, 1:good, 2:over 
+         */
+        syncData.ctr1PulseStatusA = [2, 1, 1];
+        syncData.ctr2PulseStatusA = [0, 0, 0];
+
+
+        /*
+         value 0:none, 1:ok, 2:error 
+         */
+        syncData.ctr1SspaPowerStatusA = [
+            0, 1, 2, 0, 1, 2, 0, 1, 2,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+        ];
+        syncData.ctr2SspaPowerStatusA = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+        ];
+        syncData.ctr1SspaModuleStatusA = [
+            0, 1, 2, 0, 1, 2, 0, 1, 2,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+        ];
+        syncData.ctr2SspaModuleStatusA = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+        ];
+
+
 
 
         var location = syncData.location = {};
@@ -5303,7 +5445,7 @@ class SyncGloble {
          5:ccw output rf power
          
          */
-        syncData.ctr1MeterStatusA = [0, 0, 0, 0, 0, 0];
+        syncData.ctr1MeterStatusA = [0, 1, 2, 3, 4, 5];
         syncData.ctr2MeterStatusA = [0, 0, 0, 0, 0, 0];
 
 
@@ -5372,18 +5514,18 @@ class SyncGloble {
                 subPowerStatus.faultA.push(0);
                 subPowerStatus.v50enA.push(0);
                 subPowerStatus.v32enA.push(0);
-                subPowerStatus.v50vA.push(50);
-                subPowerStatus.v50iA.push(15);
-                subPowerStatus.v50tA.push(25);
-                subPowerStatus.v32vA.push(32);
-                subPowerStatus.v32iA.push(15);
-                subPowerStatus.v32tA.push(32);
+                subPowerStatus.v50vA.push(0);
+                subPowerStatus.v50iA.push(0);
+                subPowerStatus.v50tA.push(0);
+                subPowerStatus.v32vA.push(0);
+                subPowerStatus.v32iA.push(0);
+                subPowerStatus.v32tA.push(0);
             }
             for (var i = 0; i < 36; i++) {
                 subPowerStatus.connectA[i] = 0;
-                subPowerStatus.faultA[i] = 1;
-                subPowerStatus.v50enA[i] = 1;
-                subPowerStatus.v32enA[i] = 1;
+                subPowerStatus.faultA[i] = 0;
+                subPowerStatus.v50enA[i] = 0;
+                subPowerStatus.v32enA[i] = 0;
             }
         }
         /*
@@ -5391,11 +5533,11 @@ class SyncGloble {
          */
         for (var j = 0; j < 2; j++) {
             if (j === 0)
-                var subSspaStatusA = syncData.ctr1SspaStatusA;
+                var ctrSspaStatusA = syncData.ctr1SspaStatusA;
             if (j === 1)
-                var subSspaStatusA = syncData.ctr2SspaStatusA;
+                var ctrSspaStatusA = syncData.ctr2SspaStatusA;
             for (var i = 0; i < 36; i++) {
-                subSspaStatusA.push([1, 0, 0, 0, 0, 0, 45.3, 32]);
+                ctrSspaStatusA.push([1, 0, 0, 0, 0, 0, 45.3, 32]);
             }
         }
     }
@@ -5424,67 +5566,92 @@ class SyncGloble {
         if (gr.appId === 4)
             var preText = "ctr2";
         var messageId = iobj.act;
-        if (iobj.act === "ctr1ClosePowerModule") {
+        if (iobj.act === preText + "ClosePowerModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             return;
         }
-        if (iobj.act === "ctr1OpenPowerModule") {
-            var mes={};
-            mes.type="command";
-            mes.text=iobj.act;
-            gr.logMessage.messages.push(mes);
+        if (iobj.act === preText + "OpenPowerModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             return;
         }
-        if (iobj.act === "ctr1CloseAllPowerModule") {
+
+        if (iobj.act === preText + "CloseAllPowerModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             return;
         }
-        if (iobj.act === "ctr1OpenAllPowerModule") {
-            var mes={};
-            mes.type="command";
-            mes.text=iobj.act;
-            gr.logMessage.messages.push(mes);
+        if (iobj.act === preText + "OpenAllPowerModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
+            return;
+        }
+        if (iobj.act === preText + "LocalPulseOff") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
+            return;
+        }
+        if (iobj.act === preText + "LocalPulseOn") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
+            return;
+        }
+        if (iobj.act === preText + "DisableAllSspa") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
+            return;
+        }
+        if (iobj.act === preText + "EnableAllSspa") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
+            return;
+        }
+        if (iobj.act === preText + "EmergencyStop") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             return;
         }
 
 
         if (iobj.act === preText + "InsertPowerModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             gr.paraSet[preText + "PowerExistA"][iobj.index] = 1;
             mac.saveParaSet();
             return;
         }
         if (iobj.act === preText + "RemovePowerModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             gr.paraSet[preText + "PowerExistA"][iobj.index] = 0;
             mac.saveParaSet();
             return;
         }
         if (iobj.act === preText + "InsertSspaModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             gr.paraSet[preText + "SspaExistA"][iobj.index] = 1;
             mac.saveParaSet();
             return;
         }
         if (iobj.act === preText + "RemoveSspaModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             gr.paraSet[preText + "SspaExistA"][iobj.index] = 0;
             mac.saveParaSet();
             return;
         }
         if (iobj.act === preText + "InsertAllSspaModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             for (var i = 0; i < 36; i++)
                 gr.paraSet[preText + "SspaExistA"][i] = 1;
             mac.saveParaSet();
             return;
         }
         if (iobj.act === preText + "RemoveAllSspaModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             for (var i = 0; i < 36; i++)
                 gr.paraSet[preText + "SspaExistA"][i] = 0;
             mac.saveParaSet();
             return;
         }
         if (iobj.act === preText + "InsertAllPowerModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             for (var i = 0; i < 36; i++)
                 gr.paraSet[preText + "PowerExistA"][i] = 1;
             mac.saveParaSet();
             return;
         }
         if (iobj.act === preText + "RemoveAllPowerModule") {
+            gr.logMessage.messages.push({type: "command", text: iobj.act});
             for (var i = 0; i < 36; i++)
                 gr.paraSet[preText + "PowerExistA"][i] = 0;
             mac.saveParaSet();
