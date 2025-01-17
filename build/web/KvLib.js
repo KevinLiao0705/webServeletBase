@@ -183,6 +183,7 @@ class KvLib {
             return str;
         }
     }
+    
     static lineMoveEditor(kvObj, line) {
         if (!kvObj)
             return;
@@ -199,6 +200,27 @@ class KvLib {
         var column = editor.session.getLine(cur.row).length;
         editor.gotoLine(cur.row + 1, column);
     }
+    
+    static getDateTime(){
+        var today = new Date();
+        var va=[];
+        va.push(today.getFullYear());
+        va.push(today.getMonth()+1);
+        va.push(today.getDate());
+        va.push(today.getHours());
+        va.push(today.getMinutes());
+        va.push(today.getSeconds());
+        for(var i=0;i<6;i++){
+            if(va[i]<10)
+                va[i]="0"+va[i];
+            else
+                va[i]=""+va[i];
+        }
+        
+        var date = va[0]+'-'+va[1]+'-'+va[2];
+        var time = va[3]+':'+va[4]+':'+va[5];
+        return (date + ' '+ time);        
+    }
 
     static endInputEditor(kvObj, text, color) {
         if (!kvObj)
@@ -209,15 +231,17 @@ class KvLib {
         var row = editor.session.getLength() - 1;
         var column = editor.session.getLine(row).length; // or simply Infinity
         editor.gotoLine(row + 1, column);
-        if(row === 0 && column ===0){
+        if (row === 0 && column === 0) {
             editor.insert(text);
-        }    
-        else{
-            editor.insert("\n"+text);
-        }    
+        } else {
+            editor.insert("\n" + text);
+        }
         if (color) {
             KvLib.setEditorMaker(editor, color);
         }
+        var row = editor.session.getLength() - 1;
+        var column = editor.session.getLine(row).length; // or simply Infinity
+        editor.gotoLine(row + 1, column);
 
     }
 
@@ -608,6 +632,24 @@ class KvLib {
 
             }
         }
+    }
+
+    static getByteLen(str){
+        let len = 0;
+        for (let i = 0; i < str.length; i++) {
+            str.charCodeAt(i) < 256 ? (len += 1) : (len += 2);
+        }
+        return len;
+    }
+
+    static spaceStrTo(str, toNum) {
+        var len = KvLib.getByteLen(str);
+        if (len >= toNum)
+            return;
+        var m = toNum - len;
+        for (var i = 0; i < m; i++)
+            str += " ";
+        return str;
     }
 
     static spaceText(istr) {

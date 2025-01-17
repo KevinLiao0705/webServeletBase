@@ -214,6 +214,8 @@ class MySystem {
     //period= Animate.period, unit: ms, about 16ms.
     baseTimer() {
         var self = window.sys;
+        if(!self.baseTimerCnt)
+            self.baseTimerCnt=0;
         self.baseTimerCnt++;
         self.baseTimerFlag = self.baseTimerCnt ^ self.baseTimerBuf;
         self.baseTimerBuf = self.baseTimerCnt;

@@ -20,9 +20,44 @@ class Macro {
         opts["outName"] = outName;
         sv.callServer(JSON.stringify(obj));
     }
-    saveParaSet(name,value) {
-        if(name){
-            gr.paraSet[name]=value;
+
+    messageEditor(md) {
+        var st=md.stas;
+        if (st.messageCnt === undefined)
+            st.messageCnt = gr.logMessage.messages.length;
+        for (; ; ) {
+            if (st.messageCnt >= gr.logMessage.messages.length)
+                break;
+            var kvObj = md.blockRefs["editor"];
+            var mes = gr.logMessage.messages[st.messageCnt];
+            var type="";
+            var color="";
+            if(mes.type==="cmd")
+                type="[cmd ]:";
+            if(mes.type==="info")
+                type="[info]:";
+            if(mes.type==="infoOk"){
+                color="green";
+                type="[info]:";
+            }    
+            if(mes.type==="infoErr"){
+                color="red";
+                type="[info]:";
+            }
+            var str="";
+            if(type){
+                str+=KvLib.getDateTime();
+                str+=" ";
+            }
+            str += type + mes.text;
+            KvLib.endInputEditor(kvObj, str,color);
+            st.messageCnt++;
+        }
+    }
+
+    saveParaSet(name, value) {
+        if (name) {
+            gr.paraSet[name] = value;
         }
         var fileName = "paraSet";
         var content = JSON.stringify(gr.paraSet);
@@ -666,6 +701,7 @@ class KvSetOpts {
         setOpts.enum = ["button"];
         setOpts.enumId = ["0"];
         setOpts.titleWidth = 0;
+        setOpts.fontSize="0.6rh";
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
