@@ -1230,7 +1230,7 @@ class KvSetOpts {
         setOpts.titleFontSize = "0.5rh";
         setOpts.actButtons = [];
         setOpts.readOnly_f = 1;
-        setOpts.editBaseColor = "#eeeeff";
+        setOpts.editTextColor = "#228";
         if (op) {
             KvLib.deepCoverObject(setOpts, op);
         }
